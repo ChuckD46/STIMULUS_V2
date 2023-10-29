@@ -1,39 +1,161 @@
-﻿using STIMULUS_V2.Server.Services.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using STIMULUS_V2.Server.Data;
+using STIMULUS_V2.Server.Services.Interfaces;
 using STIMULUS_V2.Shared.Models.DTOs;
 using STIMULUS_V2.Shared.Models.Entities;
 
 namespace STIMULUS_V2.Server.Services
 {
-    public class CodeService : IModelService<Code>
+    public class CodeService : IModelService<Code, int>
     {
-        public Task<APIResponse<Code>> Create(Code item)
+        private readonly STIMULUSContext sTIMULUSContext;
+
+        public CodeService(STIMULUSContext sTIMULUSContext)
         {
-            throw new NotImplementedException();
+            this.sTIMULUSContext = sTIMULUSContext;
         }
 
-        public Task<APIResponse<bool>> Delete(int id)
+        public async Task<APIResponse<Code>> Create(Code item)
         {
-            throw new NotImplementedException();
+            try
+            {
+                sTIMULUSContext.Code.Add(item);
+                await sTIMULUSContext.SaveChangesAsync();
+
+                if (sTIMULUSContext.Code.Contains(item))
+                {
+                    return new APIResponse<Code>(item, 200, "Succès");
+                }
+                else
+                {
+                    return new APIResponse<Code>(null, 500, "Erreur interne du serveur");
+                }
+            }
+            catch (Exception ex)
+            {
+                return new APIResponse<Code>(null, 500, $"Erreur lors de la création du model : {typeof(Code).Name}. Message : {ex.Message}");
+            }
         }
 
-        public Task<APIResponse<Code>> Get(int id)
+        public async Task<APIResponse<bool>> Delete(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (sTIMULUSContext.Code.Where(item => item.CodeId == id).Count() > 0)
+                {
+                    var item = await sTIMULUSContext.Code.FindAsync(id);
+                    sTIMULUSContext.Code.Remove(item);
+                    await sTIMULUSContext.SaveChangesAsync();
+
+                    return new APIResponse<bool>(true, 200, "Succès");
+                }
+                else
+                {
+                    return new APIResponse<bool>(false, 404, $"{typeof(Code).Name} non trouvé");
+                }
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    // Access the inner exception and its details
+                    Exception innerException = ex.InnerException;
+                    string innerExceptionMessage = innerException.Message;
+                    return new APIResponse<bool>(false, 500, $"Erreur lors de la suppression du model {typeof(Code).Name}. Message : {ex.Message}. Inner Exception: {innerExceptionMessage}");
+                }
+                else
+                {
+                    return new APIResponse<bool>(false, 500, $"Erreur lors de la suppression du model {typeof(Code).Name}. Message : {ex.Message}.");
+                }
+            }
         }
 
-        public Task<APIResponse<IEnumerable<Code>>> GetAll()
+        public async Task<APIResponse<Code>> Get(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var item = await sTIMULUSContext.Code.FindAsync(id);
+
+                if (item != null)
+                {
+                    return new APIResponse<Code>(item, 200, "Succès");
+                }
+                else
+                {
+                    return new APIResponse<Code>(null, 404, $"{typeof(Code).Name} non trouvé");
+                }
+            }
+            catch (Exception ex)
+            {
+                return new APIResponse<Code>(null, 500, $"Erreur lors de la récupération du model {typeof(Code).Name}. Message : {ex.Message}.");
+            }
         }
 
-        public Task<APIResponse<IEnumerable<Code>>> GetFromParentId(int id)
+        public async Task<APIResponse<IEnumerable<Code>>> GetAll()
         {
-            throw new NotImplementedException();
+            try
+            {
+                var itemList = await sTIMULUSContext.Code.ToListAsync();
+
+                if (itemList != null)
+                {
+                    return new APIResponse<IEnumerable<Code>>(itemList, 200, "Succès");
+                }
+                else
+                {
+                    return new APIResponse<IEnumerable<Code>>(null, 404, $"{typeof(Code).Name} non trouvé");
+                }
+            }
+            catch (Exception ex)
+            {
+                return new APIResponse<IEnumerable<Code>>(null, 500, $"Erreur lors de la récupération de la liste du model {typeof(Code).Name}. Message : {ex.Message}.");
+            }
         }
 
-        public Task<APIResponse<Code>> Update(int id, Code item)
+        public async Task<APIResponse<IEnumerable<Code>>> GetFromParentId(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var itemList = await sTIMULUSContext.Code.Where(item => item.CodeId == id).ToListAsync();
+
+                if (itemList != null)
+                {
+                    return new APIResponse<IEnumerable<Code>>(itemList, 200, "Succès");
+                }
+                else
+                {
+                    return new APIResponse<IEnumerable<Code>>(null, 404, $"{typeof(Code).Name} non trouvé");
+                }
+            }
+            catch (Exception ex)
+            {
+                return new APIResponse<IEnumerable<Code>>(null, 500, $"Erreur lors de la récupération du model par son parent {typeof(Code).Name}. Message : {ex.Message}.");
+            }
+        }
+
+        public async Task<APIResponse<Code>> Update(int id, Code item)
+        {
+            try
+            {
+                var existingItem = await sTIMULUSContext.Code.FindAsync(id);
+
+                if (existingItem != null)
+                {
+                    sTIMULUSContext.Entry(existingItem).CurrentValues.SetValues(item);
+
+                    await sTIMULUSContext.SaveChangesAsync();
+
+                    return new APIResponse<Code>(existingItem, 200, "Succès");
+                }
+                else
+                {
+                    return new APIResponse<Code>(null, 404, $"{typeof(Code).Name} non trouvé");
+                }
+            }
+            catch (Exception ex)
+            {
+                return new APIResponse<Code>(null, 500, $"Erreur lors de la mise à jour du model {typeof(Code).Name}. Message : {ex.Message}.");
+            }
         }
     }
 }
