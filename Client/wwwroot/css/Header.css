@@ -2,6 +2,10 @@
     background-color: darkblue;
 }
 
+.custom-header-radzen-profilemenu{
+    margin-left: 68%
+}
+
 .custom-header-image {
     text-align: center;
     width: 10%;
@@ -14,9 +18,4 @@
 .custom-header-radzen-breadcrumb{
     font-size:smaller;
     font-weight:bolder;
-}
-
-.custom-header-radzen-profile-menu{
-    background-color: darkblue;
-    margin-left: 68%;
 }

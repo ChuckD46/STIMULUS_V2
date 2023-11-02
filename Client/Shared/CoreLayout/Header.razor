@@ -12,22 +12,18 @@
                 </RadzenBreadCrumb>
             </div>
         </RadzenStack>
-        <RadzenProfileMenu Style="background-color:darkblue;" class="custom-header-radzen-profile-menu">
+        <RadzenProfileMenu Style="background-color: darkblue; margin-left:68%;" class="custom-header-radzen-profilemenu">
             <Template>
                 <RadzenIcon Icon="account_circle"></RadzenIcon>
             </Template>
             <ChildContent>
                 <RadzenProfileMenuItem Text="Menu" Path="menu" Icon="list"></RadzenProfileMenuItem>
-                 <RadzenProfileMenuItem Text="Graph" Path="graph" Image="../RessourceVisuel/Graph.png"></RadzenProfileMenuItem>
                  <RadzenProfileMenuItem Text="Réglages" Path="settings" Icon="build" ></RadzenProfileMenuItem>
                 <RadzenProfileMenuItem Text="Déconnexion" Path="deconnexion" Icon="exit_to_app"></RadzenProfileMenuItem>
             </ChildContent>
         </RadzenProfileMenu>
     </RadzenStack>
 </RadzenHeader>
-
-
-
 
 @code {
     [Parameter]
