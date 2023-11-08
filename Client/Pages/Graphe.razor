@@ -1,0 +1,13 @@
+﻿@page "/graphe"
+@using STIMULUS_V2.Client.Shared.GrapheComponents
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+
+<GrapheProf/>
+
+
+@code {
+    public async Task Temporaire()
+    {
+        await sessionStorage.SetItemAsync<int>("idGraphe", 1);
+    }
+}
