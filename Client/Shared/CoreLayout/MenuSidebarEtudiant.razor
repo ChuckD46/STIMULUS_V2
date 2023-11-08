@@ -1,0 +1,14 @@
+﻿<RadzenSidebar Style="width:auto;" @bind-Expanded="@sidebarExpandedEtudiant" Responsive=false>
+    <RadzenPanelMenu Multiple=false>
+        <RadzenPanelMenuItem Text="Classe" Icon="home">
+            <RadzenPanelMenuItem Text="Graph de test" Path="à déterminer" Icon="line_style"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Text="Graph 1" Path="à déterminer" Icon="line_style"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Text="Graph 2" Path="à déterminer" Icon="line_style"></RadzenPanelMenuItem>
+        </RadzenPanelMenuItem>   ­­­­
+    </RadzenPanelMenu>
+</RadzenSidebar>
+
+@code {
+    [Parameter]
+    public bool sidebarExpandedEtudiant { get; set; } = false;
+}
