@@ -31,7 +31,7 @@
     private void CouperLeLien()
     {
         //Methode du bled, impossible de null le champs en put. fonctionne sans soucis pour le nouveau graph, boucle infinie sur l'ancien
-        Noeud.NoeudParentId = Noeud.NoeudId;
+        Noeud.NoeudParentId = null;
         SaveChangeNoeud(Noeud);
         ReRender();
     }

@@ -1,6 +1,6 @@
 @using STIMULUS_V2.Client.Services;
-@using STIMULUS_V2.Shared.Models.Entities;
 @using STIMULUS_V2.Shared.Interface.ChildInterface;
+@using STIMULUS_V2.Shared.Models.Entities;
 @* @using STIMULUS_V2.Client.Shared.TheorieComponents; *@
 @using static STIMULUS_V2.Client.Shared.NoeudComponents.Connector;
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
@@ -82,8 +82,8 @@
                 <div class="form-group">
                     <label for="modelNoeud"><h5>Modèle de Noeud :</h5></label>
                     <select class="form-control" id="modelNoeud" @bind="modelNoeud">
-                        <option value="Noeud_Contenu" selected="@(modelNoeud == "Noeud_Contenu")">Noeud Contenu</option>
-                        <option value="Noeud_Structure" selected="@(modelNoeud == "Noeud_Structure")">Noeud Structure</option>
+                        <option value="Noeud_Contenu" selected="@(modelNoeud == "CONTENU")">Noeud Contenu</option>
+                        <option value="Noeud_Structure" selected="@(modelNoeud == "STRUCTURE")">Noeud Structure</option>
                     </select>
                 </div>
                 <div class="form-group" style="text-align: center;">
@@ -145,7 +145,7 @@
     private string displayHover = "hidden";
     private bool viewPage = false;
     //Type de noeud
-    private string modelNoeud = "Noeud_Contenu";
+    private string modelNoeud = "CONTENU";
     private string statusNom = "";
     private Noeud nouveauNoeud = new();
     private string displayNouveauNoeud = "hidden";
@@ -161,10 +161,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-
-        var allLiaison= await NoeudService.GetAllById(Node.NoeudId);
-
-
         Couleur = COULEUR_BLOQUER;
 
         if(Node.Status == 1)

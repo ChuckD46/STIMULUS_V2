@@ -2,12 +2,14 @@
 @using STIMULUS_V2.Client.Shared.GrapheComponents
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 
+
 <GrapheProf/>
 
 
 @code {
-    public async Task Temporaire()
+    protected async override void OnInitialized()
     {
-        await sessionStorage.SetItemAsync<int>("idGraphe", 1);
+        await sessionStorage.SetItemAsync<string>("idConnexion", "ericd");
+        await sessionStorage.SetItemAsync<int>("idGraphe", 3);
     }
 }

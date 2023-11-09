@@ -7,12 +7,12 @@
 @using STIMULUS_V2.Shared.Interface.ChildInterface;
 @using static STIMULUS_V2.Client.Shared.NoeudComponents.Connector;
 @using static STIMULUS_V2.Client.Shared.NoeudComponents.NoeudsProf;
-@inject MouseService mouseSrv;
+@inject INoeudService NoeudService
+@inject MouseService mouseSrv
+@inject IUpdateService updateService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntim
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
-@inject IUpdateService updateService
-@inject INoeudService NoeudService;
 
 <div class="row mt-2">
     <div class="col">
@@ -21,7 +21,7 @@
                 <button class="spaceButton btn btn-primary" type="button" @onclick="AugmenterZoom">+</button>
                 <button class="spaceButton btn btn-primary" type="button" @onclick="ReduireZoom">-</button>
                 <button class="spaceButton btn btn-secondary" type="button" @onclick="ResetViewbox">Réinitialiser</button>
-                <h5 style="color: white;"> Zoom : @AfficheZoom()</h5>
+                <h5 style="color: blue;"> Zoom : @AfficheZoom()</h5>
                 <button style="color: white;" @onclick="@(e => ModeDeVue(1))" class="spaceButton btn @modeDeVuButtonPage" title="Mode Page">Gestion de Pages</button>
                 <button style="color: white;" @onclick="@(e => ModeDeVue(2))" class="spaceButton btn @modeDeVuButtonEdition" title="Mode Edition">Édition</button>
                 <button style="color: white;" @onclick="@(e => ModeDeVue(3))" class="spaceButton btn @modeDeVuButtonEtudiant " title="Mode Etudiant">Vue étudiante</button>
@@ -46,7 +46,8 @@
                     <rect x="-1000" y="-1000" width="4000" height="4000" style="fill:rgb(0,0,0,0);stroke-width:0;stroke:rgb(0,0,0)" />
                     @foreach (var noeud in Nodes)
                     {
-                        <NoeudsProf UpdateGraphe="UpdateGraphe" GetModeDeVue="GetModeDeVue" RelinkBindNode="RelinkBindNode" ReLinkNoeud="ReLinkNoeud" Node="@noeud" Nodes="@Nodes" SaveChangeNoeud="SaveChange" AjoutNouveauNoeud="AjoutNouveauNoeud" SupprNoeud="SupprimerNoeud"></NoeudsProf>
+                        <NoeudsProf UpdateGraphe="UpdateGraphe" GetModeDeVue="GetModeDeVue" RelinkBindNode="RelinkBindNode" ReLinkNoeud="ReLinkNoeud"
+                         Node="@noeud" Nodes="@Nodes" SaveChangeNoeud="SaveChange" AjoutNouveauNoeud="AjoutNouveauNoeud" SupprNoeud="SupprimerNoeud"/>
                     }
                 </Draggable>
             </svg>
@@ -151,16 +152,20 @@
         Nodes = new();
         if (sessionStorage != null)
         {
-            int idGraphe;
+            await sessionStorage.SetItemAsync<int>("idGraphe", 3);
+            int idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");
 
             // Attendre 'idGraphe' pour ne pas etre 0 (utilise un timeout ou cancellation token = plus safe).
-            while ((idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe")) == 0)
+            while (idGraphe == 0)
             {
                 //Plus chill qu'une boucle industrielle
                 await Task.Delay(100);
             }
 
             Nodes = ((APIResponse<IEnumerable<Noeud>>)await NoeudService.GetAllFromGraph(idGraphe)).Data.ToList();
+
+            // var response = await NoeudService.GetAllFromGraph(idGraphe);
+            // Nodes = response.Data.ToList();
             Console.WriteLine("Mise a jour des noeuds du graph");
         }
         StateHasChanged();

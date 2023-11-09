@@ -149,7 +149,7 @@ namespace STIMULUS_V2.Server.Services
             }
             catch (Exception ex)
             {
-                return new APIResponse<IEnumerable<Noeud>>(null, 500, $"Erreur lors de la récupération du model par son parent {typeof(Noeud).Name}. Message : {ex.Message}.");
+                return new APIResponse<IEnumerable<Noeud>>(null, 500, $"Erreur lors de la récupération du model par son graph {typeof(Noeud).Name}. Message : {ex.Message}.");
             }
         }
 
