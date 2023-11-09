@@ -33,10 +33,14 @@ namespace STIMULUS_V2.Server
                     var etudiant = new Etudiant { Identifiant = utilisateurId, Nom = nom, Prenom = prenom, Email = email, MotDePasse = motDePasse, Role = "ETUDIANT" };
                     utilisateur = etudiant;
                 }
+                else if (email.Contains("@cegepjonquiere.ca"))
+                {
+                    var professeur = new Professeur { Identifiant = utilisateurId, Nom = nom, Prenom = prenom, Email = email, MotDePasse = BCrypt.Net.BCrypt.HashPassword(motDePasse), Role = "PROFESSEUR" };
+                    utilisateur = professeur;
+                }
                 else
                 {
-                    var professeur = new Professeur { Identifiant = utilisateurId, Nom = nom, Prenom = prenom, Email = email, MotDePasse = motDePasse, Role = "PROFESSEUR" };
-                    utilisateur = professeur;
+                    return IdentityResult.Failed(new IdentityError { Description = "N'est pas associer au domaine du cegep" });
                 }
 
                 sTIMULUSContext.Add(utilisateur);

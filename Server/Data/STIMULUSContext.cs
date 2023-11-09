@@ -23,6 +23,7 @@ namespace STIMULUS_V2.Server.Data
         {
             if (!Admin.Any())
             {
+                var password = "admin";
                 // Aucun compte administrateur n'existe, créer un par défaut
                 var admin = new Admin
                 {
@@ -31,7 +32,7 @@ namespace STIMULUS_V2.Server.Data
                     Nom = "Admin",
                     Prenom = "Admin",
                     Email = "admin@example.com",
-                    MotDePasse = "admin", // N'oubliez pas de hasher le mot de passe dans un scénario de production
+                    MotDePasse = BCrypt.Net.BCrypt.HashPassword(password), // N'oubliez pas de hasher le mot de passe dans un scénario de production
                     Role = "ADMIN"
                 };
 

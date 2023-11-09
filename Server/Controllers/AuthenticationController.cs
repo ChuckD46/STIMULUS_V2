@@ -39,8 +39,7 @@ namespace STIMULUS_V2.Server.Controllers
                 return BadRequest("L'utilisateur n'existe pas.");
             }
 
-            //if (BCrypt.Net.BCrypt.Verify(connexionVerification.Password, existingUser.MotDePasse))
-            if (connexionVerification.Password == existingUser.MotDePasse)
+            if (BCrypt.Net.BCrypt.Verify(connexionVerification.Password, existingUser.MotDePasse))            
             {
                 // Récupérer le rôle de l'utilisateur
                 var userRole = existingUser.Role;
