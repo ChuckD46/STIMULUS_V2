@@ -2,28 +2,33 @@
 @using STIMULUS_V2.Client.Shared.GrapheComponents
 @using STIMULUS_V2.Shared.Interface.ChildInterface;
 @using STIMULUS_V2.Shared.Models.Entities;
+@using Blazored.LocalStorage;
+@using Microsoft.AspNetCore.Components.Authorization;
 @inject IGroupeEtudiantService GroupeEtudiantService
 @inject IGrapheService GrapheService
+@inject ILocalStorageService localStorageService
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 
-
-<GrapheEtudiant/>
+<AuthorizeView Roles="PROFESSEUR">
+    <GrapheProf />
+</AuthorizeView>
+<AuthorizeView Roles="ETUDIANT">
+    <GrapheEtudiant />
+</AuthorizeView>
 
 
 @code {
     protected async override void OnInitialized()
     {
-        await sessionStorage.SetItemAsync<string>("idConnexion", "ericd");
-        // await sessionStorage.SetItemAsync<string>("idConnexion", tokenConnexion); sera le remplaçant
         await sessionStorage.SetItemAsync<int>("idGraphe", 3);
 
-        // if (Role == PROF)
+        // if (Roles == PROF)
         // {
-        //     var idProf = await sessionStorage.GetItemAsync<string>("idConnexion");          
+        //     var idProf = await localStorageService.GetItemAsync<string>("token");
         // }
         // if (Role == ETUDIANT)
         // {
-        //     var idEtudiant = await sessionStorage.GetItemAsync<string>("idConnexion");
+        //     var idEtudiant = await localStorageService.GetItemAsync<string>("token");
 
         //     if (await sessionStorage.ContainKeyAsync("idGroupe") == false)
         //     {
@@ -85,6 +90,6 @@
                 
         //     }
 
-        // }
+        }
     }
 }

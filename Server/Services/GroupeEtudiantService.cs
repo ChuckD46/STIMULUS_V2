@@ -19,7 +19,7 @@ namespace STIMULUS_V2.Server.Services
         {
             try
             {
-                var itemList = await sTIMULUSContext.Groupe_Etudiant.Where(item => item.Etudiant.CodeDA == id).ToListAsync();
+                var itemList = await sTIMULUSContext.Groupe_Etudiant.Where(item => item.Etudiant.Identifiant == id).ToListAsync();
 
                 if (itemList != null)
                 {
