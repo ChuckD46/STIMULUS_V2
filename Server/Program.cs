@@ -66,15 +66,14 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
 
-    // Récupérer le contexte de la base de données
     var context = services.GetRequiredService<STIMULUSContext>();
 
-    // Supprimer la base de données existante et la recréer
     context.Database.EnsureDeleted();
     context.Database.EnsureCreated();
 
-    // Créer le compte administrateur si nécessaire
     context.EnsureAdminUserCreated();
+    context.EnsureEtuUserCreated();
+    context.EnsureProfUserCreated();
 }
 
 // Configure the HTTP request pipeline.
