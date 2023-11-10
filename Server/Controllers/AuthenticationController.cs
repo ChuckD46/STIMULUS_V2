@@ -11,6 +11,8 @@ using STIMULUS_V2.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using STIMULUS_V2.Shared.Models.Authentication;
 using Serilog;
+using STIMULUS_V2.Shared.Models.DTOs;
+using STIMULUS_V2.Shared.Models.Entities;
 
 namespace STIMULUS_V2.Server.Controllers
 {
@@ -30,53 +32,50 @@ namespace STIMULUS_V2.Server.Controllers
 
         [HttpPost("Connexion")]
         [AllowAnonymous]
-        public async Task<ActionResult<SessionUtilisateur>> ConnexionUtilisateur(ConnexionVerification connexionVerification)
+        public async Task<ActionResult<APIResponse<SessionUtilisateur>>> ConnexionUtilisateur(ConnexionVerification connexionVerification)
         {
-            // Vérifier si l'utilisateur existe
-            var existingUser = await sTIMULUSContext.Utilisateur.SingleOrDefaultAsync(user => user.Identifiant == connexionVerification.Identifiant);
-            if (existingUser == null)
+            try
             {
-                return BadRequest("L'utilisateur n'existe pas.");
-            }
+                var existingUser = await sTIMULUSContext.Utilisateur.SingleOrDefaultAsync(user => user.Identifiant == connexionVerification.Identifiant);
+                if (existingUser == null)
+                {
+                    return new APIResponse<SessionUtilisateur>(null, 400, "L'utilisateur n'existe pas.");
+                }
 
-            if (BCrypt.Net.BCrypt.Verify(connexionVerification.Password, existingUser.MotDePasse))            
+                if (BCrypt.Net.BCrypt.Verify(connexionVerification.Password, existingUser.MotDePasse))
+                {
+                    var userRole = existingUser.Role;
+                    if (string.IsNullOrEmpty(userRole))
+                    {
+                        return new APIResponse<SessionUtilisateur>(null, 400, "Le rôle de l'utilisateur n'est pas défini.");
+                    }
+
+                    var token = GenerateToken(connexionVerification.Identifiant, userRole);
+
+                    var refreshToken = GenerateRefreshToken();
+
+                    var existingUserToken = await sTIMULUSContext.TokenInfo.FirstOrDefaultAsync(token => token.UserId == existingUser.Identifiant);
+                    if (existingUserToken is null)
+                    {
+                        sTIMULUSContext.TokenInfo.Add(new TokenInfo()
+                        { RefreshToken = refreshToken, UserId = existingUser.Identifiant, TokenExpiry = DateTime.UtcNow.AddMinutes(2) });
+                        await sTIMULUSContext.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        existingUserToken.RefreshToken = refreshToken;
+                        existingUserToken.TokenExpiry = DateTime.Now.AddMinutes(1);
+                        await sTIMULUSContext.SaveChangesAsync();
+                    }
+                    return new APIResponse<SessionUtilisateur>(new SessionUtilisateur() { Token = token, RefreshToken = refreshToken }, 200, "Success");
+                }
+                return new APIResponse<SessionUtilisateur>(null, 400, "Le mot de passe est incorrect.");
+            }
+            catch (Exception ex)
             {
-                // Récupérer le rôle de l'utilisateur
-                var userRole = existingUser.Role;
-                if (string.IsNullOrEmpty(userRole))
-                {
-                    return BadRequest("Le rôle de l'utilisateur n'est pas défini.");
-                }
-
-
-                //Generate Token
-                var token = GenerateToken(connexionVerification.Identifiant, userRole);
-
-                // Generate Refresh Token
-                var refreshToken = GenerateRefreshToken();
-
-                //Check if user has refresh token already.
-                var existingUserToken = await sTIMULUSContext.TokenInfo.FirstOrDefaultAsync(token => token.UserId == existingUser.Identifiant);
-                if (existingUserToken is null)
-                {
-                    //Save the refreshtoken to the TokenInfo table
-                    sTIMULUSContext.TokenInfo.Add(new TokenInfo()
-                    { RefreshToken = refreshToken, UserId = existingUser.Identifiant, TokenExpiry = DateTime.UtcNow.AddMinutes(2) });
-                    await sTIMULUSContext.SaveChangesAsync();
-                }
-                else
-                {
-                    // Update the the refresh token
-                    existingUserToken.RefreshToken = refreshToken;
-                    existingUserToken.TokenExpiry = DateTime.Now.AddMinutes(1);
-                    await sTIMULUSContext.SaveChangesAsync();
-                }
-                return Ok(new SessionUtilisateur() { Token = token, RefreshToken = refreshToken });
+                return StatusCode(500, "Une erreur interne s'est produite.");
             }
-            return BadRequest("Le mot de passe est incorrect.");
         }
-
-        // General Methods for token and refresh token generating.
         private static string GenerateRefreshToken()
         {
             return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
@@ -101,13 +100,12 @@ namespace STIMULUS_V2.Server.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-
-
         //PRIVATE API ENDPOINTS
+        //TODO: finishing clean-up code below while implementing APIResponse 
 
         // Account Registration
         [HttpPost("Inscription")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin")]
          //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> UtilisateurInscription(InscriptionVerification inscriptionVerification)
         {

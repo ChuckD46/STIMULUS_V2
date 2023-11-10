@@ -1,4 +1,5 @@
 ﻿using STIMULUS_V2.Shared.Models.Authentication;
+using STIMULUS_V2.Shared.Models.DTOs;
 
 namespace STIMULUS_V2.Client.Services.AuthenticationService
 {
@@ -6,8 +7,7 @@ namespace STIMULUS_V2.Client.Services.AuthenticationService
     {
         // Public Interfaces
         Task<object> RegisterAccountAsync(InscriptionVerification model);
-        Task<SessionUtilisateur> LoginAsync(ConnexionVerification model);
-
+        Task<APIResponse<SessionUtilisateur>> LoginAsync(ConnexionVerification model);
 
         //Protected Interfaces
         Task<int> GetUserCount();

@@ -1,6 +1,7 @@
 ﻿using Blazored.LocalStorage;
 using Newtonsoft.Json;
 using STIMULUS_V2.Shared.Models.Authentication;
+using STIMULUS_V2.Shared.Models.DTOs;
 using System.Net.Http.Json;
 
 namespace STIMULUS_V2.Client.Services.AuthenticationService
@@ -17,19 +18,20 @@ namespace STIMULUS_V2.Client.Services.AuthenticationService
         }
 
         //Public Methods with no Token needed
-        public async Task<SessionUtilisateur> LoginAsync(ConnexionVerification model)
+        public async Task<APIResponse<SessionUtilisateur>> LoginAsync(ConnexionVerification model)
         {
             try
             {
                 var result = await httpClient.PostAsJsonAsync("api/Authentication/Connexion", model);
-                var response = await result.Content.ReadFromJsonAsync<SessionUtilisateur>();
-                return response!;
+                              
+
+               return await result.Content.ReadFromJsonAsync<APIResponse<SessionUtilisateur>>();
+
             }
             catch (Exception ex)
             {
-                // Gérer l'exception ou enregistrer les détails de l'erreur
                 Console.WriteLine($"Une erreur s'est produite lors de l'appel API : {ex.Message}");
-                throw; // Vous pouvez choisir de traiter l'exception ici ou la propager vers le niveau supérieur.
+                throw;
             }
 
         }
