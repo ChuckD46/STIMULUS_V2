@@ -100,32 +100,32 @@
     private int formSizeH = 0;
     private int formSizeW = 0;
     private bool isOpen = false;
-    private string couleurBloquer = "rgb(140,140,140)";
-    private string couleurNonConsulter = "rgb(228, 231, 245)";
-    private string couleurConsulter = "rgb(199,160,53)";
-    private string couleurCompleter = "rgb(28, 90, 47)";
+    private readonly string COULEUR_BLOQUER = "rgb(140,140,140)";
+    private readonly string COULEUR_NON_CONSULTER = "rgb(228, 231, 245)";
+    private readonly string COULEUR_CONSULTER = "rgb(199,160,53)";
+    private readonly string COULEUR_COMPLETER = "rgb(28, 90, 47)";
+
 
     private int GetModeVue() => -1;
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        Couleur = couleurBloquer;
+        Couleur = COULEUR_BLOQUER;
 
-        if(Node.Status == 1)
+        if (Node.Status == 1)
         {
-            Couleur = couleurBloquer;
+            Couleur = COULEUR_BLOQUER;
         }
-
         else if (Node.Status == 2)
         {
-            Couleur = couleurNonConsulter;
+            Couleur = COULEUR_NON_CONSULTER;
         }
         else if (Node.Status == 3)
         {
-            Couleur = couleurConsulter;
+            Couleur = COULEUR_CONSULTER;
         }
         else if (Node.Status == 4)
         {
-            Couleur = couleurCompleter;
+            Couleur = COULEUR_COMPLETER;
         }
     }
     private string TestParent() => (Node.NoeudParentId != null) ? Node.NoeudParentId.ToString() : "Aucun";
