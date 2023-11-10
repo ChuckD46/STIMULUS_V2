@@ -152,7 +152,6 @@
         Nodes = new();
         if (sessionStorage != null)
         {
-            await sessionStorage.SetItemAsync<int>("idGraphe", 3);
             int idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");
 
             // Attendre 'idGraphe' pour ne pas etre 0 (utilise un timeout ou cancellation token = plus safe).

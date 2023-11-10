@@ -1,15 +1,90 @@
 ﻿@page "/graphe"
 @using STIMULUS_V2.Client.Shared.GrapheComponents
+@using STIMULUS_V2.Shared.Interface.ChildInterface;
+@using STIMULUS_V2.Shared.Models.Entities;
+@inject IGroupeEtudiantService GroupeEtudiantService
+@inject IGrapheService GrapheService
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 
 
-<GrapheProf/>
+<GrapheEtudiant/>
 
 
 @code {
     protected async override void OnInitialized()
     {
         await sessionStorage.SetItemAsync<string>("idConnexion", "ericd");
+        // await sessionStorage.SetItemAsync<string>("idConnexion", tokenConnexion); sera le remplaçant
         await sessionStorage.SetItemAsync<int>("idGraphe", 3);
+
+        // if (Role == PROF)
+        // {
+        //     var idProf = await sessionStorage.GetItemAsync<string>("idConnexion");          
+        // }
+        // if (Role == ETUDIANT)
+        // {
+        //     var idEtudiant = await sessionStorage.GetItemAsync<string>("idConnexion");
+
+        //     if (await sessionStorage.ContainKeyAsync("idGroupe") == false)
+        //     {
+        //         var result = await GroupeEtudiantService.GetAllGroupForStudent(idEtudiant);
+
+        //         if (result != null)
+        //         {
+        //             // Accéder à la liste de groupes
+        //             var groupes = result.Data;
+
+        //             // Vérifions si la liste n'est pas vide avant d'essayer d'accéder à son premier élément
+        //             if (groupes != null && groupes.Any())
+        //             {
+        //                 // Accéder à la première valeur de la liste
+        //                 var premierGroupe = groupes.FirstOrDefault();
+        //                 await sessionStorage.SetItemAsync<int?>("idGroupe", premierGroupe.GroupeId);
+        //             }
+        //             else
+        //             {
+        //                 Console.WriteLine("Aucun groupe trouvé pour cet étudiant.");
+        //             }
+        //         }
+        //         else
+        //         {
+        //             Console.WriteLine("Erreur lors de la récupération des groupes pour cet étudiant");
+        //         }
+        //     }
+
+        //     if (await sessionStorage.ContainKeyAsync("idGraphe") == false)
+        //     {
+        //         int idGroupe = await sessionStorage.GetItemAsync<int>("idGroupe"); //ça met le groupe dans la session
+
+        //         if (await sessionStorage.ContainKeyAsync("idGroupe") == false)
+        //         {
+        //             var result = await GrapheService.GetAllFromGroup(idGroupe);
+
+        //             if (result != null)
+        //             {
+        //                 // Accéder à la liste de groupes
+        //                 var graphes = result.Data;
+
+        //                 // Vérifions si la liste n'est pas vide avant d'essayer d'accéder à son premier élément
+        //                 if (graphes != null && graphes.Any())
+        //                 {
+        //                     // Accéder à la première valeur de la liste
+        //                     var premierGraphe = graphes.FirstOrDefault();
+        //                     await sessionStorage.SetItemAsync<int?>("idGraphe", premierGraphe.GrapheId);
+        //                 }
+        //                 else
+        //                 {
+        //                     Console.WriteLine("Aucun graphe trouvé pour ce groupe.");
+        //                 }
+        //             }
+        //             else
+        //             {
+        //                 Console.WriteLine("Erreur lors de la récupération des graphes pour ce groupe");
+        //             }
+        //         }
+                
+        //     }
+
+        // }
     }
 }

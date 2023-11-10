@@ -28,6 +28,7 @@ builder.Services.AddScoped<IFichierSauvegardeService, FichierSauvegardeService>(
 builder.Services.AddScoped<IFichierSourceService, FichierSourceService>();
 builder.Services.AddScoped<IGrapheService, GrapheService>();
 builder.Services.AddScoped<IGroupeService, GroupeService>();
+builder.Services.AddScoped<IGroupeEtudiantService, GroupeEtudiantService>();
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IImportanceService, ImportanceService>();
 builder.Services.AddScoped<INoeudService, NoeudService>();
