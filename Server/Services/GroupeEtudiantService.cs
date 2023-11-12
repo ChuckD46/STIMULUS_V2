@@ -35,5 +35,26 @@ namespace STIMULUS_V2.Server.Services
                 return new APIResponse<IEnumerable<Groupe_Etudiant>>(null, 500, $"Erreur lors de la récupération du model par son parent {typeof(Groupe_Etudiant).Name}. Message : {ex.Message}.");
             }
         }
+
+        public async Task<APIResponse<IEnumerable<Groupe_Etudiant>>> GetAllStudentForGroup(int id)
+        {
+            try
+            {
+                var itemList = await sTIMULUSContext.Groupe_Etudiant.Where(item => item.GroupeId == id).ToListAsync();
+
+                if (itemList != null)
+                {
+                    return new APIResponse<IEnumerable<Groupe_Etudiant>>(itemList, 200, "Succès");
+                }
+                else
+                {
+                    return new APIResponse<IEnumerable<Groupe_Etudiant>>(null, 404, $"{typeof(Groupe_Etudiant).Name} non trouvé");
+                }
+            }
+            catch (Exception ex)
+            {
+                return new APIResponse<IEnumerable<Groupe_Etudiant>>(null, 500, $"Erreur lors de la récupération du model par son parent {typeof(Groupe_Etudiant).Name}. Message : {ex.Message}.");
+            }
+        }
     }
 }

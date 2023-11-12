@@ -20,5 +20,11 @@ namespace STIMULUS_V2.Server.Controllers
             var response = await groupeEtudiantService.GetAllGroupForStudent(id);
             return StatusCode(response.StatusCode, response);
         }
+        [HttpGet("Fetch/All/StudentForGroup/{id}")]
+        public async Task<IActionResult> GetAllStudentForGroup(int id)
+        {
+            var response = await groupeEtudiantService.GetAllStudentForGroup(id);
+            return StatusCode(response.StatusCode, response);
+        }
     }
 }

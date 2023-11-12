@@ -11,5 +11,6 @@ namespace STIMULUS_V2.Shared.Interface.ChildInterface
     public interface IGroupeEtudiantService
     {
         Task<APIResponse<IEnumerable<Groupe_Etudiant>>> GetAllGroupForStudent(string id);
+        Task<APIResponse<IEnumerable<Groupe_Etudiant>>> GetAllStudentForGroup(int id);
     }
 }

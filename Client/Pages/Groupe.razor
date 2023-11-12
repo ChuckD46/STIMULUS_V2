@@ -1,0 +1,20 @@
+﻿@page "/Groupe"
+@using STIMULUS_V2.Shared.Interface.ChildInterface;
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@inject IGroupeService GroupeService
+@inject ICoursService CoursService
+
+
+
+<div class="container text-center">
+    <h1 class="display-4">Groupe : </h1>
+    <p class="lead">Liste des élèves :</p>
+    <p class="lead">Nom du Graphe associé :</p>
+</div>
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        var groupeProf = await GroupeService.Get(await sessionStorage.GetItemAsync<int>("idGroupe"));       
+    }
+}
