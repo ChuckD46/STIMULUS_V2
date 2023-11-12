@@ -2,5 +2,8 @@
 {
     public class AppState
     {
+        public string Indentifiant;
+        public int IdGraphe;
+        public int IdGroupe;
     }
 }

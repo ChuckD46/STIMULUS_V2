@@ -14,7 +14,7 @@ namespace STIMULUS_V2.Server.Controllers
             this.groupeEtudiantService = groupeEtudiantService;
         }
 
-        [HttpGet("Fetch/AllGroupForStudent/{id}")]
+        [HttpGet("Fetch/All/GroupForStudent/{id}")]
         public async Task<IActionResult> GetAllGroupForStudent(string id)
         {
             var response = await groupeEtudiantService.GetAllGroupForStudent(id);

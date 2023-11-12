@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Newtonsoft.Json;
 using STIMULUS_V2.Shared.Models.Authentication;
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -25,7 +26,7 @@ namespace STIMULUS_V2.Client.CustomAuthentication
 
             try
             {
-                var userSession = DeSerializedUserSession(token);
+                var userSession = DeSerializedUserSession(token);              
                 var (Identifiant, role) = await GetClaimsFromJWT(userSession.Token!);
                 return await Task.FromResult(new AuthenticationState(SetClaimsPrincipal(Identifiant, role)));
             }

@@ -15,7 +15,7 @@ namespace STIMULUS_V2.Client.Services
         }
         public async Task<APIResponse<IEnumerable<Groupe_Etudiant>>> GetAllGroupForStudent(string item)
         {
-            var result = await _httpClient.GetFromJsonAsync<APIResponse<IEnumerable<Groupe_Etudiant>>>($"api/GroupeEtudiant/Fetch/GroupsForStudent/{item}");
+            var result = await _httpClient.GetFromJsonAsync<APIResponse<IEnumerable<Groupe_Etudiant>>>($"api/GroupeEtudiant/Fetch/All/GroupForStudent/{item}");
             return result; ;
         }
     }

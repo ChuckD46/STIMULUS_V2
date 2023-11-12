@@ -1,9 +1,39 @@
-﻿@inject TooltipService tooltipService
+﻿@using STIMULUS_V2.Shared.Interface.ChildInterface;
+@using STIMULUS_V2.Shared.Models.Authentication;
+@using Blazored.LocalStorage;
+@using STIMULUS_V2.Shared.Models.Entities;
+@inject Microsoft.Extensions.Configuration.IConfiguration config;
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@inject TooltipService tooltipService
+@inject NavigationManager NavigationManager
+@inject IGrapheService GrapheService
+@inject ILocalStorageService localStorageService
+@inject IGroupeService GroupeService
+@inject ICoursService CoursService
+@inject IGroupeEtudiantService GroupeEtudiantService
+@inject AppState State;
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <RadzenSidebar Responsive="true" Style="width: max-content">
     <RadzenPanelMenu DisplayStyle="@(sidebarExpanded ? MenuItemDisplayStyle.IconAndText : MenuItemDisplayStyle.Icon)" ShowArrow="@sidebarExpanded">
         <RadzenPanelMenuItem Text="Accueil" Icon="home" Path="/" />
-        <RadzenPanelMenuItem Text="Graph" Icon="account_tree" Path="/Graph" />
+        <AuthorizeView Roles="ETUDIANT">
+            @foreach (var cours in nomCours)
+            {
+                @foreach (var graphe in ListeGraphes)
+                {
+                    <RadzenPanelMenuItem Icon="account_tree" Text="@cours.Code" Click="(() => ChargerGraphe(graphe.GrapheId))"></RadzenPanelMenuItem>
+                }
+            }
+        </AuthorizeView>
+        <AuthorizeView Roles="PROFESSEUR">
+        <RadzenPanelMenuItem Text="Gestion de Graphe" Icon="account_tree">
+            @foreach (var graphe in ListeGraphes)
+            {
+                <RadzenPanelMenuItem Icon="account_tree" Text="@graphe.Nom" Click="(() => ChargerGraphe(graphe.GrapheId))"></RadzenPanelMenuItem>
+             }
+        </RadzenPanelMenuItem>
+        </AuthorizeView>
         <AuthorizeView Roles="ADMIN">
             <RadzenPanelMenuItem Text="Ajouter un utiliateur" Icon="person_add" Path="/AjouterUtilisateur" />
         </AuthorizeView>
@@ -13,4 +43,65 @@
 @code {
     [Parameter]
     public bool sidebarExpanded { get; set; } = false;
+    public List<Graphe> ListeGraphes { get; set; } = new List<Graphe>();
+    public List<Cours> nomCours { get; set; } = new List<Cours>();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authenticationState.User;
+
+        var isProfesseur = user.IsInRole("PROFESSEUR");
+        var isEtudiant = user.IsInRole("ETUDIANT");
+
+        if (isProfesseur)
+        {
+            State.Indentifiant = "prof";
+            var responseGroupe = await GroupeService.GetAllForTeacher(State.Indentifiant);
+            var groupes = responseGroupe.Data;
+
+            foreach (var groupe in groupes)
+            {
+                var responseGraphe = await GrapheService.GetAllFromGroup(groupe.GroupeId);
+                var graphesDuGroupe = responseGraphe.Data;
+
+                ListeGraphes.AddRange(graphesDuGroupe);
+            }
+        }
+        if (isEtudiant)
+        {
+            State.Indentifiant = "etu";
+            var responseGroupeEtudiant = await GroupeEtudiantService.GetAllGroupForStudent(State.Indentifiant);
+            var groupes = responseGroupeEtudiant.Data;
+
+            foreach (var groupe in groupes)
+            {
+                var responseGraphe = await GrapheService.GetAllFromGroup((int)groupe.GroupeId);
+                var graphesDuGroupe = responseGraphe.Data;
+
+                ListeGraphes.AddRange(graphesDuGroupe);
+
+                var responseCoursEtudiant = await GroupeService.GetAllById((int)groupe.GroupeId);
+
+                foreach (var cours in groupes)
+                {
+                    var responseCours = await CoursService.GetAllById((int)groupe.GroupeId);
+                    var nomDesCours = responseCours.Data;
+
+                    nomCours.AddRange(nomDesCours);
+                }
+
+            }                      
+
+        }
+
+
+    }   
+    public async Task ChargerGraphe(int idGraphe)
+    {
+        await sessionStorage.SetItemAsync<int>("idGraphe", idGraphe);
+        NavigationManager.NavigateTo("/");
+        NavigationManager.NavigateTo("/Graphe");
+    }
 }
