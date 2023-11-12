@@ -22,7 +22,8 @@
             {
                     @foreach (var graphe in ListeGraphes)
                     {
-                    <RadzenPanelMenuItem Icon="build" Text="@cours.Code" Click="(() => ChargerGraphe(graphe.GrapheId))"></RadzenPanelMenuItem>
+                    <RadzenPanelMenuItem Icon="account_tree" Text="@cours.Code" Click="(() => ChargerGraphe(graphe.GrapheId))"></RadzenPanelMenuItem>
+                    StateHasChanged();
                     }               
             }
         </AuthorizeView>
@@ -30,8 +31,9 @@
         <RadzenPanelMenuItem Text="Gestion de Graphe" Icon="account_tree">
             @foreach (var graphe in ListeGraphes)
             {
-                <RadzenPanelMenuItem Icon="account_tree" Text="@graphe.Nom" Click="(() => ChargerGraphe(graphe.GrapheId))"></RadzenPanelMenuItem>
+                <RadzenPanelMenuItem Icon="build" Text="@graphe.Nom" Click="(() => ChargerGraphe(graphe.GrapheId))"></RadzenPanelMenuItem>
              }
+                <RadzenPanelMenuItem Text="Créer un nouveau Graphe" Icon="input" Path="/CreerGraphe" />
         </RadzenPanelMenuItem>
             <RadzenPanelMenuItem Text="Gestion de Groupe" Icon="assignment_ind">
             @foreach (var groupe in groupesProf)
@@ -77,6 +79,7 @@
                 var responseGraphe = await GrapheService.GetAllFromGroup(groupe.GroupeId);
                 var graphesDuGroupe = responseGraphe.Data;
                 ListeGraphes.AddRange(graphesDuGroupe);
+                StateHasChanged();
             }
 
         }
@@ -104,12 +107,11 @@
                 }
 
             }
-            
+
 
 
         }
-
-
+        StateHasChanged();
     }   
     public async Task ChargerGraphe(int idGraphe)
     {
