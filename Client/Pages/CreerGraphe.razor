@@ -77,7 +77,6 @@
         var responseGroupe = await GroupeService.GetAllForTeacher(State.Indentifiant);//Va cherchert tous les groupes du prof
         var groupes = responseGroupe.Data;
         listGroupe.AddRange(groupes);//Ajout des groupes dans la liste
-        StateHasChanged();
     }
 
     private async void AjoutGraphe()
@@ -109,13 +108,12 @@
         await NoeudService.Create(nouveauNoeud);
 
         await sessionStorage.SetItemAsync<int>("idGraphe", newgraphe.GrapheId);
-        NavigationManager.NavigateTo("/");
-        NavigationManager.NavigateTo("/Graphe");
+
         StateHasChanged();
     }
 
     void Cancel()
     {
-        //
+        NavigationManager.NavigateTo("/");
     }
 }

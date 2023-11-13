@@ -20,16 +20,15 @@
         <AuthorizeView Roles="ETUDIANT">
             @foreach (var cours in nomCours)
             {
-                    @foreach (var graphe in ListeGraphes)
+                    @foreach (var graphe in ListeGraphesEtudiant)
                     {
                     <RadzenPanelMenuItem Icon="account_tree" Text="@cours.Code" Click="(() => ChargerGraphe(graphe.GrapheId))"></RadzenPanelMenuItem>
-                    StateHasChanged();
                     }               
             }
         </AuthorizeView>
         <AuthorizeView Roles="PROFESSEUR">
         <RadzenPanelMenuItem Text="Gestion de Graphe" Icon="account_tree">
-            @foreach (var graphe in ListeGraphes)
+            @foreach (var graphe in ListeGraphesProf)
             {
                 <RadzenPanelMenuItem Icon="build" Text="@graphe.Nom" Click="(() => ChargerGraphe(graphe.GrapheId))"></RadzenPanelMenuItem>
              }
@@ -40,6 +39,7 @@
             {
                     <RadzenPanelMenuItem Icon="face" Text="@groupe.Nom" Click="(() => ChargerGroupe(groupe.GroupeId))"></RadzenPanelMenuItem>
             }
+                <RadzenPanelMenuItem Text="Créer un nouveau Groupe" Icon="input" Path="/CreerGroupe" />
             </RadzenPanelMenuItem>
         </AuthorizeView>
         <AuthorizeView Roles="ADMIN">
@@ -51,68 +51,63 @@
 @code {
     [Parameter]
     public bool sidebarExpanded { get; set; } = false;
-    public List<Graphe> ListeGraphes { get; set; } = new List<Graphe>();
+    public List<Graphe> ListeGraphesProf { get; set; } = new List<Graphe>();
+    public List<Graphe> ListeGraphesEtudiant { get; set; } = new List<Graphe>();
     public List<Cours> nomCours { get; set; } = new List<Cours>();
     public List<Groupe> groupesProf { get; set; } = new List<Groupe>();
 
     protected override async Task OnInitializedAsync()
     {
-
         var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authenticationState.User;
 
         var isProfesseur = user.IsInRole("PROFESSEUR");
         var isEtudiant = user.IsInRole("ETUDIANT");
 
-        //Permet de gérer si c'est un prof qui se connecte
         if (isProfesseur)
         {
-
             State.Indentifiant = "prof";
-            var responseGroupe = await GroupeService.GetAllForTeacher(State.Indentifiant);//Va cherchert tous les groupes du prof
+            var responseGroupe = await GroupeService.GetAllForTeacher(State.Indentifiant);
             var groupes = responseGroupe.Data;
-            groupesProf.AddRange(groupes);//Ajout des groupes dans la liste
 
-            foreach (var groupe in groupes)//Va chercher tous les graphes, de tous les groupes
+            groupesProf.AddRange(groupes);
+
+            foreach (var groupe in groupes)
             {
-
                 var responseGraphe = await GrapheService.GetAllFromGroup(groupe.GroupeId);
                 var graphesDuGroupe = responseGraphe.Data;
-                ListeGraphes.AddRange(graphesDuGroupe);
-                StateHasChanged();
+
+                ListeGraphesProf.AddRange(graphesDuGroupe);
             }
 
+            StateHasChanged(); 
         }
+
         if (isEtudiant)
         {
             State.Indentifiant = "etu";
-            var responseGroupeEtudiant = await GroupeEtudiantService.GetAllGroupForStudent(State.Indentifiant);//va chercher tous les groupes de l'étudiant
+            var responseGroupeEtudiant = await GroupeEtudiantService.GetAllGroupForStudent(State.Indentifiant);
             var groupes = responseGroupeEtudiant.Data;
 
-            foreach (var groupe in groupes)//va chercher tous les graphes de l'étudiant
+            foreach (var groupe in groupes)
             {
                 var responseGraphe = await GrapheService.GetAllFromGroup((int)groupe.GroupeId);
                 var graphesDuGroupe = responseGraphe.Data;
 
-                ListeGraphes.AddRange(graphesDuGroupe);
+                ListeGraphesEtudiant.AddRange(graphesDuGroupe);
+            }
+            foreach (var cours in groupes)
+            {
+                var responseCours = await CoursService.GetAllById((int)cours.GroupeId);
+                var nomDesCours = responseCours.Data;
 
-                var responseCoursEtudiant = await GroupeService.GetAllById((int)groupe.GroupeId);
-
-                foreach (var cours in groupes)//va chercher le cours associer au groupe
-                {
-                    var responseCours = await CoursService.GetAllById((int)groupe.GroupeId);
-                    var nomDesCours = responseCours.Data;
-
-                    nomCours.AddRange(nomDesCours);
-                }
-
+                nomCours.AddRange(nomDesCours);
             }
 
-
-
+            StateHasChanged(); 
         }
-        StateHasChanged();
-    }   
+    }
+
     public async Task ChargerGraphe(int idGraphe)
     {
         await sessionStorage.SetItemAsync<int>("idGraphe", idGraphe);
