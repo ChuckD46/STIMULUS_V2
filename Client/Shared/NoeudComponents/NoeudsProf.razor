@@ -353,9 +353,14 @@
     /// <summary>
     /// Permet le changement de page en fonction du noeud choisis
     /// </summary>
+<<<<<<< HEAD
     private async Task DirectionPages()
     {
         await sessionStorage.SetItemAsync<int>("idNoeud" , Node.NoeudId);
         NavigationManager.NavigateTo("/Theorie");
     }
 }
+=======
+    private void DirectionPage() => NavigationManager.NavigateTo("/Theorie" /*  + Node.NoeudId */);
+}
+>>>>>>> 94ad46c (Update files)
