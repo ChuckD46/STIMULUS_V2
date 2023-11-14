@@ -9,35 +9,39 @@
 @using static STIMULUS_V2.Client.Shared.NoeudComponents.NoeudsProf;
 @inject INoeudService NoeudService
 @inject IGrapheService GrapheService
+@inject IPageService PageService
 @inject MouseService mouseSrv
 @inject IUpdateService updateService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntim
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@inject Radzen.DialogService DialogService
 
 <div class="row mt-2">
     <div class="col">
         <foreignObject x="5" y="5" width="1300" height="40">
-            <div class="divGrapheEntete" style="width: 1300px; height: 40px;display:flex ; flex-direction: row ; margin:3px">
-                <button class="spaceButton btn btn-primary" type="button" @onclick="AugmenterZoom">+</button>
-                <button class="spaceButton btn btn-primary" type="button" @onclick="ReduireZoom">-</button>
-                <button class="spaceButton btn btn-secondary" type="button" @onclick="ResetViewbox">Réinitialiser</button>
-                <button style="color: white;" @onclick="@(e => ModeDeVue(1))" class="spaceButton btn @modeDeVuButtonPage" title="Mode Page">Gestion de Pages</button>
-                <button style="color: white;" @onclick="@(e => ModeDeVue(2))" class="spaceButton btn @modeDeVuButtonEdition" title="Mode Edition">Édition</button>
-                <button style="color: white;" @onclick="@(e => ModeDeVue(3))" class="spaceButton btn @modeDeVuButtonEtudiant " title="Mode Etudiant">Vue étudiante</button>
-                <h5 style="color: blue;"> Zoom : @AfficheZoom()</h5>
-            </div>
-
+            <RadzenStack class="divGrapheEntete" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem" Wrap="FlexWrap.Wrap">
+                <RadzenButton Click=AugmenterZoom Text="+" ButtonStyle="ButtonStyle.Secondary" />
+                <RadzenButton Click=ReduireZoom Text="-" ButtonStyle="ButtonStyle.Secondary" />
+                <RadzenButton Click=ResetViewbox Text="Réinitialisé" Icon="refresh" ButtonStyle="ButtonStyle.Dark" />
+                <RadzenLabel style="color: blue;">Zoom: @AfficheZoom()</RadzenLabel>
+                <RadzenButton Click=@(args => ModeDeVue(2)) Text="Édition" ButtonStyle="ButtonStyle.Primary" />
+                <RadzenButton Click=@(args => ModeDeVue(1)) Text="Gestion de pages" ButtonStyle="ButtonStyle.Primary" />
+                <RadzenButton Click=@(args => ModeDeVue(3)) Text="Vue étudiante" ButtonStyle="ButtonStyle.Primary" />
+                <RadzenButton Click=SupprimerGraphe Text="Supprimer le graphe" ButtonStyle="ButtonStyle.Danger" style="margin-left: auto;" />
+            </RadzenStack>
         </foreignObject>
         <svg class="bg-transparent" width="100%" height="2000" xmlns="http://www.w3.org/2000/svg">
-            <rect width="180" height="180" x="0" y="5" fill="#32587a"></rect>
-            <foreignObject x="0" y="5" width="180" height="180">
-                <div>
-                    <p style="color:rgb(140,140,140); margin-left:10px;">Gris : Bloqué</p>
-                    <p style="color:rgb(228, 231, 245); margin-left:10px;">Blanc: Disponible</p>
-                    <p style="color:rgb(199,160,53); margin-left:10px;">Jaune: Consulté</p>
-                    <p style="color:rgb(88,150,105); margin-left:10px;">Vert : Completé</p>
-                </div>                
+            <foreignObject x="0" y="5" width="180" height="205" style="border-radius: 5px;">
+             <RadzenPanel style="background-color: #32587a; padding: 10px;">
+                <RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.Center" Gap="1rem" Wrap="FlexWrap.Wrap">
+                        <RadzenLabel style="color:black;text-decoration: underline;">Légende</RadzenLabel>
+                      <RadzenLabel style="color:rgb(140,140,140);">Bloqué</RadzenLabel>
+                      <RadzenLabel style="color:rgb(228, 231, 245);">Disponible</RadzenLabel>
+                      <RadzenLabel style="color:rgb(199,160,53);">Consulté</RadzenLabel>
+                      <RadzenLabel style="color:rgb(88,150,105);">Complété</RadzenLabel>
+                </RadzenStack>
+            </RadzenPanel>
             </foreignObject>
             <svg class="bg-transparent" width="100%" height="1800" xmlns="http://www.w3.org/2000/svg" viewBox = "@viewBoxX @viewBoxY @viewBoxWidth @viewBoxWidth"
             @onmousemove=@(e => mouseSrv.FireMove(this, e))
@@ -81,6 +85,7 @@
     /// Permet de set le mode de vu. 1 => Page, 2 => Edit, 3 => Etudiant
     /// </summary>
     /// <param name="v">valeur de la vue</param>
+    ///
     private void ModeDeVue(int v) 
     {
         if(v == 1)
@@ -204,6 +209,44 @@
             Console.WriteLine($"Nouveau noeud : {noeud.Nom}");
         }
     }
+
+    private async void SupprimerGraphe()
+    {
+        var result = await DialogService.Confirm("Êtes-vous sûr de vouloir supprimer ce graphe?", "Supprimer");
+
+        if (result.HasValue && result.Value)
+        {
+            var allNoeud = await NoeudService.GetAllFromGraph(await sessionStorage.GetItemAsync<int>("idGraphe"));
+            var noeuds = allNoeud.Data;
+
+            foreach (var noeudDelete in noeuds)
+            {
+                // Supprimer les pages associées au nœud
+                var allPage = await PageService.GetAllFromNoeud(noeudDelete.NoeudId);
+                var pages = allPage.Data;
+
+                if (pages != null)
+                {
+                    foreach (var pageDelete in pages)
+                    {
+                        await PageService.Delete(pageDelete.PageId);
+                    }
+                }
+                foreach (var noeudDeleteParent in noeuds)
+                {
+                    await NoeudService.Delete(noeudDeleteParent.NoeudId);
+                }
+            }
+
+            // Supprimer le graphe
+            await GrapheService.Delete(await sessionStorage.GetItemAsync<int>("idGraphe"));
+            NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/Graphe");
+        }
+    }
     /// <summary>
     /// Reset le zoom a 100%
     /// </summary>
@@ -325,4 +368,5 @@
             return (zoomIncrement + "%");
         }
     }
+
 }

@@ -7,6 +7,8 @@
 @inject INoeudService NoeudService;
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JsRunTime
+@inject IPageService PageService
+@inject IComposantService ComposantService
 
 @for (int i = 0; i < Nodes.Count; i++)
 {
@@ -26,7 +28,7 @@
     {
         <rect x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(-180 + Node.Rayon/2)" visibility="@displayHover" width="200" height="150" style="fill: rgba(255,255,255,255)" />    
         <foreignObject x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(-180 + Node.Rayon/2)" visibility="@displayHover" width="200" height="150" style="padding:5px">
-            <span> Nom :  @Node.Nom / ID : @Node.NoeudId</span><br />
+            <span> Nom :  @Node.Nom </span><br />
             <span>Parent : @TestParent()</span><br /> @*Pour ne pas avoir de champ vide*@
             <span> Desc : @Node.Description</span>
         </foreignObject>
@@ -95,21 +97,24 @@
     @if (GetModeDeVue() == 1)
     {
         <NavLink @onclick="ViewPageTemplate">
-            <circle @onmouseup=@(e => SaveChangeNoeud(Node)) @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) @onclick="(e => RelinkBindNode(Node))" r="@Node.Rayon" class="cercle" style="fill:@Couleur" />
+            <circle r="@Node.Rayon" class="cercle" style="fill:@Couleur" />
+            <foreignObject x="@(Node.Rayon/2 )" y="@(Node.Rayon/2 )" width="20" height="20">
+                <span title="Ajouter une nouvelle page à @Node.Nom" id="addPage" class="oi oi-plus" aria-hidden="true" @onclick="@(args => AjoutPage(Node.NoeudId))"></span>
+            </foreignObject>
             <text @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) class="textLink" text-anchor="middle" alignment-baseline="central">@Node.Nom</text>
         </NavLink>
         if (viewPage)
         {
-            <rect x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(-180 + Node.Rayon/2)" width="80" height="105" style="fill: rgba(255,255,255,255)" />
-            <foreignObject x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(-180 + Node.Rayon/2)" width="80" height="105" style="padding:5px">
+            <rect x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(-180 + Node.Rayon/2)" width="85" height="105" style="fill: rgba(255,255,255,255)" />
+            <foreignObject @onclick="@(e => ChangePageNoeud(1))" x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(-180 + Node.Rayon/2)" width="80" height="105" style="padding:5px">
                 <span>Template1</span>
             </foreignObject>
-            <rect x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(-50 + Node.Rayon/2)" width="80" height="105" style="fill: rgba(255,255,255,255)" />
-            <foreignObject x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(-50 + Node.Rayon/2)" width="80" height="105" style="padding:5px">
+            <rect x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(-50 + Node.Rayon/2)" width="85" height="105" style="fill: rgba(255,255,255,255)" />
+            <foreignObject @onclick="@(e => ChangePageNoeud(2))" x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(-50 + Node.Rayon/2)" width="80" height="105" style="padding:5px">
                 <span>Template2</span>
             </foreignObject>
-            <rect x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(80 + Node.Rayon/2)" width="80" height="105" style="fill: rgba(255,255,255,255)" />
-            <foreignObject x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(80 + Node.Rayon/2)" width="80" height="105" style="padding:5px">
+            <rect x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(80 + Node.Rayon/2)" width="85" height="105" style="fill: rgba(255,255,255,255)" />
+            <foreignObject @onclick="@(e => ChangePageNoeud(3))" x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(80 + Node.Rayon/2)" width="80" height="105" style="padding:5px">
                 <span>Template3</span>
             </foreignObject>
         }
@@ -133,6 +138,7 @@
     //ChildContent = Noeudception
     [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter] public Noeud Node { get; set; }
+    [Parameter] public Page page { get; set; }
     [Parameter] public List<Noeud> Nodes { get; set; }
     //Delegate Land
     [Parameter] public Action<Noeud> AjoutNouveauNoeud { get; set; }
@@ -223,7 +229,13 @@
 
         isOpen = false;
     }
-
+    private async void AjoutPage(int id)
+    {
+        page.NoeudId = id;
+        page.ImportanceId = 1;
+        page.Ordre = 1;
+        await PageService.Create(page);
+    }
     /// <summary>
     /// Appel la fonction en delegate de suppression de noeud
     /// </summary>
@@ -251,6 +263,10 @@
         formSizeH = 0;
         displayNouveauNoeud = "hidden";
         isOpen = false;
+    }
+    private async void ChangePageNoeud(int id)
+    {
+
     }
     /// <summary>
     /// Quand on survole un noeud, ses elements lies apparaissent

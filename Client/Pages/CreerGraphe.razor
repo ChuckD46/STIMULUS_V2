@@ -108,12 +108,17 @@
         await NoeudService.Create(nouveauNoeud);
 
         await sessionStorage.SetItemAsync<int>("idGraphe", newgraphe.GrapheId);
+        NavigationManager.NavigateTo("/Graphe");
 
-        StateHasChanged();
+        ReRender();
     }
 
     void Cancel()
     {
         NavigationManager.NavigateTo("/");
+    }
+    private void ReRender()
+    {
+        StateHasChanged();
     }
 }

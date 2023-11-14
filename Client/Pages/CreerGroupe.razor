@@ -3,6 +3,7 @@
 @inject AuthenticationStateProvider authStateProvider
 @inject Microsoft.Extensions.Configuration.IConfiguration config;
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject AppState State;
 @inject NavigationManager NavigationManager
 @inject IEtudiantService EtudiantService
@@ -96,12 +97,11 @@
                 groupe_etudiant.CodeDA = etudiantId; // Utilisez l'identifiant de l'étudiant
 
                 await GroupeEtudiantService.Create(groupe_etudiant);
-                StateHasChanged();
-                NavigationManager.NavigateTo("/");
-                NavigationManager.NavigateTo("/CreerGroupe");
+                await sessionStorage.SetItemAsync<int>("idGroupe", nouveauGroupe.GroupeId);
+                ReRender();
+                NavigationManager.NavigateTo("/Groupe");
                 
             }
-            await js.InvokeVoidAsync("alert", nouveauGroupe.Nom + " a été créer");
         }
 
         catch
@@ -114,6 +114,10 @@
     void Cancel()
     {
         NavigationManager.NavigateTo("/");
+    }
+    private void ReRender()
+    {
+        StateHasChanged();
     }
 }
 

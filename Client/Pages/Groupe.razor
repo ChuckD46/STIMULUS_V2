@@ -5,6 +5,7 @@
 @inject IGroupeService GroupeService
 @inject IEtudiantService EtudiantService
 @inject ICoursService CoursService
+@inject NavigationManager NavigationManager
 @inject IGrapheService GrapheService
 @inject IGroupeEtudiantService GroupeEtudiantService
 
@@ -16,7 +17,7 @@
     <p class="lead">Graphe(s) associé(s) : </p>
     @foreach (var graphe in listGrapheGroupe)
     {
-        <p>@graphe.Nom</p>
+        <RadzenButton Click="@(() => RedirectionGraphe(graphe.GrapheId))" Text="@graphe.Nom" />
     }
     <p class="lead">Liste des élèves :</p>
     <RadzenDataGrid Data="@listEtudiant" TItem="Etudiant" AllowSorting="true" AllowFiltering="true" Sortable="true">
@@ -71,4 +72,10 @@
             }
         }
     }  
+    private async void RedirectionGraphe(int id)
+    {
+        await sessionStorage.SetItemAsync<int>("idGraphe", id);
+        NavigationManager.NavigateTo("/Graphe");
+
+    }
 }

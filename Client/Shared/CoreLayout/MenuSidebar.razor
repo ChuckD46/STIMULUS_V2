@@ -18,7 +18,7 @@
     <RadzenPanelMenu DisplayStyle="@(sidebarExpanded ? MenuItemDisplayStyle.IconAndText : MenuItemDisplayStyle.Icon)" ShowArrow="@sidebarExpanded">
         <RadzenPanelMenuItem Text="Accueil" Icon="home" Path="/" />
         <AuthorizeView Roles="ETUDIANT">
-            @foreach (var cours in nomCours)
+            @foreach (var cours in ListeCours)
             {
                     @foreach (var graphe in ListeGraphesEtudiant)
                     {
@@ -41,6 +41,13 @@
             }
                 <RadzenPanelMenuItem Text="Créer un nouveau Groupe" Icon="input" Path="/CreerGroupe" />
             </RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Text="Gestion de Cours" Icon="chrome_reader_mode">
+                @foreach (var cours in ListeCours)
+                {
+                    <RadzenPanelMenuItem Icon="class" Text="@cours.Code"></RadzenPanelMenuItem>
+                }
+                <RadzenPanelMenuItem Text="Créer un nouveau Cours" Icon="input" Path="/CreerCours" />
+            </RadzenPanelMenuItem>
         </AuthorizeView>
         <AuthorizeView Roles="ADMIN">
             <RadzenPanelMenuItem Text="Ajouter un utiliateur" Icon="person_add" Path="/AjouterUtilisateur" />
@@ -53,10 +60,15 @@
     public bool sidebarExpanded { get; set; } = false;
     public List<Graphe> ListeGraphesProf { get; set; } = new List<Graphe>();
     public List<Graphe> ListeGraphesEtudiant { get; set; } = new List<Graphe>();
-    public List<Cours> nomCours { get; set; } = new List<Cours>();
+    public List<Cours> ListeCours { get; set; } = new List<Cours>();
     public List<Groupe> groupesProf { get; set; } = new List<Groupe>();
 
-    protected override async Task OnInitializedAsync()
+    protected async override void OnInitialized()
+    {
+        await SideBarData();
+    }
+
+    public async Task SideBarData()
     {
         var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authenticationState.User;
@@ -79,8 +91,15 @@
 
                 ListeGraphesProf.AddRange(graphesDuGroupe);
             }
+            foreach (var cours in groupes)
+            {
+                var responseCours = await CoursService.GetAllById((int)cours.GroupeId);
+                var nomDesCours = responseCours.Data;
 
-            StateHasChanged(); 
+                ListeCours.AddRange(nomDesCours);
+            }
+
+            StateHasChanged();
         }
 
         if (isEtudiant)
@@ -101,10 +120,10 @@
                 var responseCours = await CoursService.GetAllById((int)cours.GroupeId);
                 var nomDesCours = responseCours.Data;
 
-                nomCours.AddRange(nomDesCours);
+                ListeCours.AddRange(nomDesCours);
             }
 
-            StateHasChanged(); 
+            StateHasChanged();
         }
     }
 
@@ -120,4 +139,5 @@
         NavigationManager.NavigateTo("/");
         NavigationManager.NavigateTo("/Groupe");
     }
+
 }
