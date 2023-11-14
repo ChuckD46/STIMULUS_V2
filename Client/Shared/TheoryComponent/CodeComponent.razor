@@ -1,0 +1,13 @@
+﻿@inject NavigationManager NavigationManager
+
+<h3>Composant Code</h3>
+
+@* <RadzenButton Text="Retour" Click="@(() => NavigateToTheoriePage())" />
+
+
+@code {
+    private void NavigateToTheoriePage()
+    {
+        NavigationManager.NavigateTo("/Theorie");
+    }
+} *@

@@ -1,0 +1,30 @@
+﻿@using STIMULUS_V2.Client.Services;
+@using STIMULUS_V2.Shared.Models.Authentication;
+@using STIMULUS_V2.Shared.Models.Entities;
+@inject Microsoft.Extensions.Configuration.IConfiguration config;
+@inject AuthenticationStateProvider authStateProvider
+
+<AuthorizeView Roles="PROF, ADMIN">
+    <h3 class="custom-theory-text-letter">Page d'édition de texte</h3>
+    <RadzenFieldset class="custom-theory-textbox-border">
+        <RadzenTextBox @bind-Value="@TextePourEtudiants"></RadzenTextBox>
+    </RadzenFieldset>
+    <RadzenButton class="custom-theory-save-button" Text="Enregistrer" Click="@EnregistrerTexte" />
+</AuthorizeView>
+
+<AuthorizeView Roles="ETUDIANT">
+    <RadzenFieldset>
+        <h3>Page d'informations'</h3>
+        <label for="studentTextBox">Texte pour les étudiants :</label>
+        <RadzenTextBox Value="@TextePourEtudiants" ReadOnly="true"></RadzenTextBox>
+    </RadzenFieldset>
+</AuthorizeView>
+
+@code {
+    private string TextePourEtudiants = "Texte par défaut";
+
+    private async Task EnregistrerTexte()
+    {
+
+    }
+}

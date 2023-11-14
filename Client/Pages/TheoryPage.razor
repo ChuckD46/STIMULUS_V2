@@ -1,0 +1,77 @@
+﻿@using STIMULUS_V2.Client.Shared.TheoryComponent
+
+@page "/Theorie"
+
+@if (selectedComponent == 0)
+{
+    <div class="custom-theory-menu">
+
+        <h3 class="custom-theory-text-letter">Menu des pages</h3>
+        <div style="display: block; margin-bottom: 10px;">
+            <RadzenButton Text="Code" class="custom-theory-button" Click="@(() => ShowComponent(1))" />
+        </div>
+
+        <div style="display: block; margin-bottom: 10px;">
+            <RadzenButton Text="Exercices" class="custom-theory-button" Click="@(() => ShowComponent(2))" />
+        </div>
+
+        <div style="display: block; margin-bottom: 10px;">
+            <RadzenButton Text="Image" class="custom-theory-button" Click="@(() => ShowComponent(3))" />
+        </div>
+
+        <div style="display: block; margin-bottom: 10px;">
+            <RadzenButton Text="Références" class="custom-theory-button" Click="@(() => ShowComponent(4))" />
+        </div>
+
+        <div style="display: block; margin-bottom: 10px;">
+            <RadzenButton Text="Texte" class="custom-theory-button" Click="@(() => ShowComponent(5))" />
+        </div>
+
+        <div style="display: block; margin-bottom: 10px;">
+            <RadzenButton Text="Vidéo" class="custom-theory-button" Click="@(() => ShowComponent(6))" />
+        </div>
+
+    </div>
+}
+
+@if (selectedComponent == 1)
+{
+    <CodeComponent />
+}
+else if (selectedComponent == 2)
+{
+    <ExerciceComponent />
+}
+else if (selectedComponent == 3)
+{
+    <ImageComponent />
+}
+else if (selectedComponent == 4)
+{
+    <ReferenceComponent />
+}
+else if (selectedComponent == 5)
+{
+    <TextComponent />
+}
+else if (selectedComponent == 6)
+{
+    <VideoComponent />
+}
+
+@if (selectedComponent != 0)
+{
+    <div style="margin-top: 20px;">
+        <RadzenButton class="custom-theory-backbutton" Text="Retour au menu" Click="@(() => ShowComponent(0))" />
+    </div>
+}
+
+@code {
+    private int selectedComponent = 0;
+
+    private void ShowComponent(int componentNumber)
+    {
+        selectedComponent = componentNumber;
+    }
+}
+
