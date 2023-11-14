@@ -80,10 +80,10 @@
 
         if (isProfesseur)
         {
-            var responseGroupeActif = await GroupeService.GetAllGroupActif(State.Indentifiant);
-            var groupesActif = responseGroupeActif.Data;
+                var responseGroupeActif = await GroupeService.GetAllGroupActif(State.Indentifiant);
+                var groupesActif = responseGroupeActif.Data;
 
-            groupesProf.AddRange(groupesActif);
+                groupesProf.AddRange(groupesActif);
 
                 foreach (var graphe in groupesActif)
                 {
@@ -103,10 +103,7 @@
                 }
 
                 StateHasChanged();
-
-
-            
-        }
+        }       
 
         if (isEtudiant)
         {
