@@ -85,7 +85,7 @@
     {
         try
         {
-            groupe.DateCreation = DateTime.Now;
+            groupe.DateCreation = DateTime.Now.Date;
             groupe.ProfesseurId = State.Indentifiant;
 
             var Groupe = await GroupeService.Create(groupe);
