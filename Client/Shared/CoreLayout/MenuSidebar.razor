@@ -78,7 +78,6 @@
 
         if (isProfesseur)
         {
-            State.Indentifiant = "prof";
             var responseGroupe = await GroupeService.GetAllForTeacher(State.Indentifiant);
             var groupes = responseGroupe.Data;
 
@@ -104,7 +103,6 @@
 
         if (isEtudiant)
         {
-            State.Indentifiant = "etu";
             var responseGroupeEtudiant = await GroupeEtudiantService.GetAllGroupForStudent(State.Indentifiant);
             var groupes = responseGroupeEtudiant.Data;
 

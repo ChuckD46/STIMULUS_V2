@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 namespace STIMULUS_V2.Shared.Interface.ChildInterface
 {
     public interface IGroupeService : IModelService<Groupe, int>
-    {     
+    {
+        Task<APIResponse<IEnumerable<Groupe>>> GetAllForTeacher(string id);
     }
 }
