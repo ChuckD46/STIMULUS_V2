@@ -14,6 +14,7 @@
 @inject MouseService mouseSrv
 @inject IUpdateService updateService
 @inject NavigationManager NavigationManager
+@inject AppState State;
 @inject IJSRuntime JSRuntim
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject Radzen.DialogService DialogService
@@ -170,8 +171,8 @@
 
             Nodes = ((APIResponse<IEnumerable<Noeud>>)await NoeudService.GetAllFromGraph(idGraphe)).Data.ToList();
 
-            // var response = await NoeudService.GetAllFromGraph(idGraphe);
-            // Nodes = response.Data.ToList();
+            var response = await NoeudService.GetAllFromGraph(idGraphe);
+            Nodes = response.Data.ToList();
             Console.WriteLine("Mise a jour des noeuds du graph");
         }
         StateHasChanged();
