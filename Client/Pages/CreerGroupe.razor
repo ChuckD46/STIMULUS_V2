@@ -86,7 +86,7 @@
     {
         try
         {
-            groupe.DateCreation = DateTime.Now.Date;
+            groupe.DateCreation = DateTime.Now;
             groupe.ProfesseurId = await sessionStorage.GetItemAsync<string>("idConnexion");
 
             var Groupe = await GroupeService.Create(groupe);
@@ -106,7 +106,7 @@
 
         catch
         {
-            await js.InvokeVoidAsync("alert", "erreur");
+            await js.InvokeVoidAsync("alert", "Erreur lors de la création du groupe");
         }
 
     }

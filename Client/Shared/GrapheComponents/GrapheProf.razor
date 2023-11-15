@@ -152,6 +152,7 @@
         enfantRechercheParent = noeud;
         enRecherche = true;
     }
+    
     /// <summary>
     /// Recupere les noeuds du graph Numero X et permet la MAJ du graph
     /// </summary>
@@ -243,6 +244,9 @@
                         }
                         await PageService.Delete(pageDelete.PageId);
                     }
+
+                    await NoeudService.Delete(noeudDelete.NoeudId);
+
                 }
                 foreach (var noeudDeleteParent in noeuds)
                 {
