@@ -1,31 +1,26 @@
 ﻿@using STIMULUS_V2.Client.Services;
 @using STIMULUS_V2.Shared.Models.Authentication;
 @using STIMULUS_V2.Shared.Models.Entities;
+@using STIMULUS_V2.Shared.Interface.ChildInterface;
+
 @inject Microsoft.Extensions.Configuration.IConfiguration config;
-@inject AuthenticationStateProvider authStateProvider
+@inject AuthenticationStateProvider authStateProvider;
+@inject ITexteFormaterService TextFormaterService; 
 
-<h3>Composant texte</h3>
-@* <@* AuthorizeView Roles="PROF, ADMIN">
-    <h3 class="custom-theory-text-letter">Page d'édition de texte</h3>
-    <RadzenFieldset class="custom-theory-textbox-border">
-        <RadzenTextBox @bind-Value="@TextePourEtudiants"></RadzenTextBox>
-    </RadzenFieldset>
-    <RadzenButton class="custom-theory-save-button" Text="Enregistrer" Click="@EnregistrerTexte" />
-</AuthorizeView>
 
-<AuthorizeView Roles="ETUDIANT">
-    <RadzenFieldset>
-        <h3>Page d'informations'</h3>
-        <label for="studentTextBox">Texte pour les étudiants :</label>
-        <RadzenTextBox Value="@TextePourEtudiants" ReadOnly="true"></RadzenTextBox>
-    </RadzenFieldset>
-</AuthorizeView>
+<h3 class="custom-theory-texte-letter">Composant texte</h3>
 
 @code {
-     // private string TextePourEtudiants = "Texte par défaut";
+	[Parameter]
+	public int TexteFormaterId { get; set; }
 
-    // private async Task EnregistrerTexte()
-    // {
 
-    // }
-} *@
+	// private async void AddTextFormater()
+	// {
+	// 	var texteFormater = new TexteFormater();
+	// 	texteFormater.TexteFormaterId = TexteFormaterId;
+	// 	await TextFormaterService.Create(texteFormater);
+	// 	StateHasChanged();
+	// }
+
+} 

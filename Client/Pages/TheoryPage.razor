@@ -6,7 +6,7 @@
 {
     <div class="custom-theory-menu">
 
-        <h3 class="custom-theory-text-letter">Menu des pages</h3>
+        <h3 class="custom-theory-title-text-letter">Menu des pages</h3>
         <div style="display: block; margin-bottom: 10px;">
             <RadzenButton Text="Code" class="custom-theory-button" Click="@(() => ShowComponent(1))" />
         </div>
@@ -30,6 +30,14 @@
         <div style="display: block; margin-bottom: 10px;">
             <RadzenButton Text="Vidéo" class="custom-theory-button" Click="@(() => ShowComponent(6))" />
         </div>
+    </div>
+}
+@if (selectedComponent > 0)
+{
+    <div class="container text-center" style="margin-top: 20px;">
+        <RadzenButton class="custom-theory-backbutton" Text="Page Précédente" Click="@(() => ShowComponent(selectedComponent - 1))" />
+        <RadzenButton class="custom-theory-backbutton" Text="Page Suivante" Click="@(() => ShowComponent(selectedComponent + 1))" />
+        <RadzenButton class="custom-theory-backbutton" Text="Retour au menu" Click="@(() => ShowComponent(0))" />
     </div>
 }
 
@@ -56,15 +64,6 @@ else if (selectedComponent == 5)
 else if (selectedComponent == 6)
 {
     <VideoComponent />
-}
-
-@if (selectedComponent > 0)
-{
-    <div class="container text-center" style="margin-top: 20px;">
-        <RadzenButton class="custom-theory-backbutton" Text="Page Précédente" Click="@(() => ShowComponent(selectedComponent - 1))" />
-        <RadzenButton class="custom-theory-backbutton" Text="Page Suivante" Click="@(() => ShowComponent(selectedComponent + 1))" />
-        <RadzenButton class="custom-theory-backbutton" Text="Retour au menu" Click="@(() => ShowComponent(0))" />
-    </div>
 }
 
 @code {
