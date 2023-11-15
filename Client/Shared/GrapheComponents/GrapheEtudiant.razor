@@ -19,9 +19,9 @@
     <div class="col">
         <foreignObject x="5" y="5" width="150" height="50">
             <RadzenStack class="divGrapheEntete" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem" Wrap="FlexWrap.Wrap">
-                <RadzenButton Click=AugmenterZoom Text="+" ButtonStyle="ButtonStyle.Secondary" />
-                <RadzenButton Click=ReduireZoom Text="-" ButtonStyle="ButtonStyle.Secondary" />
-                <RadzenButton Click=ResetViewbox Text="Réinitialisé" Icon="refresh" ButtonStyle="ButtonStyle.Dark" />
+                <RadzenButton class="custom-graphetu-zoom-button" Text="+" ButtonStyle="ButtonStyle.Primary" Click=AugmenterZoom />
+                <RadzenButton class="custom-graphetu-zoomout-button" Text="-" ButtonStyle="ButtonStyle.Primary" Click=ReduireZoom />
+                <RadzenButton Style="background-color: darkblue"  class="custom-graphetu-reset-button" Variant="Variant.Flat" Text="Réinitialisé" Icon="refresh" ButtonStyle="ButtonStyle.Secondary" Click=ResetViewbox />
                 <RadzenLabel style="color: blue;">Zoom: @AfficheZoom()</RadzenLabel>
             </RadzenStack>
         </foreignObject>
