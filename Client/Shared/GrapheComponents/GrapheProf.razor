@@ -53,8 +53,17 @@
                     <rect x="-1000" y="-1000" width="4000" height="4000" style="fill:rgb(0,0,0,0);stroke-width:0;stroke:rgb(0,0,0)" />
                     @foreach (var noeud in Nodes)
                     {
-                        <NoeudsProf UpdateGraphe="UpdateGraphe" GetModeDeVue="GetModeDeVue" RelinkBindNode="RelinkBindNode" ReLinkNoeud="ReLinkNoeud"
-                         Node="@noeud" Nodes="@Nodes" SaveChangeNoeud="SaveChange" AjoutNouveauNoeud="AjoutNouveauNoeud" SupprNoeud="SupprimerNoeud"/>
+                        <NoeudsProf ReLinkPage="ReLinkPage"
+                                ReLinkBindPage="ReLinkBindPage"
+                                UpdateGraphe="UpdateGraphe"
+                                GetModeDeVue="GetModeDeVue"
+                                RelinkBindNode="RelinkBindNode"
+                                ReLinkNoeud="ReLinkNoeud"
+                                Node="@noeud"
+                                Nodes="@Nodes"
+                                SaveChangeNoeud="SaveChange"
+                                AjoutNouveauNoeud="AjoutNouveauNoeud"
+                                SupprNoeud="SupprimerNoeud" />
                     }
                 </Draggable>
             </svg>
@@ -70,6 +79,9 @@
     private double zoomIncrement = 100;
     private Noeud enfantRechercheParent = new();
     private bool enRecherche = false;
+    private Page pageRechercheNoeud = new();
+    private bool enRecherchePage = new();
+
     private int modeDeVue = 2;
     private string modeDeVuInfo = "Édition";
     private string modeDeVuButtonPage = "btn-info";
@@ -128,6 +140,37 @@
     private void OnMouseHover() => displayHover = "show";
     //Quand la souris ne survole plus
     private void OnMouseLeave() => displayHover = "hidden";
+
+    /// <summary>
+    /// Detache un noeud enfant de son parent
+    /// </summary>
+    /// <param name="page"></param>
+    private void ReLinkPage(Page page)
+    {
+        Console.WriteLine($"Page {page.PageId} a besoin d'un parent");
+        pageRechercheNoeud = page;
+        enRecherchePage = true;
+    }
+    private async Task<bool> ReLinkBindPage(Noeud noeud)
+    {
+        if (enRecherchePage)
+        {
+            Console.WriteLine($"Changement de page sur : {noeud.Nom}");
+
+            pageRechercheNoeud.NoeudId = noeud.NoeudId;
+            pageRechercheNoeud.Ordre = ((APIResponse<IEnumerable<Page>>)await PageService.GetAllFromNoeud(noeud.NoeudId)).Data.ToList().Last().Ordre + 1;
+
+            enRecherchePage = false;
+
+            SaveChange(pageRechercheNoeud);
+
+            StateHasChanged();
+
+            return true;
+        }
+        return false;
+    }
+
     /// <summary>
     /// Permet de rattacher un noeud enfant a un parent clique
     /// </summary>
@@ -200,6 +243,8 @@
     /// Sauvegarde les mises a jour du graph
     /// </summary>
     public async void SaveChange(Noeud noeud) => await NoeudService.Update(noeud.NoeudId, noeud);
+    public async void SaveChange(Page page) => await PageService.Update(page.PageId, page);
+
     /// <summary>
     /// Ajoute un noeud dans la BD
     /// </summary>
