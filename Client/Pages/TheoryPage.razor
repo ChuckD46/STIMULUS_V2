@@ -30,7 +30,6 @@
         <div style="display: block; margin-bottom: 10px;">
             <RadzenButton Text="Vidéo" class="custom-theory-button" Click="@(() => ShowComponent(6))" />
         </div>
-
     </div>
 }
 
@@ -59,9 +58,11 @@ else if (selectedComponent == 6)
     <VideoComponent />
 }
 
-@if (selectedComponent != 0)
+@if (selectedComponent > 0)
 {
-    <div style="margin-top: 20px;">
+    <div class="container text-center" style="margin-top: 20px;">
+        <RadzenButton class="custom-theory-backbutton" Text="Page Précédente" Click="@(() => ShowComponent(selectedComponent - 1))" />
+        <RadzenButton class="custom-theory-backbutton" Text="Page Suivante" Click="@(() => ShowComponent(selectedComponent + 1))" />
         <RadzenButton class="custom-theory-backbutton" Text="Retour au menu" Click="@(() => ShowComponent(0))" />
     </div>
 }
@@ -71,7 +72,6 @@ else if (selectedComponent == 6)
 
     private void ShowComponent(int componentNumber)
     {
-        selectedComponent = componentNumber;
+        selectedComponent = Math.Max(0, Math.Min(componentNumber, 6)); // Assure que selectedComponent reste dans la plage de 0 à 6
     }
 }
-

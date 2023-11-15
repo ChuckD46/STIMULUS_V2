@@ -142,10 +142,15 @@
     }
     else if (GetModeDeVue() == 3)
     {
+<<<<<<< HEAD
         <NavLink @onclick="DirectionPages">
+=======
+        <NavLink @onclick="DirectionPage">
+>>>>>>> 99250c5 (Navigation from Noeud to Theory done)
             <circle @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) @onclick="(e => RelinkBindNode(Node))" r="@Node.Rayon" class="cercle" style="fill:@Couleur" />
             <text @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) class="textLink" text-anchor="middle" alignment-baseline="central">@Node.Nom</text>
         </NavLink>
+
     }
 </Draggable>
 @code {
@@ -354,6 +359,7 @@
     /// Permet le changement de page en fonction du noeud choisis
     /// </summary>
 <<<<<<< HEAD
+<<<<<<< HEAD
     private async Task DirectionPages()
     {
         await sessionStorage.SetItemAsync<int>("idNoeud" , Node.NoeudId);
@@ -364,3 +370,12 @@
     private void DirectionPage() => NavigationManager.NavigateTo("/Theorie" /*  + Node.NoeudId */);
 }
 >>>>>>> 94ad46c (Update files)
+=======
+    private async Task DirectionPage()
+    {
+        await sessionStorage.SetItemAsync<int>("idNoeud", Node.NoeudId);
+        NavigationManager.NavigateTo("/Theorie");
+        await sessionStorage.GetItemAsync<int>("idNoeud");
+    }
+}
+>>>>>>> 99250c5 (Navigation from Noeud to Theory done)
