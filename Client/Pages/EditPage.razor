@@ -184,27 +184,27 @@
                         <RadzenButton ButtonStyle="ButtonStyle.Danger" Style="height:35px;" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => DeleteComposant(composant.ComposantId))" />
                     @if (composant.Type == "Code")
                     {
-                        <CodeComponent />
+                    <CodeComponent composantId="composant.ComposantId" />
                     }
                     @if (composant.Type == "Exercice")
                     {
-                        <ExerciceComponent />
+                    <ExerciceComponent composantId="composant.ComposantId" />
                     }
                     @if (composant.Type == "Image")
                     {
-                        <ImageComponent />
+                    <ImageComponent composantId="composant.ComposantId" />
                     }
                     @if (composant.Type == "Reference")
                     {
-                        <ReferenceComponent />
+                    <ReferenceComponent composantId="composant.ComposantId" />
                     }
                     @if (composant.Type == "Texte")
                     {
-                        <TextComponent />
+                        <TextComponent composantId="composant.ComposantId"/>
                     }
                     @if (composant.Type == "Video")
                     {
-                        <VideoComponent/>
+                        <VideoComponent composantId="composant.ComposantId"/>
                     }
             }
         </RadzenRow>
@@ -219,6 +219,7 @@
     Popup popup;
     RadzenButton button;
     private List<Composant> listComposant { get; set; } = new List<Composant>();
+
     private Page page { get; set; } = new();    
     private Composant composant { get; set; } = new();
     private Noeud noeud { get; set; } = new();
@@ -278,6 +279,9 @@
 
         var noeudActuelle = await NoeudService.Get(await sessionStorage.GetItemAsync<int>("idNoeud"));
         noeud = noeudActuelle.Data;
+
+
+
     }
 
     private async void DeleteComposant(int id)
@@ -364,8 +368,6 @@
     }
 
 
-
-
     void TogglePopup()
     {
         if (popup != null)
@@ -377,7 +379,7 @@
     async Task OnOpen()
     {
         await JSRuntime.InvokeVoidAsync("eval", "setTimeout(function(){ document.getElementById('search').focus(); }, 200)");
-    }
+    }   
 
 
 }

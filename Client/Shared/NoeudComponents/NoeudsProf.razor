@@ -307,6 +307,21 @@
     {
         LinkedPage.PageId = id;
         pageLink = true;
+
+        var pageDelete = await PageService.Get(id);
+        var page = pageDelete.Data;
+
+        var allPages = await PageService.GetAllById(Node.NoeudId);
+        var pages = allPages.Data;
+
+        foreach (var reOrdered in pages)
+        {
+            if (page.Ordre < reOrdered.Ordre)
+            {
+                reOrdered.Ordre = reOrdered.Ordre - 1;
+                await PageService.Update(reOrdered.PageId, reOrdered);
+            }
+        }
     }
 
     private async void ReLinkPage(int id)

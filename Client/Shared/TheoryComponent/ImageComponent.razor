@@ -3,11 +3,12 @@
 <div class="container text-center"> 
 	<h3>Composant image</h3>
 	<RadzenStack AlignItems="AlignItems.Center">
-		<RadzenImage Path="/RessourceVisuel/LogoCegep.jpg" Style="width: 15rem" />
+		<RadzenImage Path="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Red_Color.jpg/1536px-Red_Color.jpg" Style="width: 15rem" />
 	</RadzenStack>
 </div>
 
 
 @code {
+	[Parameter] public int composantId { get; set; }
 
 }

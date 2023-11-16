@@ -5,16 +5,69 @@
 
 <div class="container text-center">
 	<h3 class="custom-theory-video">Composant vidéo</h3>
-	<iframe width="800" height="500" style="padding-left:1%;" src="" frameborder="0" allowfullscreen></iframe>
+	<iframe width="800" height="500" style="padding-left:1%;" src="@embedUrl" frameborder="0" allowfullscreen></iframe>
 </div>
 
 @code {
 	[Parameter] public int composantId { get; set; }
-	public Video videoUnit { get; set; }
+	public Video video { get; set; }
+    public string embedUrl { get; set; }
 
 	protected async override Task OnInitializedAsync()
 	{
 
+        string youtubeUrl = "https://www.youtube.com/watch?v=xG-Ef4ig07I&t=400s&ab_channel=SQUEEZIE";
+        embedUrl = GetYouTubeEmbedLink(youtubeUrl);
+
+        string GetYouTubeEmbedLink(string youtubeUrl)
+        {
+            // Extraire l'identifiant de la vidéo à partir de l'URL
+            string videoId = ExtractVideoId(youtubeUrl);
+
+            // Construire le lien embed
+            string embedUrl = $"https://www.youtube.com/embed/{videoId}";
+
+            return embedUrl;
+        }
+
+        string ExtractVideoId(string youtubeUrl)
+        {
+            Uri uri = new Uri(youtubeUrl);
+            string videoId = null;
+
+            // Recherche du paramètre 'v' dans la query
+            string query = uri.Query;
+            int index = query.IndexOf("v=");
+            if (index != -1)
+            {
+                int startIndex = index + 2; // Début de l'identifiant après 'v='
+                videoId = query.Substring(startIndex);
+
+                // Si l'identifiant contient d'autres paramètres, les supprimer
+                int endIndex = videoId.IndexOf("&");
+                if (endIndex != -1)
+                {
+                    videoId = videoId.Substring(0, endIndex);
+                }
+            }
+
+            // Si l'identifiant n'a pas été trouvé dans la query, essayer avec le dernier segment du chemin
+            if (string.IsNullOrEmpty(videoId))
+            {
+                string[] segments = uri.Segments;
+                if (segments.Length > 0)
+                {
+                    videoId = segments[segments.Length - 1].Trim('/');
+                }
+            }
+
+            if (string.IsNullOrEmpty(videoId))
+            {
+                throw new ArgumentException("L'URL YouTube ne contient pas de paramètre 'v'.");
+            }
+
+            return videoId;
+        }
 	}
 
 }
