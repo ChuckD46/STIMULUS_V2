@@ -111,7 +111,7 @@ namespace STIMULUS_V2.Server.Services
         {
             try
             {
-                var itemList = await sTIMULUSContext.TexteFormater.Where(item => item.TexteFormaterId == id).ToListAsync();
+                var itemList = await sTIMULUSContext.TexteFormater.Where(item => item.ComposantId == id).ToListAsync();
 
                 if (itemList != null)
                 {

@@ -35,6 +35,12 @@ namespace STIMULUS_V2.Server.Controllers
             var response = await videoService.Get(id);
             return StatusCode(response.StatusCode, response);
         }
+        [HttpGet("Fetch/ByComponenet/{id}")]
+        public async Task<IActionResult> GetVideo(int id)
+        {
+            var response = await videoService.Get(id);
+            return StatusCode(response.StatusCode, response);
+        }
 
         [HttpGet("Fetch/All")]
         public async Task<IActionResult> GetAll()

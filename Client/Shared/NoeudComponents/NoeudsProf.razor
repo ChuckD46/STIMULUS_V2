@@ -258,7 +258,7 @@
         var pageNoeud = await PageService.GetAllFromNoeud(id);
         var create = pageNoeud.Data;
 
-        if (create != null)
+        if (create  != null)
         {
             newPage.NoeudId = id;
             newPage.ImportanceId = 1;
@@ -329,9 +329,11 @@
         var pageNoeud = await PageService.GetAllFromNoeud(id);
         var relink = pageNoeud.Data;
 
+
+
         LinkedPage.NoeudId = id;
         LinkedPage.Ordre = relink.Count() + 1;
-        LinkedPage.ImportanceId = 1;
+        LinkedPage.ImportanceId = null;
         await PageService.Update(LinkedPage.PageId, LinkedPage);
     }
 

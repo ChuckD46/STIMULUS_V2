@@ -204,7 +204,7 @@
                     }
                     @if (composant.Type == "Video")
                     {
-                        <VideoComponent composantId="composant.ComposantId"/>
+                        <VideoComponent ComposantId="composant.ComposantId"/>
                     }
             }
         </RadzenRow>
@@ -272,6 +272,7 @@
         var allComposant = await ComposantService.GetAllById(await sessionStorage.GetItemAsync<int>("idPage"));
         var composants = allComposant.Data;
 
+
         listComposant.AddRange(composants);
 
         var pageActuelle = await PageService.Get(await sessionStorage.GetItemAsync<int>("idPage"));
@@ -292,6 +293,7 @@
         var allComposant = await ComposantService.GetAllById(await sessionStorage.GetItemAsync<int>("idPage"));
         var composants = allComposant.Data;
 
+
         foreach(var reOrdered in composants)
         {
             if(composantDelete.Ordre < reOrdered.Ordre)
@@ -300,7 +302,7 @@
                 await ComposantService.Update(reOrdered.ComposantId, reOrdered);
             }
         }
-
+        await VideoService.Delete(id);
         await ComposantService.Delete(id);
         ShouldRender();
     }
@@ -320,7 +322,10 @@
 
         composant.Type = typeComposant;
 
-        await ComposantService.Create(composant);
+        var newComposant = await ComposantService.Create(composant);
+        var id = newComposant.Data;
+
+        var idComposant = await ComposantService.Get(id.ComposantId);
 
         if (composant.Type == "Code")
         {
@@ -354,6 +359,7 @@
         }
         if (composant.Type == "Video")
         {
+            video.ComposantId = id.ComposantId;
             video.Url = urlVideo;
             video.Description = descriptionVideo;
             video.Longueur = 800;

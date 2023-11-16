@@ -4,20 +4,31 @@
 @inject IComposantService ComposantService
 
 <div class="container text-center">
-	<h3 class="custom-theory-video">Composant vidéo</h3>
-	<iframe width="800" height="500" style="padding-left:1%;" src="@embedUrl" frameborder="0" allowfullscreen></iframe>
+    <h1>@video.Description</h1>
+    <iframe width="800" height="500" style="padding-left:1%;" src="@video.Url" frameborder="0" allowfullscreen></iframe>
 </div>
 
 @code {
-	[Parameter] public int composantId { get; set; }
-	public Video video { get; set; }
-    public string embedUrl { get; set; }
+    [Parameter] public int ComposantId { get; set; }
+    public Video video { get; set; }
 
-	protected async override Task OnInitializedAsync()
+    protected async override Task OnInitializedAsync()
+    {
+        var videos = await VideoService.GetVideo(ComposantId);
+        var videoGet = videos.Data;
+
+        videoGet.Url = video.Url;
+        videoGet.Description = video.Description;
+
+
+        await base.OnInitializedAsync();
+        await TransformerVideoEmbed();
+    }
+
+	public async Task TransformerVideoEmbed()
 	{
-
         string youtubeUrl = "https://www.youtube.com/watch?v=xG-Ef4ig07I&t=400s&ab_channel=SQUEEZIE";
-        embedUrl = GetYouTubeEmbedLink(youtubeUrl);
+        video.Url = GetYouTubeEmbedLink(youtubeUrl);
 
         string GetYouTubeEmbedLink(string youtubeUrl)
         {
