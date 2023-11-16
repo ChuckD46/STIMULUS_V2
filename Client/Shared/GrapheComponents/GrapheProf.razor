@@ -27,9 +27,9 @@
                 <RadzenButton Click=ReduireZoom Text="-" ButtonStyle="ButtonStyle.Secondary" />
                 <RadzenButton Click=ResetViewbox Text="Réinitialisé" Icon="refresh" ButtonStyle="ButtonStyle.Dark" />
                 <RadzenLabel style="color: blue;">Zoom: @AfficheZoom()</RadzenLabel>
-                <RadzenButton Click=@(args => ModeDeVue(2)) Text="Édition" ButtonStyle="ButtonStyle.Primary" />
-                <RadzenButton Click=@(args => ModeDeVue(1)) Text="Gestion de pages" ButtonStyle="ButtonStyle.Primary" />
-                <RadzenButton Click=@(args => ModeDeVue(3)) Text="Vue étudiante" ButtonStyle="ButtonStyle.Primary" />
+                <RadzenButton Click=@(args => ModeDeVue(2)) Text="Édition" ButtonStyle="@modeDeVuButtonEdition" />
+                <RadzenButton Click=@(args => ModeDeVue(1)) Text="Gestion de pages" ButtonStyle="@modeDeVuButtonPage" />
+                <RadzenButton Click=@(args => ModeDeVue(3)) Text="Vue étudiante" ButtonStyle="@modeDeVuButtonEtudiant" />
                 <RadzenButton Click=SupprimerGraphe Text="Supprimer le graphe" ButtonStyle="ButtonStyle.Danger" style="margin-left: auto;" />
             </RadzenStack>
         </foreignObject>
@@ -83,10 +83,9 @@
     private bool enRecherchePage = new();
     private bool upt = false;
     private int modeDeVue = 2;
-    private string modeDeVuInfo = "Édition";
-    private string modeDeVuButtonPage = "btn-info";
-    private string modeDeVuButtonEdition = "btn-warning";
-    private string modeDeVuButtonEtudiant = "btn-info";
+    private ButtonStyle modeDeVuButtonEdition = ButtonStyle.Warning;
+    private ButtonStyle modeDeVuButtonPage = ButtonStyle.Primary;
+    private ButtonStyle modeDeVuButtonEtudiant = ButtonStyle.Primary;
 
     private Noeud nouveauNoeud = new();
     public List<Noeud> Nodes { get; set; } = new();
@@ -104,24 +103,21 @@
     {
         if(v == 1)
         {
-            modeDeVuInfo = "Gestion de Pages";
-            modeDeVuButtonPage = "btn-warning";
-            modeDeVuButtonEdition = "btn-info";
-            modeDeVuButtonEtudiant = "btn-info";
+            modeDeVuButtonPage = ButtonStyle.Warning;
+            modeDeVuButtonEdition = ButtonStyle.Primary;
+            modeDeVuButtonEtudiant = ButtonStyle.Primary;
         }
         else if(v == 2)
         {
-            modeDeVuInfo = "Édition";
-            modeDeVuButtonPage = "btn-info";
-            modeDeVuButtonEdition = "btn-warning";
-            modeDeVuButtonEtudiant = "btn-info";
+            modeDeVuButtonPage = ButtonStyle.Primary;
+            modeDeVuButtonEdition = ButtonStyle.Warning;
+            modeDeVuButtonEtudiant = ButtonStyle.Primary;
         }
         else
         {
-            modeDeVuInfo = "Vue étudiante";
-            modeDeVuButtonPage = "btn-info";
-            modeDeVuButtonEdition = "btn-info";
-            modeDeVuButtonEtudiant = "btn-warning";
+            modeDeVuButtonPage = ButtonStyle.Primary;
+            modeDeVuButtonEdition = ButtonStyle.Primary;
+            modeDeVuButtonEtudiant = ButtonStyle.Warning;
         }
         modeDeVue = v;
         Console.WriteLine($"Mode de vu : {v}");
