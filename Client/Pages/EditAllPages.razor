@@ -1,0 +1,90 @@
+﻿@using STIMULUS_V2.Client.Shared.TheoryComponent
+@using STIMULUS_V2.Shared.Interface.ChildInterface;
+@using STIMULUS_V2.Shared.Models.Entities;
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRunTime
+@inject IPageService PageService
+@inject IComposantService ComposantService
+@inject INoeudService NoeudService
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+
+@page "/ModifierPages"
+
+
+<RadzenLayout Style="grid-template-columns: 1fr auto; grid-template-areas: 'rz-header rz-header' 'rz-body rz-sidebar'">
+    <RadzenSidebar>
+        <RadzenPanelMenu>
+            <RadzenPanelMenuItem Text="Page #1" Icon="book" />
+            <RadzenPanelMenuItem Text="Page #2" Icon="book" />
+        </RadzenPanelMenu>
+    </RadzenSidebar>
+    <RadzenBody>
+        <RadzenCard Class="rz-my-12 mx-auto" Style="max-width: 1800px; margin : 30px">
+            <RadzenText TextStyle="TextStyle.H6" Class="text-center" Style="margin-top:20px;margin-bottom:10px; text-decoration: underline"><strong>Édition</strong></RadzenText>
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center" Gap="1rem" Class="rz-p-4">
+                <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">TEST</RadzenText>
+                <RadzenStack Gap="2">
+                    <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Noeud</RadzenText>
+                    <RadzenText TextStyle="TextStyle.Body1"><b>@((noeud.Nom != null) ? noeud.Nom : "")</b></RadzenText>
+                    <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Page</RadzenText>
+                    <RadzenText TextStyle="TextStyle.Body1"><b>@((page.Ordre != null) ? "#" + page.Ordre : "")</b></RadzenText>
+                </RadzenStack>
+            </RadzenStack>
+            <RadzenRow RowGap="2" Class="justify-content-center">
+                @foreach (var composant in listComposant)
+                {
+                    @if (composant.Type == "Code")
+                    {
+                        <CodeComponent />
+                    }
+                    if (composant.Type == "Exercice")
+                    {
+
+                        <ExerciceComponent />
+                    }
+                    if (composant.Type == "Image")
+                    {
+                        <ImageComponent />
+                    }
+                    if (composant.Type == "Reference")
+                    {
+                        <ReferenceComponent />
+                    }
+                    if (composant.Type == "Texte")
+                    {
+                        <TextComponent />
+                    }
+                    if (composant.Type == "Video")
+                    {
+                        <VideoComponent />
+                    }
+                }
+            </RadzenRow>
+        </RadzenCard>
+    </RadzenBody>
+</RadzenLayout>
+
+
+
+
+@code {
+    bool sidebar1Expanded = true;
+    private List<Composant> listComposant { get; set; } = new List<Composant>();
+    private Page page { get; set; } = new();
+    private Noeud noeud { get; set; } = new();
+
+    protected async override Task OnInitializedAsync()
+    {
+        var allComposant = await ComposantService.GetAllById(await sessionStorage.GetItemAsync<int>("idPage"));
+        var composants = allComposant.Data;
+
+        listComposant.AddRange(composants);
+
+        var pageActuelle = await PageService.Get(await sessionStorage.GetItemAsync<int>("idPage"));
+        page = pageActuelle.Data;
+
+        var noeudActuelle = await NoeudService.Get(await sessionStorage.GetItemAsync<int>("idNoeud"));
+        noeud = noeudActuelle.Data;
+    }
+
+}

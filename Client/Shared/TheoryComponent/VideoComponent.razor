@@ -1,8 +1,20 @@
-﻿<div class="container text-center">
+﻿@using STIMULUS_V2.Shared.Interface.ChildInterface;
+@using STIMULUS_V2.Shared.Models.Entities;
+@inject IVideoService VideoService
+@inject IComposantService ComposantService
+
+<div class="container text-center">
 	<h3 class="custom-theory-video">Composant vidéo</h3>
-	<iframe width="600" height="350" style="padding-left:1%;" src="https://www.youtube.com/embed/GHTA143_b-s" frameborder="0" allowfullscreen></iframe>
+	<iframe width="800" height="500" style="padding-left:1%;" src="" frameborder="0" allowfullscreen></iframe>
 </div>
 
 @code {
+	[Parameter] public int composantId { get; set; }
+	public Video videoUnit { get; set; }
+
+	protected async override Task OnInitializedAsync()
+	{
+
+	}
 
 }

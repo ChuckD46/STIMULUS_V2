@@ -320,16 +320,6 @@
         await PageService.Update(LinkedPage.PageId, LinkedPage);
     }
 
-    private async void DirectionPage(int id)
-    {
-        var getPage = await PageService.Get(id);
-        var pageNoeud = getPage.Data;
-
-
-        await sessionStorage.SetItemAsync<int>("idPage", id);
-        await sessionStorage.SetItemAsync<int>("idNoeud", (int)pageNoeud.NoeudId);
-        NavigationManager.NavigateTo("/Theorie");
-    }
     private async void SupprimerPage(int id)
     {
         await PageService.Delete(id);
@@ -356,6 +346,16 @@
     private async Task DirectionPages()
     {
         await sessionStorage.SetItemAsync<int>("idNoeud", Node.NoeudId);
-        NavigationManager.NavigateTo("/Theorie");
+        NavigationManager.NavigateTo("/ModifierPages");
+    }
+    private async void DirectionPage(int id)
+    {
+        var getPage = await PageService.Get(id);
+        var pageNoeud = getPage.Data;
+
+
+        await sessionStorage.SetItemAsync<int>("idPage", id);
+        await sessionStorage.SetItemAsync<int>("idNoeud", (int)pageNoeud.NoeudId);
+        NavigationManager.NavigateTo("/ModifierPage");
     }
 }
