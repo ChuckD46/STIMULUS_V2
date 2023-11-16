@@ -103,7 +103,7 @@
         <NavLink @onclick="ViewPageTemplate">
             <circle r="@Node.Rayon" class="cercle" style="fill:@Couleur" />
             <foreignObject x="@(Node.Rayon/2 )" y="@(Node.Rayon/2 )" width="20" height="20">
-                <span title="Ajouter une nouvelle page à @Node.Nom" id="addPage" class="oi oi-plus" aria-hidden="true" @onclick="@(args => AjoutPage(Node.NoeudId))"></span>
+                <span title="Ajouter une nouvelle page à @Node.Nom" id="addNoeud" class="oi oi-plus" aria-hidden="true" @onclick="@(args => AjoutPage(Node.NoeudId))"></span>
             </foreignObject>
             <text @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) class="textLink" text-anchor="middle" alignment-baseline="central">@Node.Nom</text>
         </NavLink>
@@ -116,7 +116,7 @@
             {
                 <rect x="@(Node.Rayon * 2 - Node.Rayon / 2 - 10 + offsetX)" y="@(-180 + Node.Rayon / 2 + offsetY)" width="85" height="105" style="fill: rgba(255,255,255,255); stroke: black; stroke-width: 2;" />
                 <foreignObject x="@(Node.Rayon * 2 - Node.Rayon / 2 - 10 + offsetX + 80)" y="@(-180 + Node.Rayon / 2 + offsetY - 12)" width="20" height="20">
-                    <span id="deletePage" title="Supprimer la page @pageAffichage.Ordre" class="oi oi-circle-x" aria-hidden="true" @onclick="@(e => SupprimerPage(pageAffichage.PageId))"></span>
+                    <span id="deleteNoeud" title="Supprimer la page @pageAffichage.Ordre" class="oi oi-circle-x" aria-hidden="true" @onclick="@(e => SupprimerPage(pageAffichage.PageId))"></span>
                 </foreignObject>
                 <foreignObject x="@(Node.Rayon * 2 - Node.Rayon / 2 - 10 + offsetX - 15)" y="@(-180 + Node.Rayon / 2 + offsetY + 87)" width="20" height="20">
                     <span id="AssocierPage" title="Réarranger la page @pageAffichage.PageId" class="oi oi-action-undo" aria-hidden="true" @onclick="@(e => ReLinkPage(pageAffichage))"></span>
@@ -162,6 +162,7 @@
     [Parameter] public Action<Page> ReLinkPage { get; set; }
     [Parameter] public Func<int> GetModeDeVue { get; set; }
     [Parameter] public Func<Task> UpdateGraphe { get; set; }
+
     private string displayHover = "hidden";
     private bool viewPage = false;
     //Type de noeud
@@ -210,24 +211,34 @@
     }
     private async void ViewPageTemplate()
     {
-        bool test = await ReLinkBindPage(Node);
-        var pageNoeud = await PageService.GetAllFromNoeud(Node.NoeudId);
-        var affichPage = pageNoeud.Data;
-        listePage.Clear();
-        listePage.AddRange(affichPage);
-        StateHasChanged();
-        if (test)
-            viewPage = true;
         if (!viewPage)
         {
+            // Ajoutez ici l'appel à la fonction ReLinkBindPage avant d'afficher et trier les pages
+            await ReLinkBindPage(Node);
+            var pageNoeud = await PageService.GetAllFromNoeud(Node.NoeudId);
+            var affichPage = pageNoeud.Data.ToList();
+            affichPage = affichPage.OrderBy(p => p.Ordre).ToList();
+
+            // Met à jour les valeurs de la propriété Ordre de manière séquentielle
+            for (int i = 0; i < affichPage.Count(); i++)
+            {
+                affichPage[i].Ordre = i + 1;
+                PageService.Update(affichPage[i].PageId, affichPage[i]);
+
+            }
+            listePage.Clear();
+            listePage.AddRange(affichPage);
+            StateHasChanged();
             viewPage = true;
+
         }
         else
         {
             viewPage = false;
-        }     
-
+        }
     }
+
+
     /// <summary>
     /// (Visuel) permet de check si le noeud a un parent, et l'affiche dans le bulle d'info du noeud
     /// </summary>
@@ -261,26 +272,55 @@
     }
     private async void AjoutPage(int id)
     {
-        var pageNoeud = await PageService.GetAllFromNoeud(id);
-        var create = pageNoeud.Data;
+        // Récupère toutes les pages du nœud avant l'ajout
+        var pageNoeudBefore = await PageService.GetAllFromNoeud(id);
+        var createBefore = pageNoeudBefore.Data;
 
-        if (create != null)
+        // Initialise une nouvelle page
+        var newPage = new Page();
+        newPage.NoeudId = id;
+        newPage.ImportanceId = 1;
+
+        if (createBefore != null)
         {
-            newPage.NoeudId = id;
-            newPage.ImportanceId = 1;
-            newPage.Ordre = create.Count() + 1;
-            await PageService.Create(newPage);
+            // Si des pages existent déjà, organise la valeur de la propriété Ordre de manière séquentielle
+            newPage.Ordre = createBefore.Count() + 1;
         }
         else
         {
-            newPage.NoeudId = id;
-            newPage.ImportanceId = 1;
+            // Si aucune page n'existe, initialise la valeur de la propriété Ordre à 1
             newPage.Ordre = 1;
-            await PageService.Create(newPage);
         }
 
+        // Crée la nouvelle page
+        await PageService.Create(newPage);
+
+        // Récupère toutes les pages du nœud après l'ajout
+        var pageNoeudAfter = await PageService.GetAllFromNoeud(id);
+        var affichPage = pageNoeudAfter.Data.ToList();
+
+        // Trie les pages en fonction de la propriété Ordre
+        affichPage = affichPage.OrderBy(p => p.Ordre).ToList();
+
+        // Met à jour les valeurs de la propriété Ordre de manière séquentielle
+        for (int i = 0; i < affichPage.Count(); i++)
+        {
+            affichPage[i].Ordre = i + 1;
+            PageService.Update(affichPage[i].PageId, affichPage[i]);
+
+        }
+
+        // Met à jour la liste des pages
+        listePage.Clear();
+        listePage.AddRange(affichPage);
+
+        // Active l'affichage des pages
+        viewPage = true;
+
+        // Met à jour l'affichage
         StateHasChanged();
     }
+
     /// <summary>
     /// Appel la fonction en delegate de suppression de noeud
     /// </summary>
@@ -322,7 +362,14 @@
     {
         await PageService.Delete(id);
         var pageNoeud = await PageService.GetAllFromNoeud(Node.NoeudId);
-        var affichPage = pageNoeud.Data;
+        var affichPage = pageNoeud.Data.ToList();
+        affichPage = affichPage.OrderBy(p => p.Ordre).ToList();
+        // Met à jour la propriété Ordre de manière séquentielle
+        for (int i = 0; i < affichPage.Count(); i++)
+        {
+            affichPage[i].Ordre = i + 1;
+            PageService.Update(affichPage[i].PageId, affichPage[i]);
+        }
         listePage.Clear();
         listePage.AddRange(affichPage);
         StateHasChanged();

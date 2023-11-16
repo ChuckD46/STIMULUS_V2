@@ -63,7 +63,7 @@
                                 Nodes="@Nodes"
                                 SaveChangeNoeud="SaveChange"
                                 AjoutNouveauNoeud="AjoutNouveauNoeud"
-                                SupprNoeud="SupprimerNoeud" />
+                                SupprNoeud="SupprimerNoeud"/>
                     }
                 </Draggable>
             </svg>
@@ -81,7 +81,7 @@
     private bool enRecherche = false;
     private Page pageRechercheNoeud = new();
     private bool enRecherchePage = new();
-
+    private bool upt = false;
     private int modeDeVue = 2;
     private string modeDeVuInfo = "Édition";
     private string modeDeVuButtonPage = "btn-info";
@@ -159,7 +159,6 @@
 
             pageRechercheNoeud.NoeudId = noeud.NoeudId;
             pageRechercheNoeud.Ordre = ((APIResponse<IEnumerable<Page>>)await PageService.GetAllFromNoeud(noeud.NoeudId)).Data.ToList().Last().Ordre + 1;
-
             enRecherchePage = false;
 
             SaveChange(pageRechercheNoeud);
