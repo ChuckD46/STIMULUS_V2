@@ -7,6 +7,7 @@
 @using STIMULUS_V2.Shared.Interface.ChildInterface;
 @using static STIMULUS_V2.Client.Shared.NoeudComponents.Connector;
 @using static STIMULUS_V2.Client.Shared.NoeudComponents.NoeudsProf;
+
 @inject INoeudService NoeudService
 @inject IGrapheService GrapheService
 @inject IPageService PageService
@@ -26,7 +27,7 @@
             <RadzenButton Style="background-color: darkblue" class="custom-graphe-zoomout-button" Text="-" ButtonStyle="ButtonStyle.Primary" Click=ReduireZoom />
             <RadzenButton Style="background-color: darkblue" class="custom-graphe-reset-button" Icon="refresh" ButtonStyle="ButtonStyle.Primary" Click=ResetViewbox />
             <RadzenText class="custom-graphe-zoom-text" TextStyle="TextStyle.DisplayH3">Zoom: @AfficheZoom()</RadzenText>
-            <RadzenButton Click=@(args => ModeDeVue(2)) Text="Édition" ButtonStyle="ButtonStyle.Primary" />
+            <RadzenButton Click=@(args => ModeDeVue(2)) Text="Édition" ButtonStyle="ButtonStyle.Primary"  />
             <RadzenButton Click=@(args => ModeDeVue(1)) Text="Gestion de pages" ButtonStyle="ButtonStyle.Primary" />
             <RadzenButton Click=@(args => ModeDeVue(3)) Text="Vue étudiante" ButtonStyle="ButtonStyle.Primary" />
             <RadzenButton Click=SupprimerGraphe Text="Supprimer le graphe" ButtonStyle="ButtonStyle.Danger" style="background-color: darkblue; margin-left: auto;" />
@@ -144,7 +145,7 @@
     /// </summary>
     /// <returns></returns>
     private int GetModeFond() => 2; //Hardcode
-                                    //Quand la souris survole
+    //Quand la souris survole
     private void OnMouseHover() => displayHover = "show";
     //Quand la souris ne survole plus
     private void OnMouseLeave() => displayHover = "hidden";
@@ -216,10 +217,12 @@
         await UpdateGraphe();
         Console.WriteLine($"Suppression du noeud : id={id}");
     }
+
     /// <summary>
     /// Sauvegarde les mises a jour du graph
     /// </summary>
     public async void SaveChange(Noeud noeud) => await NoeudService.Update(noeud.NoeudId, noeud);
+
     /// <summary>
     /// Ajoute un noeud dans la BD
     /// </summary>
@@ -264,16 +267,13 @@
                         }
                         await PageService.Delete(pageDelete.PageId);
                     }
-
                     await NoeudService.Delete(noeudDelete.NoeudId);
-
                 }
                 foreach (var noeudDeleteParent in noeuds)
                 {
                     await NoeudService.Delete(noeudDeleteParent.NoeudId);
                 }
             }
-
             // Supprimer le graphe
             await GrapheService.Delete(await sessionStorage.GetItemAsync<int>("idGraphe"));
             NavigationManager.NavigateTo("/");
@@ -295,6 +295,7 @@
         zoomIncrement = 100;
         AfficheZoom();
     }
+
     /// <summary>
     /// Augmenter le zoom
     /// </summary>
@@ -316,6 +317,7 @@
             AfficheZoom();
         }
     }
+
     /// <summary>
     /// Reduit le zoom
     /// </summary>
@@ -337,6 +339,7 @@
             AfficheZoom();
         }
     }
+
     /// <summary>
     /// Zoom scroll molette
     /// </summary>
@@ -388,6 +391,7 @@
             }
         }
     }
+
     public string AfficheZoom()
     {
         if (zoomIncrement <= 0)

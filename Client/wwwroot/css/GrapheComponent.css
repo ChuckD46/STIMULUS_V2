@@ -1,4 +1,4 @@
-﻿/*Cette section concerne le graphe etudiant  */
+﻿/*Cette section concerne l'ensemble des composants graphe*/
 .custom-graphe-zoom-button {
     border-radius: 25%;
     margin-left: 1%;
@@ -45,5 +45,3 @@
 .custom-graphe-legend-stack {
     border: solid;
 }
-
-/*Cette section concerne le graphe prof*/
