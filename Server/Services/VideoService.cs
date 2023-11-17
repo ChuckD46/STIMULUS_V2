@@ -89,28 +89,7 @@ namespace STIMULUS_V2.Server.Services
             {
                 return new APIResponse<Video>(null, 500, $"Erreur lors de la récupération du model {typeof(Video).Name}. Message : {ex.Message}.");
             }
-        }
-
-        public async Task<APIResponse<Video>> GetVideo(int id)
-        {
-            try
-            {
-                var item = await sTIMULUSContext.Video.FirstOrDefaultAsync(video => video.ComposantId == id);
-
-                if (item != null)
-                {
-                    return new APIResponse<Video>(item, 200, "Succès");
-                }
-                else
-                {
-                    return new APIResponse<Video>(null, 404, $"{typeof(Video).Name} non trouvé");
-                }
-            }
-            catch (Exception ex)
-            {
-                return new APIResponse<Video>(null, 500, $"Erreur lors de la récupération du model {typeof(Video).Name}. Message : {ex.Message}.");
-            }
-        }
+        }      
         public async Task<APIResponse<IEnumerable<Video>>> GetAll()
         {
             try                
@@ -136,7 +115,7 @@ namespace STIMULUS_V2.Server.Services
         {
             try
             {
-                var itemList = await sTIMULUSContext.Video.Where(item => item.ComposantId == id).ToListAsync();
+                var itemList = await sTIMULUSContext.Video.Where(item => item.VideoId == id).ToListAsync();
 
                 if (itemList != null)
                 {

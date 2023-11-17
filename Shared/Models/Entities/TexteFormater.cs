@@ -13,9 +13,5 @@ namespace STIMULUS_V2.Shared.Models.Entities
 
         [Column(TypeName = "nvarchar(max)")]
         public string? Contenue { get; set; }
-
-        [ForeignKey("Composant")]
-        public int? ComposantId { get; set; }
-        public Importance? Composant { get; set; }
     }
 }

@@ -15,11 +15,15 @@
 @inject IReferenceService ReferenceService
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject IJSRuntime JSRuntime
+@inject Radzen.DialogService DialogService
 
 @page "/ModifierPage"
 
     <RadzenBody>
         <RadzenCard Class="rz-my-12 mx-auto" Style="max-width: 1500px; margin : 30px">
+        <div style="text-align: center;">
+            <RadzenButton Click=@DeletePage Text="Supprimer la page" Icon="report" ButtonStyle="ButtonStyle.Danger" />
+        </div>
             <RadzenText TextStyle="TextStyle.H6" Class="text-center" Style="margin-top:20px;margin-bottom:10px; text-decoration: underline"><strong>Édition</strong></RadzenText>
             <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center" Gap="1rem" Class="rz-p-4">
                 <RadzenImage Path="/RessourceVisuel/editpencil.png" Style="width: 100px; height: 100px; border-radius: 50%;" />
@@ -84,7 +88,7 @@
                                                     <RadzenLabel Text="Contenu" />
                                                 </RadzenColumn>
                                                 <RadzenColumn Size="12" SizeMD="8">
-                                                    <RadzenTextBox @bind-Value="contenuTexte" Style="width: 200px;" />
+                                                    <RadzenTextBox @bind-Value="contenuTexte" Style="width: 200px; height : 160px" />
                                                 </RadzenColumn>
                                             </RadzenRow>
    
@@ -98,7 +102,7 @@
                                                     <RadzenLabel Text="URL de la référence" />
                                                 </RadzenColumn>
                                                 <RadzenColumn Size="12" SizeMD="8">
-                                                    <RadzenTextBox @bind-Value="urlVideo" Style="width: 200px;" />
+                                                    <RadzenTextBox @bind-Value="urlReference" Style="width: 200px;" />
                                                 </RadzenColumn>
                                             </RadzenRow>
                                             <RadzenRow AlignItems="AlignItems.Center">
@@ -106,7 +110,7 @@
                                                     <RadzenLabel Text="Description" />
                                                 </RadzenColumn>
                                                 <RadzenColumn Size="12" SizeMD="8">
-                                                    <RadzenTextBox @bind-Value="descriptionVideo" Style="width: 200px;" />
+                                                    <RadzenTextBox @bind-Value="descriptionReference" Style="width: 200px;" />
                                                 </RadzenColumn>
                                             </RadzenRow>
 
@@ -178,34 +182,49 @@
             </Popup>
             </RadzenStack>
         <RadzenRow RowGap="2" Class="justify-content-center">
-            @foreach (var composant in listComposant)
+            @foreach (var composant in listComposant.OrderBy(c => c.Ordre))
             {
-                        <!-- Ajoutez cette ligne -->
+                <div style="margin: 0 auto; width: 50%; padding: 10px; text-align: center;">
+                    <!-- Conteneur du bouton -->
+                    <div style="text-align: right; margin-bottom: 10px;">
                         <RadzenButton ButtonStyle="ButtonStyle.Danger" Style="height:35px;" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => DeleteComposant(composant.ComposantId))" />
-                    @if (composant.Type == "Code")
-                    {
-                    <CodeComponent composantId="composant.ComposantId" />
-                    }
-                    @if (composant.Type == "Exercice")
-                    {
-                    <ExerciceComponent composantId="composant.ComposantId" />
-                    }
-                    @if (composant.Type == "Image")
-                    {
-                    <ImageComponent composantId="composant.ComposantId" />
-                    }
-                    @if (composant.Type == "Reference")
-                    {
-                    <ReferenceComponent composantId="composant.ComposantId" />
-                    }
-                    @if (composant.Type == "Texte")
-                    {
-                        <TextComponent composantId="composant.ComposantId"/>
-                    }
-                    @if (composant.Type == "Video")
-                    {
-                        <VideoComponent ComposantId="composant.ComposantId"/>
-                    }
+                        <div style="text-align: center;">
+                            <!-- Bouton pour la flèche vers le haut -->
+                            <RadzenButton Style="position: relative; margin-bottom: -20px;" Icon="arrow_upward" Click="@(args => ChangeComposantOrdreUp(composant.ComposantId))" />
+
+                            <!-- Bouton pour la flèche vers le bas -->
+                            <RadzenButton Icon="arrow_downward" Click="@(args => ChangeComposantOrdreDown(composant.ComposantId))" />
+                        </div>
+                    </div>
+
+                    <!-- Conteneur du composant spécifique -->
+                    <div style="text-align: center;">
+                        @if (composant.Type == "Code")
+                        {
+                            <CodeComponent Reference="composant.Reference" />
+                        }
+                        @if (composant.Type == "Exercice")
+                        {
+                            <ExerciceComponent Reference="composant.Reference" />
+                        }
+                        @if (composant.Type == "Image")
+                        {
+                            <ImageComponent Reference="composant.Reference" />
+                        }
+                        @if (composant.Type == "Reference")
+                        {
+                            <ReferenceComponent Reference="composant.Reference" />
+                        }
+                        @if (composant.Type == "Texte")
+                        {
+                            <TextComponent Reference="composant.Reference" />
+                        }
+                        @if (composant.Type == "Video")
+                        {
+                            <VideoComponent Reference="composant.Reference" />
+                        }
+                    </div>
+                </div>
             }
         </RadzenRow>
         </RadzenCard>
@@ -293,27 +312,94 @@
         var allComposant = await ComposantService.GetAllById(await sessionStorage.GetItemAsync<int>("idPage"));
         var composants = allComposant.Data;
 
+        var result = await DialogService.Confirm("Êtes-vous sûr de vouloir supprimer ce composant?", "Supprimer");
 
-        foreach(var reOrdered in composants)
+        if (result.HasValue && result.Value)
         {
-            if(composantDelete.Ordre < reOrdered.Ordre)
+            foreach (var reOrdered in composants)
             {
-                reOrdered.Ordre = reOrdered.Ordre - 1;
-                await ComposantService.Update(reOrdered.ComposantId, reOrdered);
+                if (composantDelete.Ordre < reOrdered.Ordre)
+                {
+                    reOrdered.Ordre = reOrdered.Ordre - 1;
+                    await ComposantService.Update(reOrdered.ComposantId, reOrdered);
+                }
             }
+            await VideoService.Delete(id);
+            await ComposantService.Delete(id);
+            NavigationManager.NavigateTo("/");
+            NavigationManager.NavigateTo("/ModifierPage");
         }
-        await VideoService.Delete(id);
-        await ComposantService.Delete(id);
-        ShouldRender();
+        else
+        {
+            NavigationManager.NavigateTo("/ModifierPage");
+        }
+
     }
     private async void AddComposant()
     {
         var allComposant = await ComposantService.GetAllById(await sessionStorage.GetItemAsync<int>("idPage"));
         var composants = allComposant.Data;
 
+        if (typeComposant == "Code")
+        {
+            code.Titre = titreCode;
+            code.Contenue = contenuCode;
+            
+            var codeNew = await CodeService.Create(code);
+            var newCode = codeNew.Data;
+            composant.Reference = newCode.CodeId;
+        }
+        if (typeComposant == "Exercice")
+        {
+            exercice.Solution= solutionExercice;
+
+            var exerciceNew = await ExerciceService.Create(exercice);
+            var newExercice = exerciceNew.Data;
+            composant.Reference = newExercice.ExerciceId;
+        }
+        if (typeComposant == "Image")
+        {
+            image.url = urlImage;
+            image.Description = descriptionImage;
+            image.Largeur = 500;
+            image.Longueur = 800;
+
+            var imageNew = await ImageService.Create(image);
+            var newImage = imageNew.Data;
+            composant.Reference = newImage.ImageId;
+        }
+        if (typeComposant == "Reference")
+        {
+            reference.Url = urlReference;
+            reference.Description = descriptionReference;
+            
+            var referenceNew = await ReferenceService.Create(reference);
+            var newReference = referenceNew.Data;
+            composant.Reference = newReference.ReferenceId;
+        }
+        if (typeComposant == "Texte")
+        {
+            texte.Contenue = contenuTexte;
+
+            var texteNew = await TexteService.Create(texte);
+            var newTexte = texteNew.Data;
+            composant.Reference = newTexte.TexteFormaterId;
+        }
+        if (typeComposant == "Video")
+        {
+            video.Url = urlVideo;
+            video.Description = descriptionVideo;
+            video.Longueur = 800;
+            video.Largeur = 500;
+
+            var videoNew = await VideoService.Create(video);
+            var newVideo = videoNew.Data;
+            composant.Reference = newVideo.VideoId;
+        }
+
         composant.PageId = await sessionStorage.GetItemAsync<int>("idPage");
 
-        if(composants == null)
+        if (composants == null)
         {
             composant.Ordre = 1;
         }
@@ -322,57 +408,124 @@
 
         composant.Type = typeComposant;
 
-        var newComposant = await ComposantService.Create(composant);
-        var id = newComposant.Data;
-
-        var idComposant = await ComposantService.Get(id.ComposantId);
-
-        if (composant.Type == "Code")
-        {
-            code.Titre = titreCode;
-            code.Contenue = contenuCode;
-            await CodeService.Create(code);
-        }
-        if (composant.Type == "Exercice")
-        {
-            exercice.Solution= solutionExercice;
-            await ExerciceService.Create(exercice);
-        }
-        if (composant.Type == "Image")
-        {
-            image.url = urlImage;
-            image.Description = descriptionImage;
-            image.Largeur = 500;
-            image.Longueur = 800;
-            await ImageService.Create(image);
-        }
-        if (composant.Type == "Reference")
-        {
-            reference.Url = urlReference;
-            reference.Description = descriptionReference;
-            await ReferenceService.Create(reference);
-        }
-        if (composant.Type == "Texte")
-        {
-            texte.Contenue = contenuTexte;
-            await TexteService.Create(texte);
-        }
-        if (composant.Type == "Video")
-        {
-            video.ComposantId = id.ComposantId;
-            video.Url = urlVideo;
-            video.Description = descriptionVideo;
-            video.Longueur = 800;
-            video.Largeur = 500;
-
-            await VideoService.Create(video);
-        }
-
-
+        await ComposantService.Create(composant);
+        NavigationManager.NavigateTo("/");
+        NavigationManager.NavigateTo("/ModifierPage");
         await popup.CloseAsync();
-        ShouldRender();
+    }
+    private async void ChangeComposantOrdreUp(int id)
+    {
+        // 1. Obtenir le composant que vous souhaitez déplacer vers le haut
+        var composantChange = (await ComposantService.Get(id)).Data;
+
+        // 2. Obtenir tous les composants associés à la même page
+        var composants = (await ComposantService.GetAllById(await sessionStorage.GetItemAsync<int>("idPage"))).Data;
+
+        // 3. Trouver le composant actuellement à l'ordre désiré
+        var composantAChangerPlaceAvec = composants.FirstOrDefault(c => c.Ordre == composantChange.Ordre - 1);
+
+        if (composantAChangerPlaceAvec != null)
+        {
+            // 4. Échanger les ordres des deux composants
+            int tempOrdre = composantChange.Ordre;
+            composantChange.Ordre = composantAChangerPlaceAvec.Ordre;
+            composantAChangerPlaceAvec.Ordre = tempOrdre;
+
+            // 5. Mettre à jour les composants modifiés dans la base de données
+            await ComposantService.Update(id, composantChange);
+            await ComposantService.Update(composantAChangerPlaceAvec.ComposantId, composantAChangerPlaceAvec);
+        }
+        else
+        {
+            // Si aucun composant n'est actuellement à l'ordre désiré,
+            // vous pouvez ajuster la logique pour permettre l'échange
+            composantAChangerPlaceAvec = composants.FirstOrDefault(c => c.Ordre == composantChange.Ordre + 1);
+
+            if (composantAChangerPlaceAvec != null)
+            {
+                // 6. Échanger les ordres des deux composants
+                int tempOrdre = composantChange.Ordre;
+                composantChange.Ordre = composantAChangerPlaceAvec.Ordre;
+                composantAChangerPlaceAvec.Ordre = tempOrdre;
+
+                // 7. Mettre à jour les composants modifiés dans la base de données
+                await ComposantService.Update(id, composantChange);
+                await ComposantService.Update(composantAChangerPlaceAvec.ComposantId, composantAChangerPlaceAvec);
+            }
+        }
+
+        // 8. Rafraîchir la page
+        NavigationManager.NavigateTo("/");
+        NavigationManager.NavigateTo("/ModifierPages");
     }
 
+    private async void ChangeComposantOrdreDown(int id)
+    {
+        // 1. Obtenir le composant que vous souhaitez déplacer vers le bas
+        var composantChange = (await ComposantService.Get(id)).Data;
+
+        // 2. Obtenir tous les composants associés à la même page
+        var composants = (await ComposantService.GetAllById(await sessionStorage.GetItemAsync<int>("idPage"))).Data;
+
+        // 3. Trouver le composant actuellement à l'ordre désiré
+        var composantAChangerPlaceAvec = composants.FirstOrDefault(c => c.Ordre == composantChange.Ordre + 1);
+
+        if (composantAChangerPlaceAvec != null)
+        {
+            // 4. Échanger les ordres des deux composants
+            int tempOrdre = composantChange.Ordre;
+            composantChange.Ordre = composantAChangerPlaceAvec.Ordre;
+            composantAChangerPlaceAvec.Ordre = tempOrdre;
+
+            // 5. Mettre à jour les composants modifiés dans la base de données
+            await ComposantService.Update(id, composantChange);
+            await ComposantService.Update(composantAChangerPlaceAvec.ComposantId, composantAChangerPlaceAvec);
+        }
+        else
+        {
+            // Si aucun composant n'est actuellement à l'ordre désiré,
+            // vous pouvez ajuster la logique pour permettre l'échange
+            composantAChangerPlaceAvec = composants.FirstOrDefault(c => c.Ordre == composantChange.Ordre - 1);
+
+            if (composantAChangerPlaceAvec != null)
+            {
+                // 6. Échanger les ordres des deux composants
+                int tempOrdre = composantChange.Ordre;
+                composantChange.Ordre = composantAChangerPlaceAvec.Ordre;
+                composantAChangerPlaceAvec.Ordre = tempOrdre;
+
+                // 7. Mettre à jour les composants modifiés dans la base de données
+                await ComposantService.Update(id, composantChange);
+                await ComposantService.Update(composantAChangerPlaceAvec.ComposantId, composantAChangerPlaceAvec);
+            }
+        }
+
+        // 8. Rafraîchir la page
+        NavigationManager.NavigateTo("/");
+        NavigationManager.NavigateTo("/ModifierPages");
+    }
+    private async void DeletePage()
+    {
+        var result = await DialogService.Confirm("Êtes-vous sûr de vouloir supprimer cette page?", "Supprimer");
+
+        if (result.HasValue && result.Value)
+        {
+            var allComposant = await ComposantService.GetAllById(await sessionStorage.GetItemAsync<int>("idPage"));
+            var composants = allComposant.Data;
+
+            foreach (var deleteComposant in composants)
+            {
+                await ComposantService.Delete(deleteComposant.ComposantId);
+            }
+
+            await PageService.Delete(await sessionStorage.GetItemAsync<int>("idPage"));
+            NavigationManager.NavigateTo("/Graphe");
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/ModifierPage");
+        }
+    }
 
     void TogglePopup()
     {

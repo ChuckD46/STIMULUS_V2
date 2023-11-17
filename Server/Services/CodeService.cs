@@ -116,7 +116,7 @@ namespace STIMULUS_V2.Server.Services
         {
             try
             {
-                var itemList = await sTIMULUSContext.Code.Where(item => item.ComposantId == id).ToListAsync();
+                var itemList = await sTIMULUSContext.Code.Where(item => item.CodeId == id).ToListAsync();
 
                 if (itemList != null)
                 {
