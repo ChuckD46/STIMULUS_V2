@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace STIMULUS_V2.Server.Migrations
 {
-    public partial class FirstMigration : Migration
+    public partial class pagenom : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -249,7 +249,7 @@ namespace STIMULUS_V2.Server.Migrations
                 {
                     GroupeId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Nom = table.Column<string>(type: "nvarchar(10)", nullable: false),
+                    Nom = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DateCreation = table.Column<DateTime>(type: "Date", nullable: false),
                     DateCloture = table.Column<DateTime>(type: "Date", nullable: false),
                     CoursId = table.Column<int>(type: "int", nullable: true),
@@ -354,6 +354,7 @@ namespace STIMULUS_V2.Server.Migrations
                     PageId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Ordre = table.Column<int>(type: "int", nullable: false),
+                    Nom = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     NoeudId = table.Column<int>(type: "int", nullable: true),
                     ImportanceId = table.Column<string>(type: "char(3)", nullable: true)
                 },

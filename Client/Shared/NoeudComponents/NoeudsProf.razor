@@ -102,9 +102,15 @@
     {
         <NavLink @onclick="ViewPageTemplate">
             <circle r="@Node.Rayon" class="cercle" style="fill:@Couleur" />
-            <foreignObject x="@(Node.Rayon/2 )" y="@(Node.Rayon/2 )" width="20" height="20">
+            @if (Node.Type == NoeudType.CONTENU)
+            {
+                <foreignObject x="@((-Node.Rayon) )" y="@((Node.Rayon)/2 )" width="20" height="20">
+                    <span title="Aller vers l'édition" class="oi oi-book" id="reLink" @onclick="DirectionPages"></span>
+                </foreignObject>
+                <foreignObject x="@(Node.Rayon/2 )" y="@(Node.Rayon/2 )" width="20" height="20">
                 <span title="Ajouter une nouvelle page à @Node.Nom" id="addNoeud" class="oi oi-plus" aria-hidden="true" @onclick="@(args => AjoutPage(Node.NoeudId))"></span>
-            </foreignObject>
+                </foreignObject>
+            }
             <text @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) class="textLink" text-anchor="middle" alignment-baseline="central">@Node.Nom</text>
         </NavLink>
         if (viewPage)
@@ -112,7 +118,7 @@
             int offsetX = 0;
             int offsetY = 0;
 
-            @foreach (var pageAffichage in listePage)
+            @foreach (var pageAffichage in listePage.OrderBy(c => c.Ordre))
             {
                 <rect x="@(Node.Rayon * 2 - Node.Rayon / 2 - 10 + offsetX)" y="@(-180 + Node.Rayon / 2 + offsetY)" width="85" height="105" style="fill: rgba(255,255,255,255); stroke: black; stroke-width: 2;" />
                 <foreignObject x="@(Node.Rayon * 2 - Node.Rayon / 2 - 10 + offsetX + 80)" y="@(-180 + Node.Rayon / 2 + offsetY - 12)" width="20" height="20">
@@ -138,11 +144,22 @@
     }
     else if (GetModeDeVue() == 3)
     {
-        <NavLink @onclick="DirectionPages">
-            <circle @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) @onclick="(e => RelinkBindNode(Node))" r="@Node.Rayon" class="cercle" style="fill:@Couleur" />
-            <text @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) class="textLink" text-anchor="middle" alignment-baseline="central">@Node.Nom</text>
-        </NavLink>
+        @if(Node.Type == NoeudType.CONTENU)
+        {
+            <NavLink @onclick="DirectionPagesEtudiant">
+                <circle @onmouseover="@((e) => OnMouseHover())" @onmouseout="@((e) => OnMouseLeave())" @onclick="@((e) => RelinkBindNode(Node))" r="@Node.Rayon" class="cercle" style="fill:@Couleur" />
+                <text @onmouseover="@((e) => OnMouseHover())" @onmouseout="@((e) => OnMouseLeave())" class="textLink" text-anchor="middle" alignment-baseline="central">@Node.Nom</text>
+            </NavLink>
+        }
+        else
+        {   
+            <NavLink>
+                <circle @onmouseover="@((e) => OnMouseHover())" @onmouseout="@((e) => OnMouseLeave())" @onclick="@((e) => RelinkBindNode(Node))" r="@Node.Rayon" class="cercle" style="fill:@Couleur" />
+                <text @onmouseover="@((e) => OnMouseHover())" @onmouseout="@((e) => OnMouseLeave())" class="textLink" text-anchor="middle" alignment-baseline="central">@Node.Nom</text>
+            </NavLink>
+        }
     }
+ }
 </Draggable>
 @code {
     private bool delete = false;
@@ -174,6 +191,7 @@
     private int formSizeW = 0;
     private bool isOpen = false;
     private bool pageLink = false;
+    private int newPageId;
     //Variable couleurs
     private readonly string COULEUR_BLOQUER = "rgb(140,140,140)";
     private readonly string COULEUR_NON_CONSULTER = "rgb(228, 231, 245)";
@@ -214,7 +232,7 @@
         if (!viewPage)
         {
             // Ajoutez ici l'appel à la fonction ReLinkBindPage avant d'afficher et trier les pages
-            await ReLinkBindPage(Node);
+            await ReLinkBindPage(Node); //erreur 404
             var pageNoeud = await PageService.GetAllFromNoeud(Node.NoeudId);
             var affichPage = pageNoeud.Data.ToList();
             affichPage = affichPage.OrderBy(p => p.Ordre).ToList();
@@ -270,7 +288,7 @@
 
         isOpen = false;
     }
-    private async void AjoutPage(int id)
+    private async Task AjoutPage(int id)
     {
         // Récupère toutes les pages du nœud avant l'ajout
         var pageNoeudBefore = await PageService.GetAllFromNoeud(id);
@@ -350,14 +368,6 @@
         isOpen = false;
     }
 
-    private async void DirectionPage(int id)
-    {
-        var getPage = await PageService.Get(id);
-        var pageNoeud = getPage.Data;
-        await sessionStorage.SetItemAsync<int>("idPage", id);
-        await sessionStorage.SetItemAsync<int>("idNoeud", (int)pageNoeud.NoeudId);
-        NavigationManager.NavigateTo("/Theorie");
-    }
     private async void SupprimerPage(int id)
     {
         await PageService.Delete(id);
@@ -396,6 +406,47 @@
     private async Task DirectionPages()
     {
         await sessionStorage.SetItemAsync<int>("idNoeud", Node.NoeudId);
-        NavigationManager.NavigateTo("/Theorie");
+
+        if (listePage.Count() == 0)
+        {
+            await AjoutPage(await sessionStorage.GetItemAsync<int>("idNoeud"));
+            await sessionStorage.SetItemAsync<int>("idPage", newPage.PageId);
+        }
+        else
+        {
+            var firstPage = listePage.FirstOrDefault();
+            await sessionStorage.SetItemAsync<int>("idPage", firstPage.PageId);
+        }
+
+        NavigationManager.NavigateTo("/ModifierPages");
+    }
+    private async void DirectionPage(int id)
+    {
+        var getPage = await PageService.Get(id);
+        var pageNoeud = getPage.Data;
+
+
+        await sessionStorage.SetItemAsync<int>("idPage", id);
+        await sessionStorage.SetItemAsync<int>("idNoeud", (int)pageNoeud.NoeudId);
+        NavigationManager.NavigateTo("/ModifierPage");
+    }
+    private async void DirectionPagesEtudiant()
+    {
+        await sessionStorage.SetItemAsync<int>("idNoeud", Node.NoeudId);
+
+        // Récupérer toutes les pages associées au nœud actuel
+        var pageNoeud = await PageService.GetAllFromNoeud(Node.NoeudId);
+        var affichPage = pageNoeud.Data;
+
+        if (affichPage != null && affichPage.Any())
+        {
+            // Trouver la page avec l'ordre minimum (la première page)
+            var firstPage = affichPage.OrderBy(p => p.Ordre).First();
+
+            // Stocker l'ID de la première page dans la session
+            await sessionStorage.SetItemAsync<int>("idPage", firstPage.PageId);
+        }
+
+        NavigationManager.NavigateTo("/Pages");
     }
 }
