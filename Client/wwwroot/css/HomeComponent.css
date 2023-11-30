@@ -1,0 +1,15 @@
+﻿.custom-home-spacing {
+    padding-top: 20%;
+}
+
+.custom-homestudent-help-text a{
+    color: inherit; 
+    text-decoration: underline;
+    transition: color 0.3s ease;
+}
+
+    .custom-homestudent-help-text a:hover {
+        color: #000080;
+        text-decoration: underline;
+    }
+
