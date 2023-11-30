@@ -28,7 +28,13 @@ namespace STIMULUS_V2.Server.Controllers
             var response = await fichierSauvegardeService.Delete(id);
             return StatusCode(response.StatusCode, response);
         }
-
+        
+        [HttpGet("Fetch/All/Exercice/{da}/{exerciceId}")]
+        public async Task<IActionResult> GetAllExercice(int exerciceId, string da)
+        {
+            var response = await fichierSauvegardeService.GetAllExercice(exerciceId, da);
+            return StatusCode(response.StatusCode, response);
+        }
         [HttpGet("Fetch/{id}")]
         public async Task<IActionResult> Get(int id)
         {

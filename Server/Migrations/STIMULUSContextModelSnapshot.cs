@@ -170,6 +170,9 @@ namespace STIMULUS_V2.Server.Migrations
                     b.Property<string>("Contenue")
                         .HasColumnType("varchar(8000)");
 
+                    b.Property<int?>("ExerciceId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Nom")
                         .IsRequired()
                         .HasColumnType("nvarchar(10)");
@@ -180,6 +183,8 @@ namespace STIMULUS_V2.Server.Migrations
                     b.HasKey("FichierSauvegardeId");
 
                     b.HasIndex("CodeDA");
+
+                    b.HasIndex("ExerciceId");
 
                     b.ToTable("FichierSauvegarde");
                 });
@@ -546,7 +551,13 @@ namespace STIMULUS_V2.Server.Migrations
                         .WithMany()
                         .HasForeignKey("CodeDA");
 
+                    b.HasOne("STIMULUS_V2.Shared.Models.Entities.Exercice", "Exercice")
+                        .WithMany()
+                        .HasForeignKey("ExerciceId");
+
                     b.Navigation("Etudiant");
+
+                    b.Navigation("Exercice");
                 });
 
             modelBuilder.Entity("STIMULUS_V2.Shared.Models.Entities.FichierSource", b =>
