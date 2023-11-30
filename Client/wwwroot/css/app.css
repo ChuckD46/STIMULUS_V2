@@ -27,17 +27,18 @@
     --rz-paginator-back-button-color: #ffffff;
     --rz-primary: #0021A5;
     --rz-primary-lighter: rgba(98, 27, 9, 0.12);
-    --rz-secondary: #FA4616;
+    --rz-secondary: #14274E;
     --rz-success: #6966db;
     --rz-info: #DEDEE0;
     --rz-warning: #FFB500;
-    --rz-danger: #FA4616;
-    --rz-panel-menu-item-active-color: #FA4616;
-    --rz-panel-menu-item-2nd-level-active-color: #FA4616;
+    --rz-danger: #14274E;
+    --rz-panel-menu-item-active-color: #14274E;
+    --rz-panel-menu-item-2nd-level-active-color: #14274E;
 }
 
 .custom-padding-body {
     padding: 0;
+    background-color: #F1F6F9;
 }
 
 html, body {

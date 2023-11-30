@@ -14,21 +14,26 @@
 
 @page "/"
 
-<div class="container text-center">
-    <h1 class="display-4">Bienvenue sur STIMULUS_V2</h1>
-    <p class="lead">Votre plateforme d'apprentissage en ligne.</p>
-</div>
-
 <div>
     <AuthorizeView Roles="ADMIN">
+        <div class="container text-center">
+            <h1>Bienvenue sur Stimulus!</h1>
+        </div>
         <HomeAdminComponent />
     </AuthorizeView>
 
     <AuthorizeView Roles="PROFESSEUR">
+        <div class="container text-center">
+            <h1>Bienvenue sur Stimulus!</h1>
+        </div>
         <HomeTeacherComponent />
     </AuthorizeView>
 
     <AuthorizeView Roles="ETUDIANT">
+        <div class="container text-center">
+            <h1>Apprenez sur Stimulus!</h1>
+            <p>L'application utilisée partout au cégep de Jonquière</p>
+        </div>
         <HomeStudentComponent />
     </AuthorizeView>
 </div>
