@@ -1,6 +1,6 @@
 ﻿/*Cette section concerne l'ensemble du header*/
 .custom-header-background {
-    background-color: #14274E;
+    background-color: #394867;
 }
 
 .custom-header-radzen-breadcrumb {
@@ -15,7 +15,7 @@
 
 /*Cette section concerne l'ensemble du footer*/
 .custom-footer-background {
-    background-color: #14274E;
+    background-color: #394867;
     display: flex;
     flex-direction: column;
     text-align: center;
@@ -92,7 +92,7 @@
 @keyframes stroke {
     0% {
         fill: white;
-        stroke: #14274E;
+        stroke: #394867;
         stroke-dashoffset: 25%;
         stroke-dasharray: 0 50%;
         stroke-width: 2;
@@ -100,18 +100,18 @@
 
     70% {
         fill: white;
-        stroke: #14274E;
+        stroke: #394867;
     }
 
     80% {
         fill: white;
-        stroke: #14274E;
+        stroke: #394867;
         stroke-width: 3;
     }
 
     100% {
         fill: white;
-        stroke: #14274E;
+        stroke: #394867;
         stroke-dashoffset: -25%;
         stroke-dasharray: 50% 0;
         stroke-width: 0;
