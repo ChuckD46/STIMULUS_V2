@@ -318,7 +318,8 @@
         jsonString = JsonConvert.SerializeObject(fichiers);
 
         //Voir pour le mettre en post
-        Result = await ApiClient.PageExercicePOSTAsync(jsonString, int.Parse(IdEtudiant));
+        var sortieApi = await ExerciceService.ExecuteCode(IdEtudiant, jsonString);
+        Result = sortieApi.Data;
         StateHasChanged();
     }
 

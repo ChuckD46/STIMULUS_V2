@@ -22,6 +22,13 @@ namespace STIMULUS_V2.Server.Controllers
             return StatusCode(response.StatusCode, response);
         }
 
+        [HttpPost("Execute/{da}")]
+        public async Task<IActionResult> ExecuteCode(string da, string json)
+        {
+            var response = await exerciceService.ExecuteCode(da, json);
+            return StatusCode(response.StatusCode, response);
+        }
+
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
