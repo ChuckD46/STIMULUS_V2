@@ -1,23 +1,18 @@
-﻿<div class="custom-home-spacing">
+﻿<div class="custom-home-spacing">@*style="background-image: url('/RessourceVisuel/FondTest.jpg')"*@    
     <div class="container text-center">
-        <p class="lead">Vous êtes un étudiant</p>
+        <div class="custom-homestudent-searchbar-container">
+            <span class="material-icons search-icon">search</span>
+            <RadzenTextBox class="custom-homestudent-searchbar" Placeholder="Rechercher..." />
+        </div>
+        <div class="custom-homestudent-role-text">
+            <p class="lead">Vous êtes un étudiant</p>
+        </div>
+        <div class="custom-homestudent-help-text">
+            <a href="/aide">Besoin d'aide pour commencer?</a>
+        </div>
     </div>
-
-    @* Doit travailler sur la barre de recherche pour la rendre plus belle *@
-    @* <RadzenTextBox @bind-Value="@searchText" Style="width: 300px;" Placeholder="Rechercher..." />
-    <RadzenButton Text="Rechercher" Click="@PerformSearch" Style="margin-top: 10px;" />  *@
-
-    <div class="container text-center custom-homestudent-help-text">
-        <a href="/aide">Besoin d'aide pour commencer?</a>
     </div>
-</div>
-
 
 @code {
-    private string searchText;
 
-    private void PerformSearch()
-    {
-       
-    }
 }
