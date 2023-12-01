@@ -214,7 +214,9 @@
     /// </summary>
     protected override async void OnInitialized()
     {
-        IdEtudiant = await sessionStorage.GetItemAsync<string>("idConnexion");
+        //IdEtudiant = await sessionStorage.GetItemAsync<string>("idConnexion");
+
+        IdEtudiant = "etu";
 
         //var Exercice = await ExerciceService.Get(Reference);
         //exercice = Exercice.Data;
