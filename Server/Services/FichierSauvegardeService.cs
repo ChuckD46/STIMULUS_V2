@@ -38,29 +38,6 @@ namespace STIMULUS_V2.Server.Services
                 return new APIResponse<FichierSauvegarde>(null, 500, $"Erreur lors de la création du model : {typeof(FichierSauvegarde).Name}. Message : {ex.Message}");
             }
         }
-        public async Task<APIResponse<string>> PostExercice(string codeJson, int? idEtudiant)
-        {
-            try
-            {
-                // Your logic for creating a resource, for example:
-                var newItem = new FichierSauvegarde(); // Replace this with your actual model and logic
-                sTIMULUSContext.FichierSauvegarde.Add(newItem);
-                await sTIMULUSContext.SaveChangesAsync();
-
-                if (sTIMULUSContext.FichierSauvegarde.Contains(newItem))
-                {
-                    return new APIResponse<string>("Success", 200, "Succès");
-                }
-                else
-                {
-                    return new APIResponse<string>(null, 500, "Erreur interne du serveur");
-                }
-            }
-            catch (Exception ex)
-            {
-                return new APIResponse<string>(null, 500, $"Erreur lors de la création de la ressource : {ex.Message}");
-            }
-        }
 
         public async Task<APIResponse<bool>> Delete(int id)
         {

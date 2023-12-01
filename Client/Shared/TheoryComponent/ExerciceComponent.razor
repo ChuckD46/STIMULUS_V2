@@ -285,42 +285,42 @@
     /// <summary>
     /// Envoit le code de l'étudiant à l'interpréteur
     /// </summary>
-    //private async void Post()
-    //{
-    //    List<object> fichiers = new List<object>();
-    //    string jsonString = "";
-    //    int id = FichierCode.FirstOrDefault().Id;
+    private async void Post()
+    {
+        List<object> fichiers = new List<object>();
+        string jsonString = "";
+        int id = FichierCode.FirstOrDefault().Id;
 
-    //    Result = "Interprétation du code...";
-    //    Console.WriteLine("Running python code...");
-    //    StateHasChanged();
+        Result = "Interprétation du code...";
+        Console.WriteLine("Running python code...");
+        StateHasChanged();
 
-    //    foreach (var fichier in FichierCode)
-    //    {
-    //        if (fichier.Css != "hidden")
-    //        {
-    //            id = fichier.Id;
-    //            break;
-    //        }
-    //    }
-    //    foreach (var fichier in FichierCode)
-    //    {
-    //        await ChangeTab(fichier.Id);
-    //        string texte = await GetCode();
-    //        fichiers.Add(new
-    //        {
-    //            Nom = fichier.Nom,
-    //            Contenu = texte.Replace("\"", "\'")
-    //        });
-    //    }
-    //    await ChangeTab(id);
+        foreach (var fichier in FichierCode)
+        {
+            if (fichier.Css != "hidden")
+            {
+                id = fichier.Id;
+                break;
+            }
+        }
+        foreach (var fichier in FichierCode)
+        {
+            await ChangeTab(fichier.Id);
+            string texte = await GetCode();
+            fichiers.Add(new
+            {
+                Nom = fichier.Nom,
+                Contenu = texte.Replace("\"", "\'")
+            });
+        }
+        await ChangeTab(id);
 
-    //    jsonString = JsonConvert.SerializeObject(fichiers);
+        jsonString = JsonConvert.SerializeObject(fichiers);
 
-    //    //Voir pour le mettre en post
-    //    Result = await FichierSauvegardeService.Create(jsonString, int.Parse(IdEtudiant));
-    //    StateHasChanged();
-    //}
+        //Voir pour le mettre en post
+        Result = await ApiClient.PageExercicePOSTAsync(jsonString, int.Parse(IdEtudiant));
+        StateHasChanged();
+    }
 
     /// <summary>
     /// Sauvegarde le fichier python de l'étudiant

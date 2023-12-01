@@ -12,6 +12,5 @@ namespace STIMULUS_V2.Shared.Interface.ChildInterface
     public interface IFichierSauvegardeService : IModelService<FichierSauvegarde, int>
     {
         Task<APIResponse<IEnumerable<FichierSauvegarde>>> GetAllExercice(int exerciceId, string da);
-        Task<APIResponse<IEnumerable<FichierSauvegarde>>> PostExercice(string codeJson, string da);
     }
 }
