@@ -11,7 +11,7 @@
     overflow: hidden;
     display: inline-block;
     width: 200%;
-    height: 3%;
+    height: 5%;
 }
 
 .custom-homestudent-role-text{
@@ -39,20 +39,31 @@
 .search-icon {
     position: absolute;
     top: 50%;
-    left: 95%; /* Ajustez la position selon vos besoins */
+    left: 110%; /* Ajustez la position selon vos besoins */
     transform: translateY(-50%);
     color: #555; /* Couleur de l'icône */
     cursor: pointer;
+
+
 }
-
-
-.spiral {
+/*
+.custom-shape-divider-bottom-1701457915 {
     position: absolute;
     bottom: 0;
     left: 0;
-    right: 0;
     width: 100%;
-    height: 100px; /* Ajustez selon vos besoins */
-    background: url('/RessourceVisuel/FondTest.jpg') repeat-x center;
-    z-index: 1;
+    overflow: hidden;
+    line-height: 0;
+    transform: rotate(180deg);
 }
+
+    .custom-shape-divider-bottom-1701457915 svg {
+        position: relative;
+        display: block;
+        width: calc(100% + 1.3px);
+        height: 113px;
+    }
+
+    .custom-shape-divider-bottom-1701457915 .shape-fill {
+        fill: #FFFFFF;
+    }*/

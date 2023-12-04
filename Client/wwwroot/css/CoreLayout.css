@@ -80,40 +80,44 @@
     display: flex;
     justify-content: flex-start;
     align-items: center;
+    position: relative; /* Ajout d'une position relative pour positionner le texte animé */
 }
 
 #animated-text {
-    /* ajustez la durée de l'animation */
-    animation: stroke 5s infinite alternate;
-    stroke-width: 2;
+    /* Ajustez la durée de l'animation */
     font-size: 20px;
+    fill: white;
+    stroke: #394867;
+    stroke-dashoffset: -25%;
+    stroke-dasharray: 50% 0;
+    stroke-width: 0;
+    font-weight: normal; /* Utiliser le même style que la fin de l'animation */
+}
+
+#logo-container:hover #animated-text {
+    animation: stroke 5s infinite alternate;
 }
 
 @keyframes stroke {
     0% {
-        fill: white;
-        stroke: #394867;
         stroke-dashoffset: 25%;
         stroke-dasharray: 0 50%;
         stroke-width: 2;
+        font-weight: bold; /* Rendre le texte en gras au début de l'animation */
     }
 
     70% {
-        fill: white;
         stroke: #394867;
     }
 
     80% {
-        fill: white;
-        stroke: #394867;
         stroke-width: 3;
     }
 
     100% {
-        fill: white;
-        stroke: #394867;
         stroke-dashoffset: -25%;
         stroke-dasharray: 50% 0;
         stroke-width: 0;
+        font-weight: normal; /* Revenir à la normale à la fin de l'animation */
     }
 }
