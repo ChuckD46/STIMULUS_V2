@@ -10,8 +10,11 @@
 
 @inject INoeudService NoeudService
 @inject IGrapheService GrapheService
+@inject IGroupeService GroupeService
 @inject IPageService PageService
 @inject IComposantService ComposantService
+@inject IGroupeEtudiantService GroupeEtudiantService
+@inject INoeudEtudiantService NoeudEtudiantService
 @inject MouseService mouseSrv
 @inject IUpdateService updateService
 @inject NavigationManager NavigationManager
@@ -109,6 +112,7 @@
     private ButtonStyle modeDeVuButtonEtudiant = ButtonStyle.Primary;
 
     private Noeud nouveauNoeud = new();
+    private Noeud_Etudiant noeudEtudiant = new();
     public List<Noeud> Nodes { get; set; } = new();
 
     protected async override void OnInitialized()
@@ -156,7 +160,7 @@
     /// </summary>
     /// <returns></returns>
     private int GetModeFond() => 2; 
-      
+
     //Quand la souris survole
     private void OnMouseHover() => displayHover = "show";
 
@@ -251,6 +255,10 @@
         {
             int idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");
 
+            var groupeGraphe = await GrapheService.Get(idGraphe);
+            var groupe = groupeGraphe.Data;
+            await sessionStorage.SetItemAsync<int>("idGroupe", (int)groupe.GroupeId);
+
             // Attendre 'idGraphe' pour ne pas etre 0 (utilise un timeout ou cancellation token = plus safe).
             while (idGraphe == 0)
             {
@@ -271,7 +279,7 @@
     /// </summary>
     private async void AjoutNouveauNoeud(Noeud nouveauNoeud)
     {
-        await SaveNouveauNoeud(nouveauNoeud);
+        await SaveNouveauNoeud(nouveauNoeud);       
         await UpdateGraphe();
     }
 
@@ -289,14 +297,14 @@
             var allPage = await PageService.GetAllFromNoeud(id);
             var pages = allPage.Data;
 
-            if (pages != null)
+            if (pages.Count() != 0)
             {
                 foreach (var pageDelete in pages)
                 {
                     var allComposant = await ComposantService.GetAllById(pageDelete.PageId);
                     var composant = allComposant.Data;
 
-                    if (composant != null)
+                    if (composant.Count() != 0)
                     {
                         foreach (var composantDelete in composant)
                         {
@@ -305,15 +313,20 @@
                     }
                     await PageService.Delete(pageDelete.PageId);
                 }
-
-                await NoeudService.Delete(id);
-
+            }
+            foreach (var etudiantNoeud in State.NoeudEtudiant)
+            {
+                await NoeudEtudiantService.Delete(etudiantNoeud.Noeud_EtudiantId);
             }
 
             // Supprimer le graphe
-            await GrapheService.Delete(await sessionStorage.GetItemAsync<int>("idGraphe"));
+            await NoeudService.Delete(id);
+
+            // Attendre la fin des opérations asynchrones avant de mettre à jour l'interface utilisateur
             var allNodesFromGraph = await NoeudService.GetAllFromGraph(await sessionStorage.GetItemAsync<int>("idGraphe"));
             Nodes = allNodesFromGraph.Data.ToList();
+
+            // Mettre à jour l'interface utilisateur
             StateHasChanged();
         }
         else
@@ -336,8 +349,20 @@
     {
         if (noeud != null)
         {
-            await NoeudService.Create(noeud);
+            var newNoeud = await NoeudService.Create(noeud).ConfigureAwait(false);
+            var createNoeud = newNoeud.Data;
+            var nouveauNoeud = await NoeudService.Get(createNoeud.NoeudId).ConfigureAwait(false);
+            var newNode = nouveauNoeud.Data;
             Console.WriteLine($"Nouveau noeud : {noeud.Nom}");
+            foreach (var etudiantNoeud in State.NoeudEtudiant)
+            {
+                noeudEtudiant.CodeDA = etudiantNoeud.CodeDA;
+                noeudEtudiant.NoeudId = newNode.NoeudId;
+                noeudEtudiant.Status = etudiantNoeud.Status;
+                noeudEtudiant.Noeud_EtudiantId = etudiantNoeud.Noeud_EtudiantId;
+
+                await NoeudEtudiantService.Update(noeudEtudiant.Noeud_EtudiantId, noeudEtudiant).ConfigureAwait(false);
+            }
         }
     }
 

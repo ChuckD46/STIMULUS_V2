@@ -1,7 +1,6 @@
 @using STIMULUS_V2.Client.Services;
 @using STIMULUS_V2.Shared.Interface.ChildInterface;
 @using STIMULUS_V2.Shared.Models.Entities;
-@* @using STIMULUS_V2.Client.Shared.TheorieComponents; *@
 @using static STIMULUS_V2.Client.Shared.NoeudComponents.Connector;
 
 @inject IJSRuntime JSRuntime
@@ -12,6 +11,9 @@
 @inject IJSRuntime JsRunTime
 @inject IPageService PageService
 @inject IComposantService ComposantService
+@inject IEtudiantService EtudiantService
+@inject INoeudEtudiantService NoeudEtudiantService
+@inject IGroupeEtudiantService GroupeEtudiantService
 @inject AppState State;
 @inject Radzen.DialogService DialogService
 
@@ -40,6 +42,7 @@
     }
     @if (GetModeDeVue() == 2)
     {
+        Couleur = COULEUR_BLOQUER;
         @if(Nodes.Count > 1){
             @if (Nodes.Where(c => c.NoeudParentId == Node.NoeudId).ToList().Count == 0 || Node.NoeudId == Node.NoeudParentId)
             {
@@ -48,6 +51,19 @@
                 </foreignObject>
             }
         }
+        if(Node.Status == 1)
+        {
+            <foreignObject x="@(Node.Rayon)" y="@(-Node.Rayon )" width="20" height="20">
+            <span class="oi oi-lock-locked" id="Lock" @onclick="(e => LockAndUnlocked(Node))"></span>
+            </foreignObject>
+        }
+        else
+        {
+            <foreignObject x="@(Node.Rayon)" y="@(-Node.Rayon )" width="20" height="20">
+                <span class="oi oi-lock-unlocked" id="Lock" @onclick="(e => LockAndUnlocked(Node))"></span>
+            </foreignObject>    
+        }
+
         
         @if (Node.NoeudParentId == null || Node.NoeudId == Node.NoeudParentId)
         {
@@ -84,9 +100,7 @@
                     <label for="status"><h5>Status :</h5></label>
                     <select class="form-control" id="status" @bind="nouveauNoeud.Status">
                         <option value="1" selected="@(nouveauNoeud.Status == 1)">Bloqué</option>
-                        <option value="2" selected="@(nouveauNoeud.Status == 2)">Non consulté</option>
-                        <option value="3" selected="@(nouveauNoeud.Status == 3)">Consulté</option>
-                        <option value="4" selected="@(nouveauNoeud.Status == 4)">Complété</option>
+                        <option value="2" selected="@(nouveauNoeud.Status == 2)">Débloqué</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -104,6 +118,7 @@
     }
     @if (GetModeDeVue() == 1)
     {
+        Couleur = COULEUR_BLOQUER;
         <NavLink @onclick="ViewPageTemplate">
             <circle r="@Node.Rayon" class="cercle" style="fill:@Couleur" />
             @if (Node.Type == NoeudType.CONTENU)
@@ -142,14 +157,25 @@
     }
     else if (GetModeDeVue() == 2)
     {
+        Couleur = COULEUR_BLOQUER;
         <NavLink>
             <text @onclick=@(e => RelinkBindNode(Node)) @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) class="textLink" text-anchor="middle" alignment-baseline="central">@Node.Nom</text>
         </NavLink>
     }
     else if (GetModeDeVue() == 3)
     {
+        if (Node.Status == 1)
+        {
+            Couleur = COULEUR_BLOQUER;
+        }
+        else if (Node.Status == 2)
+        {
+            Couleur = COULEUR_NON_COMPLETER;
+        }
+
         @if(Node.Type == NoeudType.CONTENU)
         {
+            
             <NavLink @onclick="DirectionPagesEtudiant">
                 <circle @onmouseover="@((e) => OnMouseHover())" @onmouseout="@((e) => OnMouseLeave())" @onclick="@((e) => RelinkBindNode(Node))" r="@Node.Rayon" class="cercle" style="fill:@Couleur" />
                 <text @onmouseover="@((e) => OnMouseHover())" @onmouseout="@((e) => OnMouseLeave())" class="textLink" text-anchor="middle" alignment-baseline="central">@Node.Nom</text>
@@ -193,41 +219,21 @@
     private string modelNoeud = "CONTENU";
     private string statusNom = "";
     private Noeud nouveauNoeud = new();
+    private Noeud_Etudiant noeudEtudiant = new();
     private string displayNouveauNoeud = "hidden";
     private int formSizeH = 0;
     private int formSizeW = 0;
     private bool isOpen = false;
     private bool pageLink = false;
     private int newPageId;
-
-    //Variable couleurs
-    private readonly string COULEUR_BLOQUER = "rgb(140,140,140)";
-    private readonly string COULEUR_NON_CONSULTER = "rgb(228, 231, 245)";
-    private readonly string COULEUR_CONSULTER = "rgb(199,160,53)";
-    private readonly string COULEUR_COMPLETER = "rgb(28, 90, 47)";
+    private readonly string COULEUR_BLOQUER = "rgb(128,128,128)";
+    private readonly string COULEUR_NON_COMPLETER = "rgb(255, 55, 55)";
     private string Couleur { get; set; }
     public List<Page> listePage { get; set; } = new List<Page>();
 
     protected override async Task OnInitializedAsync()
     {
         Couleur = COULEUR_BLOQUER;
-
-        if (Node.Status == 1)
-        {
-            Couleur = COULEUR_BLOQUER;
-        }
-        else if (Node.Status == 2)
-        {
-            Couleur = COULEUR_NON_CONSULTER;
-        }
-        else if (Node.Status == 3)
-        {
-            Couleur = COULEUR_CONSULTER;
-        }
-        else if (Node.Status == 4)
-        {
-            Couleur = COULEUR_COMPLETER;
-        }
 
         var pageNoeud = await PageService.GetAllFromNoeud(Node.NoeudId);
         var affichPage = pageNoeud.Data;
@@ -293,6 +299,21 @@
         if (nouveauNoeud.Nom != null && nouveauNoeud.Description != null && nouveauNoeud.Nom.Length >= 3 && nouveauNoeud.Nom.Length <= 10 && nouveauNoeud.Description.Length >= 3 && nouveauNoeud.Description.Length <= 100 && nouveauNoeud.Rayon != null)
         {
             AjoutNouveauNoeud(nouveauNoeud);
+
+
+            var etudiant = await GroupeEtudiantService.GetAllStudentForGroup(await sessionStorage.GetItemAsync<int>("idGroupe"));
+            var etudiants = etudiant.Data;
+
+            foreach (var etudiantId in etudiants)
+            {
+                noeudEtudiant.CodeDA = etudiantId.CodeDA;
+                noeudEtudiant.NoeudId = null;
+                noeudEtudiant.Status = nouveauNoeud.Status;
+
+                var NoeudEtudiantId = await NoeudEtudiantService.Create(noeudEtudiant);
+                var noeudEtu = NoeudEtudiantId.Data;
+                State.NoeudEtudiant.Add(noeudEtu);
+            }
         }
         else
         {
@@ -304,6 +325,52 @@
 
         isOpen = false;
     }
+    private async Task LockAndUnlocked(Noeud noeud)
+    {
+
+        Noeud changeNoeudStatus = new();
+
+        if(noeud.Status == 1)
+        {
+            changeNoeudStatus.NoeudId = noeud.NoeudId;
+            changeNoeudStatus.Status = 2;
+            changeNoeudStatus.PosX = noeud.PosX;
+            changeNoeudStatus.PosY = noeud.PosY;
+            changeNoeudStatus.Description = noeud.Description;
+            changeNoeudStatus.Disponibilite = noeud.Disponibilite;
+            changeNoeudStatus.NoeudParentId = noeud.NoeudParentId;
+            changeNoeudStatus.GrapheId = noeud.GrapheId;
+            changeNoeudStatus.Nom = noeud.Nom;
+            changeNoeudStatus.Obligatoire = noeud.Obligatoire;
+            changeNoeudStatus.Type = noeud.Type;
+            changeNoeudStatus.Rayon = noeud.Rayon;
+
+            await NoeudService.Update(changeNoeudStatus.NoeudId, changeNoeudStatus);
+            await NoeudService.Get(changeNoeudStatus.NoeudId);
+            StateHasChanged();
+        }
+        else
+        {
+            changeNoeudStatus.NoeudId = noeud.NoeudId;
+            changeNoeudStatus.Status = 1;
+            changeNoeudStatus.PosX = noeud.PosX;
+            changeNoeudStatus.PosY = noeud.PosY;
+            changeNoeudStatus.Description = noeud.Description;
+            changeNoeudStatus.Disponibilite = noeud.Disponibilite;
+            changeNoeudStatus.NoeudParentId = noeud.NoeudParentId;
+            changeNoeudStatus.GrapheId = noeud.GrapheId;
+            changeNoeudStatus.Nom = noeud.Nom;
+            changeNoeudStatus.Obligatoire = noeud.Obligatoire;
+            changeNoeudStatus.Type = noeud.Type;
+            changeNoeudStatus.Rayon = noeud.Rayon;
+
+
+            await NoeudService.Update(changeNoeudStatus.NoeudId, changeNoeudStatus);
+            await NoeudService.Get(changeNoeudStatus.NoeudId);
+            StateHasChanged();
+        }
+    }
+
     private async Task AjoutPage(int id)
     {
         // Récupère toutes les pages du nœud avant l'ajout

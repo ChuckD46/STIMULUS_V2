@@ -6,67 +6,67 @@ namespace STIMULUS_V2.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GrapheController : Controller
+    public class NoeudEtudiantController : Controller
     {
-        private readonly IGrapheService grapheService;
+        private readonly INoeudEtudiantService noeudEtudiantService;
 
-        public GrapheController(IGrapheService grapheService)
+        public NoeudEtudiantController(INoeudEtudiantService noeudEtudiantService)
         {
-            this.grapheService = grapheService;
+            this.noeudEtudiantService = noeudEtudiantService;
         }
 
         [HttpPost("Create")]
-        public async Task<IActionResult> Create([FromBody] Graphe graphe)
+        public async Task<IActionResult> Create([FromBody] Noeud_Etudiant groupeEtudiant)
         {
-            var response = await grapheService.Create(graphe);
+            var response = await noeudEtudiantService.Create(groupeEtudiant);
             return StatusCode(response.StatusCode, response);
         }
 
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var response = await grapheService.Delete(id);
+            var response = await noeudEtudiantService.Delete(id);
             return StatusCode(response.StatusCode, response);
         }
 
         [HttpGet("Fetch/{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var response = await grapheService.Get(id);
+            var response = await noeudEtudiantService.Get(id);
             return StatusCode(response.StatusCode, response);
         }
-        [HttpGet("Fetch/Groupe/{id}")]
-        public async Task<IActionResult> GetGroupe(int id)
+        [HttpGet("Fetch/Noeud/{id}")]
+        public async Task<IActionResult> GetByNoeudId(int id)
         {
-            var response = await grapheService.GetGroupe(id);
+            var response = await noeudEtudiantService.GetByNoeudId(id);
             return StatusCode(response.StatusCode, response);
         }
 
         [HttpGet("Fetch/All")]
         public async Task<IActionResult> GetAll()
         {
-            var response = await grapheService.GetAll();
+            var response = await noeudEtudiantService.GetAll();
             return StatusCode(response.StatusCode, response);
         }
 
         [HttpGet("Fetch/All/{id}")]
         public async Task<IActionResult> GetAllById(int id)
         {
-            var response = await grapheService.GetAllById(id);
+            var response = await noeudEtudiantService.GetAllById(id);
+            return StatusCode(response.StatusCode, response);
+        }
+        [HttpGet("Fetch/All/NoeudForStudent/{id}")]
+        public async Task<IActionResult> GetAllNoeudForStudent(string id)
+        {
+            var response = await noeudEtudiantService.GetAllNoeudForStudent(id);
             return StatusCode(response.StatusCode, response);
         }
 
-        [HttpGet("Fetch/All/FromGroup/{id}")]
-        public async Task<IActionResult> GetAllFromGroup(int id)
-        {
-            var response = await grapheService.GetAllFromGroup(id);
-            return StatusCode(response.StatusCode, response);
-        }
 
         [HttpPut("Update/{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Graphe graphe)
+        public async Task<IActionResult> Update(int id, [FromBody] Noeud_Etudiant noeudEtudiant)
         {
-            var response = await grapheService.Update(id, graphe);
+            var response = await noeudEtudiantService.Update(id, noeudEtudiant);
             return StatusCode(response.StatusCode, response);
         }
     }
