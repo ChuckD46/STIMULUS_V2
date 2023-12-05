@@ -1,4 +1,4 @@
-﻿@using STIMULUS_V2.Client.Services;
+﻿﻿@using STIMULUS_V2.Client.Services;
 @using STIMULUS_V2.Shared.Interface.ChildInterface;
 @using STIMULUS_V2.Shared.Models.Authentication;
 @using Blazored.LocalStorage;
@@ -17,7 +17,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject RerenderService Rerender
 
-<RadzenSidebar Responsive="true" Style="width: max-content">
+<RadzenSidebar Responsive="false" Style="width: max-content">
     <RadzenPanelMenu DisplayStyle="@(sidebarExpanded ? MenuItemDisplayStyle.IconAndText : MenuItemDisplayStyle.Icon)" ShowArrow="@sidebarExpanded">
         <RadzenPanelMenuItem Text="Accueil" Icon="home" Path="/" />
         <AuthorizeView Roles="ETUDIANT">

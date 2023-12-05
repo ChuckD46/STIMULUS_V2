@@ -1,19 +1,17 @@
-﻿<div class="container text-center">
-    <p class="lead">Vous êtes un professeur</p>
-</div>
-@using Radzen.Blazor.Rendering;
+﻿@using Radzen.Blazor.Rendering;
 @using STIMULUS_V2.Client.Shared.TheoryComponent
 @using STIMULUS_V2.Shared.Interface.ChildInterface;
 @using STIMULUS_V2.Shared.Models.Entities;
 @using System.Globalization
 @inject  IPageEtudiantService PageEtudiantService
 
-<div class="teacher-info-container">
-    <div class="container text-center">
-        <p class="lead">Vous êtes un Professeur</p>
+<div class="container text-center">
+    <h1>Bienvenue sur Stimulus!</h1>
+    <div class="teacher-info-container">
+        <div class="container text-center">
+            <p class="lead">Vous êtes un Professeur</p>
+        </div>
     </div>
-</div>
-    <p class="lead">Vous êtes un professeur</p>
 </div>
 
 <div class="box-display">
@@ -49,17 +47,6 @@
         </div>
     </div>
 </div>
-<style>
-    .box-display {
-        text-align: center;
-        align-items: center;
-        background-color: lightgrey;
-        border-radius: 10px;
-        margin-bottom: 20px;
-        margin-left: 10px;
-        margin-right: 10px;
-    }
-</style>
 
 @code {
     bool showDataLabels = false;

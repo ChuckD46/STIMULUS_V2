@@ -1,4 +1,5 @@
-﻿.custom-home-spacing {
+﻿/*Cette sectionm comporte l'ensemble des composants Home*/
+.custom-home-spacing {
     padding-top: 20%;
     padding-left: 0;
     padding-right: 0;
@@ -6,6 +7,7 @@
     margin-right: 0;
 }
 
+/*Cette section comprend l''ensemble du composant HomeStudent*/
 .custom-homestudent-searchbar{
     border-radius: 50px;
     overflow: hidden;
@@ -36,34 +38,26 @@
     display: inline-block;
 }
 
-.search-icon {
+.custom-homestudent-wave-effect-color .shape-fill {
+    fill: #F1F6F9;
+}
+
+.custom-homestudent-search-icon {
     position: absolute;
     top: 50%;
     left: 110%; /* Ajustez la position selon vos besoins */
     transform: translateY(-50%);
     color: #555; /* Couleur de l'icône */
     cursor: pointer;
-
-
-}
-/*
-.custom-shape-divider-bottom-1701457915 {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    overflow: hidden;
-    line-height: 0;
-    transform: rotate(180deg);
 }
 
-    .custom-shape-divider-bottom-1701457915 svg {
-        position: relative;
-        display: block;
-        width: calc(100% + 1.3px);
-        height: 113px;
-    }
-
-    .custom-shape-divider-bottom-1701457915 .shape-fill {
-        fill: #FFFFFF;
-    }*/
+/*Cette section comprend l'ensemble du composant HomeTeacher*/
+.box-display {
+    text-align: center;
+    align-items: center;
+    background-color: lightgrey;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    margin-left: 10px;
+    margin-right: 10px;
+}

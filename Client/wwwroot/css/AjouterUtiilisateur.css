@@ -1,6 +1,17 @@
-﻿.custom-adduser-btn-save {
+﻿.custom-adduser-title {
+    display: flex;
+    text-align: center;
+    margin-left: 38%;
+    font-size: xx-large
+   
+}
+
+.custom-adduser-btn-save {
     border: none;
     background-color: #14274E;
-    border-radius: 10px;
+    border-radius: 8px;
     margin-left: 87%;
+    color: white;
 }
+
+
