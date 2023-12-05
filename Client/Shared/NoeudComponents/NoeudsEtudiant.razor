@@ -21,7 +21,7 @@
 }
 
 <NonDraggable @bind-X=Node.PosX @bind-Y=Node.PosY>
-    @if (Node.Status == 1 && Node.Type == NoeudType.STRUCTURE || Node.Type == NoeudType.STRUCTURE || Node.Status == 1 || Node.Status == 5)
+    @if (Node.Status == 1 && Node.Type == NoeudType.STRUCTURE || Node.Type == NoeudType.STRUCTURE || Node.Status == 1 || (noeudEtudiant != null) && (noeudEtudiant.Status != null) && (noeudEtudiant.Status != 0) && (noeudEtudiant.Status == 5))
     {
         <NavLink id="lien">
             <circle visibility="@displayHover" r="@(Node.Rayon + 3)" class="cercle" style="fill: rgba(255,255,255,5); opacity:0.5" />
@@ -54,7 +54,7 @@
 
 @code {
     [Parameter]
-    public EventCallback OnNoeudStatus { get; set; }
+    public EventCallback OnStatusUpdated { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter] public Noeud Node { get; set; }
     [Parameter] public List<Noeud> Nodes { get; set; }
@@ -84,7 +84,7 @@
         if (etudiantData != null)
         {
             noeudEtudiant = etudiantData.Data;
-            CheckStatus();
+            Rerender.OnNoeudStatus += UpdateChildrenColors;
         }
     }
 
@@ -111,8 +111,6 @@
 
             // Stocker l'ID de la première page dans la session
             noeudEtudiant.Status = 3;
-            CheckStatus();
-            await NoeudEtudiantService.Update(noeudEtudiant.Noeud_EtudiantId, noeudEtudiant);
             await sessionStorage.SetItemAsync<int>("idPage", firstPage.PageId);
         }
         else
@@ -122,86 +120,36 @@
         NavigationManager.NavigateTo("/Pages");
     }
 
-    private async void CheckStatus()
-    {
-        try
-        {
-           // Récupérer tous les nœuds enfants du nœud parent
-            var childrenNodesResponse = await NoeudService.GetAllById((int)noeudEtudiant.NoeudId);
-
-            // Vérifiez la réponse avant d'entrer dans la boucle foreach
-                var childrenNodes = childrenNodesResponse.Data;
-
-                // Parcourir les nœuds enfants
-                foreach (var childNode in childrenNodes)
-                {
-                    var childNoeudEtudiant = await NoeudEtudiantService.GetByNoeudId(childNode.NoeudId);
-
-                    if (childNoeudEtudiant.Data != null)
-                    {
-                        // Utilisez le statut du parent pour mettre à jour le statut des enfants
-                        if (noeudEtudiant.Status == 2) // Non complété
-                        {
-                            childNoeudEtudiant.Data.Status = 5; // Bloqué
-                        }
-                        else if (noeudEtudiant.Status == 4) // Complété
-                        {
-                            childNoeudEtudiant.Data.Status = 2; //Non Complété
-                        }
-                        else if (noeudEtudiant.Status == 5 || noeudEtudiant.Status == 3 || noeudEtudiant.Status == 1) // En cours ou Bloqué
-                        {
-                            childNoeudEtudiant.Data.Status = 5; // Bloqué
-                        }
-
-                        // Mettez à jour le statut pour chaque Noeud_Etudiant
-                        await NoeudEtudiantService.Update(childNoeudEtudiant.Data.Noeud_EtudiantId, childNoeudEtudiant.Data);
-                    }
-                }
-
-                // Mettre à jour les couleurs des enfants en fonction de leur nouveau statut
-                UpdateChildrenColors();            
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Erreur : {ex}");
-        }
-
-        // Mettre à jour l'interface utilisateur
-        StateHasChanged();
-    }
-
     private void UpdateChildrenColors()
     {
         // Mettez à jour les couleurs des enfants en fonction de leur statut
         // Vous pouvez utiliser une logique similaire à celle que vous avez utilisée dans OnInitializedAsync()
 
-        foreach (var childNode in Nodes)
+        // Vérifiez si le nœud est un enfant du nœud actuel
+        if (noeudEtudiant.Status == 0)
         {
-            // Vérifiez si le nœud est un enfant du nœud actuel
-            if (childNode.NoeudParentId == noeudEtudiant.NoeudId)
-            {
-                if (noeudEtudiant.Status == 1)
-                {
-                    Couleur = COULEUR_BLOQUER;
-                }
-                else if (noeudEtudiant.Status == 2)
-                {
-                    Couleur = COULEUR_NON_COMPLETER;
-                }
-                else if (noeudEtudiant.Status == 3)
-                {
-                    Couleur = COULEUR_EN_COURS;
-                }
-                else if (noeudEtudiant.Status == 4)
-                {
-                    Couleur = COULEUR_COMPLETER;
-                }
-                else if (noeudEtudiant.Status == 5)
-                {
-                    //Status 5 sera le status bloquer car le noeud parent n'est pas terminé
-                    Couleur = COULEUR_BLOQUER;
-                }
-            }
+            Couleur = COULEUR_BLOQUER;
+        }
+        if (noeudEtudiant.Status == 1)
+        {
+            Couleur = COULEUR_BLOQUER;
+        }
+        else if (noeudEtudiant.Status == 2)
+        {
+            Couleur = COULEUR_NON_COMPLETER;
+        }
+        else if (noeudEtudiant.Status == 3)
+        {
+            Couleur = COULEUR_EN_COURS;
+        }
+        else if (noeudEtudiant.Status == 4)
+        {
+            Couleur = COULEUR_COMPLETER;
+        }
+        else if (noeudEtudiant.Status == 5)
+        {
+            //Status 5 sera le status bloquer car le noeud parent n'est pas terminé
+            Couleur = COULEUR_BLOQUER;
         }
     }
 }

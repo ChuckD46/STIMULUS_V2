@@ -14,6 +14,7 @@
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject IUpdateService updateService
 @inject INoeudService NoeudService;
+@inject INoeudEtudiantService NoeudEtudiantService;
 @inject AppState State;
 @inject RerenderService Rerender
 
@@ -75,6 +76,8 @@
 </div>
 
 @code {
+    [Parameter]
+    public EventCallback OnStatusChanged{ get; set; }
     private string displayHover;
     public List<Noeud> Nodes { get; set; } = new();
     private List<Noeud> NodesTemp { get; set; } = new();
@@ -86,9 +89,10 @@
     private string viewForm = "hidden";
     private string displayNouveauNoeud = "hidden";
     private Noeud nouveauNoeud;
+    private Noeud_Etudiant noeudEtudiant;
 
     protected async override void OnInitialized()
-    {       
+    {
         await UpdateGraphe();
     }
 
@@ -100,14 +104,14 @@
         Nodes = new();
         int idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");
 
-            // Wait until 'idGraphe' is not zero (use a timeout or cancellation token for safety).
-            while (idGraphe == 0)
-            {
-                // Add a delay to avoid continuous polling (e.g., 100ms).
-                await Task.Delay(100);
-            }
-
-            Nodes = ((APIResponse<IEnumerable<Noeud>>)await NoeudService.GetAllFromGraph(idGraphe)).Data.ToList();
+        // Wait until 'idGraphe' is not zero (use a timeout or cancellation token for safety).
+        while (idGraphe == 0)
+        {
+            // Add a delay to avoid continuous polling (e.g., 100ms).
+            await Task.Delay(100);
+        }
+        Nodes = ((APIResponse<IEnumerable<Noeud>>)await NoeudService.GetAllFromGraph(idGraphe)).Data.ToList();
+        await CheckStatus();
 
         // Consider navigating using a relative URL
         StateHasChanged();
@@ -118,6 +122,58 @@
 
     private void OnMouseHover() => displayHover = "show";
     private void OnMouseLeave() => displayHover = "hidden";
+
+    private async Task CheckStatus()
+    {
+        try
+        {
+            // Récupérer tous les nœuds enfants du nœud parent
+            foreach(var noeudParent in Nodes)
+            {
+                var childrenNodesResponse = await NoeudService.GetAllById(noeudParent.NoeudId);
+
+                var childrenNodes = childrenNodesResponse.Data;
+
+                foreach (var childNode in childrenNodes)
+                {
+                    var childNoeudEtudiant = await NoeudEtudiantService.GetByNoeudId(childNode.NoeudId);
+
+                    if (childNoeudEtudiant.Data != null)
+                    {
+                        // Utilize the status of the parent to update the status of the children
+                        if (noeudEtudiant.Status == 1 || noeudEtudiant.Status == 5) // Bloqué
+                        {
+                            childNoeudEtudiant.Data.Status = 5; // Bloqué
+                        }
+                        else if (noeudEtudiant.Status == 2) // Non complété
+                        {
+                            childNoeudEtudiant.Data.Status = 5; // Bloqué
+                        }
+                        else if (noeudEtudiant.Status == 4) // Complété
+                        {
+                            if (childNoeudEtudiant.Data.Status != 1) // If the child status is not Bloqué
+                            {
+                                childNoeudEtudiant.Data.Status = 2; // Non complété
+                            }
+                        }
+
+                        // Update the status for each Noeud_Etudiant
+                        await NoeudEtudiantService.Update(childNoeudEtudiant.Data.Noeud_EtudiantId, childNoeudEtudiant.Data);
+                    }
+                }
+            }
+            
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur : {ex}");
+        }
+
+        await OnStatusChanged.InvokeAsync();
+        Rerender.TriggerStatusNoeud();
+        // Mettre à jour l'interface utilisateur
+        StateHasChanged();
+    }
 
     private void ResetViewbox()
     {

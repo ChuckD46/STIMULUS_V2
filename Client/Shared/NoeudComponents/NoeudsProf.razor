@@ -16,6 +16,7 @@
 @inject IGroupeEtudiantService GroupeEtudiantService
 @inject AppState State;
 @inject Radzen.DialogService DialogService
+@inject RerenderService Rerender
 
 @for (int i = 0; i < Nodes.Count; i++)
 {
@@ -57,9 +58,13 @@
         {
             <span title="Débloquer le noeud @Node.Nom" id="LockAndUnlocked" class="oi oi-lock-locked" aria-hidden="true" @onclick="(e => LockAndUnlocked(Node))"></span>
         }
+        else if (Node.Status == 2)
+        {
+                <span title="Bloquer le noeud @Node.Nom" id="LockAndUnlocked" class="oi oi-lock-unlocked" aria-hidden="true" @onclick="(e => LockAndUnlocked(Node))"></span>
+        } 
         else
         {
-            <span title="Bloquer le noeud @Node.Nom" id="LockAndUnlocked" class="oi oi-lock-unlocked" aria-hidden="true" @onclick="(e => LockAndUnlocked(Node))"></span>
+                <span title="Le noeud @Node.Nom est bloqué" class="oi oi-lock-locked" aria-hidden="true"></span>
         }
         </foreignObject>
 
@@ -192,7 +197,8 @@
 
 @code {
     private bool delete = false;
-
+    [Parameter]
+    public EventCallback OnStatusUpdated { get; set; }
     //ChildContent = Noeudception
     [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter] public Noeud Node { get; set; }
@@ -298,21 +304,6 @@
         if (nouveauNoeud.Nom != null && nouveauNoeud.Description != null && nouveauNoeud.Nom.Length >= 3 && nouveauNoeud.Nom.Length <= 10 && nouveauNoeud.Description.Length >= 3 && nouveauNoeud.Description.Length <= 100 && nouveauNoeud.Rayon != null)
         {
             AjoutNouveauNoeud(nouveauNoeud);
-
-
-            // var etudiant = await GroupeEtudiantService.GetAllStudentForGroup(await sessionStorage.GetItemAsync<int>("idGroupe"));
-            // var etudiants = etudiant.Data;
-
-            // foreach (var etudiantId in etudiants)
-            // {
-            //     noeudEtudiant.CodeDA = etudiantId.CodeDA;
-            //     noeudEtudiant.NoeudId = null;
-            //     noeudEtudiant.Status = nouveauNoeud.Status;
-
-            //     var NoeudEtudiantId = await NoeudEtudiantService.Create(noeudEtudiant);
-            //     var noeudEtu = NoeudEtudiantId.Data;
-            //     State.NoeudEtudiant.Add(noeudEtu);
-            // }
         }
         else
         {
@@ -327,46 +318,15 @@
     private async Task LockAndUnlocked(Noeud noeud)
     {
 
-        Noeud changeNoeudStatus = new();
-
         if(noeud.Status == 1)
         {
-            changeNoeudStatus.NoeudId = noeud.NoeudId;
-            changeNoeudStatus.Status = 2;
-            changeNoeudStatus.PosX = noeud.PosX;
-            changeNoeudStatus.PosY = noeud.PosY;
-            changeNoeudStatus.Description = noeud.Description;
-            changeNoeudStatus.Disponibilite = noeud.Disponibilite;
-            changeNoeudStatus.NoeudParentId = noeud.NoeudParentId;
-            changeNoeudStatus.GrapheId = noeud.GrapheId;
-            changeNoeudStatus.Nom = noeud.Nom;
-            changeNoeudStatus.Obligatoire = noeud.Obligatoire;
-            changeNoeudStatus.Type = noeud.Type;
-            changeNoeudStatus.Rayon = noeud.Rayon;
-
-            await NoeudService.Update(changeNoeudStatus.NoeudId, changeNoeudStatus);
-            await NoeudService.Get(changeNoeudStatus.NoeudId);
-            StateHasChanged();
-            
+            Node.Status = 2;
+            await NoeudService.Update(Node.NoeudId, Node);   
         }
         else
         {
-            changeNoeudStatus.NoeudId = noeud.NoeudId;
-            changeNoeudStatus.Status = 1;
-            changeNoeudStatus.PosX = noeud.PosX;
-            changeNoeudStatus.PosY = noeud.PosY;
-            changeNoeudStatus.Description = noeud.Description;
-            changeNoeudStatus.Disponibilite = noeud.Disponibilite;
-            changeNoeudStatus.NoeudParentId = noeud.NoeudParentId;
-            changeNoeudStatus.GrapheId = noeud.GrapheId;
-            changeNoeudStatus.Nom = noeud.Nom;
-            changeNoeudStatus.Obligatoire = noeud.Obligatoire;
-            changeNoeudStatus.Type = noeud.Type;
-            changeNoeudStatus.Rayon = noeud.Rayon;
-
-            await NoeudService.Update(changeNoeudStatus.NoeudId, changeNoeudStatus);
-            await NoeudService.Get(changeNoeudStatus.NoeudId);
-            StateHasChanged();
+            Node.Status = 1;
+            await NoeudService.Update(Node.NoeudId, Node);
         }
     }
 
