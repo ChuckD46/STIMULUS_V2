@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Serilog;
-using STIMULUS_V2.Client.Pages;
 using STIMULUS_V2.Shared.Interface.ChildInterface;
 using STIMULUS_V2.Shared.Models.Entities;
 
@@ -83,8 +82,8 @@ namespace STIMULUS_V2.Server.Controllers
             var response = await grapheService.Update(id, graphe);
             var log = Log.ForContext<GrapheController>();
             var apiResponse = StatusCode(response.StatusCode, response);
-            log.Information($"Update(int id, [FromBody] Graphe graphe) \n  Response: {apiResponse}");
-            return StatusCode(response.StatusCode, response);
+            log.Information($"Update(int id = {id}, [FromBody] Graphe graphe = {graphe}) \n  Response: {apiResponse}");
+            return apiResponse;
         }
     }
 }
