@@ -314,7 +314,11 @@
                     await PageService.Delete(pageDelete.PageId);
                 }
             }
-            foreach (var etudiantNoeud in State.NoeudEtudiant)
+
+            var noeud = await NoeudEtudiantService.GetAllById(id);
+            var etudiantNoeudDelete = noeud.Data;
+
+            foreach (var etudiantNoeud in etudiantNoeudDelete)
             {
                 await NoeudEtudiantService.Delete(etudiantNoeud.Noeud_EtudiantId);
             }
@@ -354,15 +358,6 @@
             var nouveauNoeud = await NoeudService.Get(createNoeud.NoeudId).ConfigureAwait(false);
             var newNode = nouveauNoeud.Data;
             Console.WriteLine($"Nouveau noeud : {noeud.Nom}");
-            foreach (var etudiantNoeud in State.NoeudEtudiant)
-            {
-                noeudEtudiant.CodeDA = etudiantNoeud.CodeDA;
-                noeudEtudiant.NoeudId = newNode.NoeudId;
-                noeudEtudiant.Status = etudiantNoeud.Status;
-                noeudEtudiant.Noeud_EtudiantId = etudiantNoeud.Noeud_EtudiantId;
-
-                await NoeudEtudiantService.Update(noeudEtudiant.Noeud_EtudiantId, noeudEtudiant).ConfigureAwait(false);
-            }
         }
     }
 
@@ -401,6 +396,14 @@
                 }
                 foreach (var noeudDeleteParent in noeuds)
                 {
+                    var noeud = await NoeudEtudiantService.GetAllById(noeudDeleteParent.NoeudId);
+                    var etudiantNoeudDelete = noeud.Data;
+
+                    foreach (var etudiantNoeud in etudiantNoeudDelete)
+                    {
+                        await NoeudEtudiantService.Delete(etudiantNoeud.Noeud_EtudiantId);
+                    }
+
                     await NoeudService.Delete(noeudDeleteParent.NoeudId);
                 }
             }

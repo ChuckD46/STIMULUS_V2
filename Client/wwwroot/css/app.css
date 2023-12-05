@@ -167,6 +167,15 @@ Connecteur:hover {
         cursor: pointer;
     }
 
+#LockAndUnlocked {
+    color: black;
+}
+
+    #LockAndUnlocked:hover {
+        color: royalblue;
+        cursor: pointer;
+    }
+
 a {
     text-decoration: none;
 }

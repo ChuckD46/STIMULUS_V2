@@ -70,6 +70,7 @@ using (var scope = app.Services.CreateScope())
     context.EnsureAdminUserCreated();
     context.EnsureEtuUserCreated();
     context.EnsureProfUserCreated();
+
 }
 
 // Configure the HTTP request pipeline.

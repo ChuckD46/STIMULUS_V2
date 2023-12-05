@@ -51,26 +51,25 @@
                 </foreignObject>
             }
         }
-        if(Node.Status == 1)
+
+        <foreignObject x="@(Node.Rayon)" y="@(-Node.Rayon )" width="20" height="20">
+        @if(Node.Status == 1)
         {
-            <foreignObject x="@(Node.Rayon)" y="@(-Node.Rayon )" width="20" height="20">
-            <span class="oi oi-lock-locked" id="Lock" @onclick="(e => LockAndUnlocked(Node))"></span>
-            </foreignObject>
+            <span title="Débloquer le noeud @Node.Nom" id="LockAndUnlocked" class="oi oi-lock-locked" aria-hidden="true" @onclick="(e => LockAndUnlocked(Node))"></span>
         }
         else
         {
-            <foreignObject x="@(Node.Rayon)" y="@(-Node.Rayon )" width="20" height="20">
-                <span class="oi oi-lock-unlocked" id="Lock" @onclick="(e => LockAndUnlocked(Node))"></span>
-            </foreignObject>    
+            <span title="Bloquer le noeud @Node.Nom" id="LockAndUnlocked" class="oi oi-lock-unlocked" aria-hidden="true" @onclick="(e => LockAndUnlocked(Node))"></span>
         }
+        </foreignObject>
 
-        
         @if (Node.NoeudParentId == null || Node.NoeudId == Node.NoeudParentId)
         {
             <foreignObject x="@((-Node.Rayon) )" y="@((Node.Rayon)/2 )" width="20" height="20">
                 <span class="oi oi-link-broken" id="reLink" @onclick="(e => ReLinkNoeud(Node))"></span>
             </foreignObject>
         }
+
         <foreignObject x="@(Node.Rayon/2 )" y="@(Node.Rayon/2 )" width="20" height="20">
             @if (!isOpen)
             {
@@ -301,19 +300,19 @@
             AjoutNouveauNoeud(nouveauNoeud);
 
 
-            var etudiant = await GroupeEtudiantService.GetAllStudentForGroup(await sessionStorage.GetItemAsync<int>("idGroupe"));
-            var etudiants = etudiant.Data;
+            // var etudiant = await GroupeEtudiantService.GetAllStudentForGroup(await sessionStorage.GetItemAsync<int>("idGroupe"));
+            // var etudiants = etudiant.Data;
 
-            foreach (var etudiantId in etudiants)
-            {
-                noeudEtudiant.CodeDA = etudiantId.CodeDA;
-                noeudEtudiant.NoeudId = null;
-                noeudEtudiant.Status = nouveauNoeud.Status;
+            // foreach (var etudiantId in etudiants)
+            // {
+            //     noeudEtudiant.CodeDA = etudiantId.CodeDA;
+            //     noeudEtudiant.NoeudId = null;
+            //     noeudEtudiant.Status = nouveauNoeud.Status;
 
-                var NoeudEtudiantId = await NoeudEtudiantService.Create(noeudEtudiant);
-                var noeudEtu = NoeudEtudiantId.Data;
-                State.NoeudEtudiant.Add(noeudEtu);
-            }
+            //     var NoeudEtudiantId = await NoeudEtudiantService.Create(noeudEtudiant);
+            //     var noeudEtu = NoeudEtudiantId.Data;
+            //     State.NoeudEtudiant.Add(noeudEtu);
+            // }
         }
         else
         {
@@ -348,6 +347,7 @@
             await NoeudService.Update(changeNoeudStatus.NoeudId, changeNoeudStatus);
             await NoeudService.Get(changeNoeudStatus.NoeudId);
             StateHasChanged();
+            
         }
         else
         {
@@ -363,7 +363,6 @@
             changeNoeudStatus.Obligatoire = noeud.Obligatoire;
             changeNoeudStatus.Type = noeud.Type;
             changeNoeudStatus.Rayon = noeud.Rayon;
-
 
             await NoeudService.Update(changeNoeudStatus.NoeudId, changeNoeudStatus);
             await NoeudService.Get(changeNoeudStatus.NoeudId);

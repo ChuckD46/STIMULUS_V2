@@ -136,7 +136,23 @@ namespace STIMULUS_V2.Server.Services
 
         public async Task<APIResponse<IEnumerable<Noeud_Etudiant>>> GetAllById(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var itemList = await sTIMULUSContext.Noeud_Etudiant.Where(item => item.NoeudId == id).ToListAsync();
+
+                if (itemList != null)
+                {
+                    return new APIResponse<IEnumerable<Noeud_Etudiant>>(itemList, 200, "Succès");
+                }
+                else
+                {
+                    return new APIResponse<IEnumerable<Noeud_Etudiant>>(null, 404, $"{typeof(Noeud_Etudiant).Name} non trouvé");
+                }
+            }
+            catch (Exception ex)
+            {
+                return new APIResponse<IEnumerable<Noeud_Etudiant>>(null, 500, $"Erreur lors de la récupération du model par son parent {typeof(Noeud_Etudiant).Name}. Message : {ex.Message}.");
+            }
         }
 
         public async Task<APIResponse<IEnumerable<Noeud_Etudiant>>> GetAllNoeudForStudent(string id)

@@ -45,13 +45,14 @@ namespace STIMULUS_V2.Client.Services
             return result;
         }
 
-        public Task<APIResponse<IEnumerable<Groupe_Etudiant>>> GetAllById(int id)
+        public async Task<APIResponse<IEnumerable<Noeud_Etudiant>>> GetAllById(int id)
         {
-            throw new NotImplementedException();
+            var result = await _httpClient.GetFromJsonAsync<APIResponse<IEnumerable<Noeud_Etudiant>>>($"api/NoeudEtudiant/Fetch/All/{id}");
+            return result; ;
         }
         public async Task<APIResponse<IEnumerable<Noeud_Etudiant>>> GetAllNoeudForStudent(string item)
         {
-            var result = await _httpClient.GetFromJsonAsync<APIResponse<IEnumerable<Noeud_Etudiant>>>($"api/GroupeEtudiant/Fetch/All/NoeudForStudent/{item}");
+            var result = await _httpClient.GetFromJsonAsync<APIResponse<IEnumerable<Noeud_Etudiant>>>($"api/NoeudEtudiant/Fetch/All/NoeudForStudent/{item}");
             return result; ;
         }
 
@@ -59,11 +60,6 @@ namespace STIMULUS_V2.Client.Services
         {
             var result = await _httpClient.PutAsJsonAsync($"api/NoeudEtudiant/Update/{id}", item);
             return await result.Content.ReadFromJsonAsync<APIResponse<Noeud_Etudiant>>();
-        }
-
-        Task<APIResponse<IEnumerable<Noeud_Etudiant>>> IModelService<Noeud_Etudiant, int>.GetAllById(int id)
-        {
-            throw new NotImplementedException();
         }
     }
 }
