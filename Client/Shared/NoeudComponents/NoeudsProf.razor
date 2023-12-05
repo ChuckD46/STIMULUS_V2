@@ -35,17 +35,21 @@
         <foreignObject x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(-180 + Node.Rayon/2)" visibility="@displayHover" width="200" height="150" style="padding:5px">
             <span> Nom :  @Node.Nom </span><br />
             <span>Parent : @TestParent()</span><br /> @*Pour ne pas avoir de champ vide*@
-            <span> Desc : @Node.Description</span>
+            <span> Desc : @Node.Description</span><br />
+            <span> Type : @Node.Type </span>
         </foreignObject>
     }
     @if (GetModeDeVue() == 2)
     {
-        @if (Nodes.Where(c => c.NoeudParentId == Node.NoeudId).ToList().Count == 0 || Node.NoeudId == Node.NoeudParentId)
-        {
-            <foreignObject x="@(-Node.Rayon )" y="@(-Node.Rayon )" width="20" height="20">
-                <span id="deleteNoeud" title="Supprimer le noeud @Node.Status" class="oi oi-circle-x" aria-hidden="true" @onclick="@SupprimerNoeud"></span>
-            </foreignObject>
+        @if(Nodes.Count > 1){
+            @if (Nodes.Where(c => c.NoeudParentId == Node.NoeudId).ToList().Count == 0 || Node.NoeudId == Node.NoeudParentId)
+            {
+                <foreignObject x="@(-Node.Rayon )" y="@(-Node.Rayon )" width="20" height="20">
+                    <span id="deleteNoeud" title="Supprimer le noeud @Node.Status" class="oi oi-circle-x" aria-hidden="true" @onclick="@SupprimerNoeud"></span>
+                </foreignObject>
+            }
         }
+        
         @if (Node.NoeudParentId == null || Node.NoeudId == Node.NoeudParentId)
         {
             <foreignObject x="@((-Node.Rayon) )" y="@((Node.Rayon)/2 )" width="20" height="20">
@@ -62,7 +66,7 @@
                 <span title="Ajouter un nouveau noeud a @Node.Nom" id="addNoeud" class="oi oi-minus" aria-hidden="true" @onclick="@FermeForm"></span>
             }
         </foreignObject>
-        <rect x="@(Node.Rayon/2 + 20)" y="@(Node.Rayon/2 + 20)" visibility="@displayNouveauNoeud" width="@formSizeW" height="@formSizeH" style="fill: rgba(0, 0, 0, 0.5); stroke: black; stroke-width: 1; rx: 10; ry: 10;" />
+        <rect x="@(Node.Rayon/2 + 20)" y="@(Node.Rayon/2 + 20)" visibility="@displayNouveauNoeud" width="@formSizeW" height="@formSizeH" style="fill: rgba(0, 0, 0, 0.8); stroke: black; stroke-width: 1; rx: 10; ry: 10;" />
         <foreignObject x="@(Node.Rayon/2 +20 )" y="@(Node.Rayon/2 +20)" visibility="@displayNouveauNoeud" width="@formSizeW" height="@formSizeH" style="padding:5px">
             <EditForm Model="nouveauNoeud" OnSubmit="AjoutNoeud" visibility="@displayNouveauNoeud" class="formLogin">
                 <div class="form-group">
@@ -75,7 +79,7 @@
                 </div>
                 <div class="form-group">
                     <label for="rayon"><h5>Rayon :</h5></label>
-                    <InputNumber type="number" class="form-control" id="rayon" min="40" max="80" placeholder="40" @bind-Value="nouveauNoeud.Rayon" />
+                    <InputNumber type="number" class="form-control" id="rayon" min="40" max="80" placeholder="40-80" @bind-Value="nouveauNoeud.Rayon" />
                 </div>
                 <div class="form-group">
                     <label for="status"><h5>Status :</h5></label>
@@ -89,8 +93,8 @@
                 <div class="form-group">
                     <label for="modelNoeud"><h5>Modèle de Noeud :</h5></label>
                     <select class="form-control" id="modelNoeud" @bind="modelNoeud">
-                        <option value="Noeud_Contenu" selected="@(modelNoeud == "CONTENU")">Noeud Contenu</option>
-                        <option value="Noeud_Structure" selected="@(modelNoeud == "STRUCTURE")">Noeud Structure</option>
+                        <option value="CONTENU">Noeud Contenu</option>
+                        <option value="STRUCTURE">Noeud Structure</option>
                     </select>
                 </div>
                 <div class="form-group" style="text-align: center;">
@@ -228,9 +232,8 @@
 
         var pageNoeud = await PageService.GetAllFromNoeud(Node.NoeudId);
         var affichPage = pageNoeud.Data;
-
+        nouveauNoeud.Rayon = 40;
         listePage.AddRange(affichPage);
-
         StateHasChanged();
     }
 
@@ -283,6 +286,10 @@
         nouveauNoeud.NoeudParentId = Node.NoeudId;
         nouveauNoeud.Obligatoire = true;
         nouveauNoeud.Disponibilite = DateTime.Now;
+        if(modelNoeud == "STRUCTURE")
+            nouveauNoeud.Type = NoeudType.STRUCTURE;
+        else
+            nouveauNoeud.Type = NoeudType.CONTENU;
 
         if (nouveauNoeud.Nom != null && nouveauNoeud.Description != null && nouveauNoeud.Nom.Length >= 3 && nouveauNoeud.Nom.Length <= 10 && nouveauNoeud.Description.Length >= 3 && nouveauNoeud.Description.Length <= 100 && nouveauNoeud.Rayon != null)
         {
@@ -365,7 +372,7 @@
     {
         //Base du nouveau noeud
         formSizeW = 250;
-        formSizeH = 480;
+        formSizeH = 445;
         displayNouveauNoeud = "visible";
         isOpen = true;
     }
@@ -467,7 +474,7 @@
 
         await sessionStorage.SetItemAsync<int>("idPage", id);
         await sessionStorage.SetItemAsync<int>("idNoeud", (int)pageNoeud.NoeudId);
-        NavigationManager.NavigateTo("/ModifierPage");
+        NavigationManager.NavigateTo("/ModifierPages");
     }
 
     private async void DirectionPagesEtudiant()
