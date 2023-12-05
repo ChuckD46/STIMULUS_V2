@@ -9,87 +9,88 @@
 @inject IExerciceService ExerciceService
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage;
 
-
-<div class="fileSelector">
-    @if (FichierCode != null)
-    {
-        @foreach (Fichier fichier in FichierCode)
-        {
-
-            @if (fichier.Nom == "Main.py" || fichier.Nom == "main.py")
-            {
-                <div class="file-tab">
-                    <button @onclick="() => ChangeTab(fichier.Id)" style="color: @(fichier.Css == "focused" ? "white" : "grey")">@((fichier.Nom != null) ? fichier.Nom : "")</button>
-                </div>
-            }
-            else
-            {
-                <div class="file-tab">
-                    <button @onclick="() => ChangeTab(fichier.Id)" style="color: @(fichier.Css == "focused" ? "white" : "grey")">@((fichier.Nom != null) ? fichier.Nom : "")</button>
-                    <button class="close-button" @onclick="() => Delete(fichier.Id)">X</button>
-                </div>
-            }
-
-        }
-    }
-    else
-    {
-        <p>Chargement...</p>
-    }
-    <button @onclick="AddPage">+</button>
-</div>
-
-<div class="d-flex justify-content-around">
-    <div class="d-flex justify-content-between">
-        <div>
-            <StandaloneCodeEditor Id="monaco" ConstructionOptions="EditorConstructionOptions" @ref="_editor" />
-        </div>
+@if (InitDone)
+{
+    <div class="fileSelector">
         @if (FichierCode != null)
         {
             @foreach (Fichier fichier in FichierCode)
             {
 
-                if (fichier.Css != "hidden")
+                @if (fichier.Nom == "Main.py" || fichier.Nom == "main.py")
                 {
-                    SetCode(@fichier.Contenu);
+                    <div class="file-tab">
+                        <button @onclick="() => ChangeTab(fichier.Id)" style="color: @(fichier.Css == "focused" ? "white" : "grey")">@((fichier.Nom != null) ? fichier.Nom : "")</button>
+                    </div>
                 }
-                <textarea class="textareaCode hidden" id="@fichier.Id" cols="50" rows="25" name="@((fichier.Nom != null) ? fichier.Nom : "")" @bind=@fichier.Contenu @bind:event="oninput" @onfocus="() => Tab(fichier.Id)"></textarea>
+                else
+                {
+                    <div class="file-tab">
+                        <button @onclick="() => ChangeTab(fichier.Id)" style="color: @(fichier.Css == "focused" ? "white" : "grey")">@((fichier.Nom != null) ? fichier.Nom : "")</button>
+                        <button class="close-button" @onclick="() => Delete(fichier.Id)">X</button>
+                    </div>
+                }
+
             }
         }
         else
         {
             <p>Chargement...</p>
         }
+        <button @onclick="AddPage">+</button>
     </div>
-    <div id="background-result">
-        <p style="white-space:pre-wrap">@Result</p>
+
+    <div class="d-flex justify-content-around">
+        <div class="d-flex justify-content-between">
+            <div>
+                <StandaloneCodeEditor Id="monaco" ConstructionOptions="EditorConstructionOptions" @ref="_editor" />
+            </div>
+            @if (FichierCode != null)
+            {
+                @foreach (Fichier fichier in FichierCode)
+                {
+
+                    if (fichier.Css != "hidden")
+                    {
+                        SetCode(@fichier.Contenu);
+                    }
+                    <textarea class="textareaCode hidden" id="@fichier.Id" cols="50" rows="25" name="@((fichier.Nom != null) ? fichier.Nom : "")" @bind=@fichier.Contenu @bind:event="oninput" @onfocus="() => Tab(fichier.Id)"></textarea>
+                }
+            }
+            else
+            {
+                <p>Chargement...</p>
+            }
+        </div>
+        <div id="background-result">
+            <p style="white-space:pre-wrap">@Result</p>
+        </div>
     </div>
-</div>
 
-<!-- Section bouton -->
-<div class="row">
-    <div class="d-flex flex-row-reverse" style="width: 800px">
-        <button @onclick=@Post class="boutonExerciceGauche">Éxecuter</button>
-        <button @onclick=@Save class="boutonExerciceDroite">Sauvegarder</button>
+    <!-- Section bouton -->
+    <div class="row">
+        <div class="d-flex flex-row-reverse" style="width: 800px">
+            <button @onclick=@Post class="boutonExerciceGauche">Éxecuter</button>
+            <button @onclick=@Save class="boutonExerciceDroite">Sauvegarder</button>
+        </div>
     </div>
-</div>
 
-<style>
-    .focused {
-        display: block;
-    }
+    <style>
+        .focused {
+            display: block;
+        }
 
-    .hidden {
-        display: none;
-    }
+        .hidden {
+            display: none;
+        }
 
-    .monaco-editor-container { /* for all editor instances */
-        height: 600px;
-        width: 800px;
-    }
-</style>
+        .monaco-editor-container { /* for all editor instances */
+            height: 600px;
+            width: 800px;
+        }
+    </style>
 
-@code {
+    @code {
     [Parameter]
     public int Reference { get; set; }
 
@@ -97,6 +98,63 @@
 
     private StandaloneCodeEditor _editor { get; set; }
     private bool showDeleteConfirmation = false;
+
+    /// <summary>
+    /// Initialise le composant en allant chercher les fichiers d'ecercice correspondants
+    /// </summary>
+    protected override async void OnInitialized()
+    {
+        //IdEtudiant = await sessionStorage.GetItemAsync<string>("idConnexion");
+
+        IdEtudiant = "etu";
+
+        var Exercice = await ExerciceService.Get(Reference);
+        exercice = Exercice.Data;
+
+        await base.OnInitializedAsync();
+        StateHasChanged();
+        try
+        {
+            var fichiersSauvegardesCall = await FichierSauvegardeService.GetAllExercice(ExerciceModel.ExerciceId, "etu");
+            //var fichiersSauvegardesCall = await FichierSauvegardeService.GetAll();
+
+            var fichier = fichiersSauvegardesCall.Data;
+
+            if (fichier != null)
+            {
+                FichierCode = new List<Fichier>();
+
+                foreach (var fichierListSauvegarde in fichier)
+                {
+                    FichierCode.Add(new Fichier()
+                        {
+                            Contenu = fichierListSauvegarde.Contenue,
+                            Nom = fichierListSauvegarde.Nom,
+                            Id = fichierListSauvegarde.FichierSauvegardeId,
+                            Css = HiddenTab
+                        });
+                }
+            }
+            else
+            {
+                FichierCode.Add(new Fichier()
+                {
+                    Contenu = "print('Hello World !')",
+                    Nom = "Main.py",
+                    Id = -(FichierCode.Count + 1),
+                    Css = FocusedTab            
+                });
+            }
+        }
+        catch (Exception e)
+        {
+            
+        }
+
+
+        InitDone = true;
+        await InvokeAsync(StateHasChanged);
+    }
 
     private async Task<string> GetCode()
     {
@@ -182,41 +240,6 @@
         }
     }
     private List<Fichier> FichierCode { get; set; }
-
-    /// <summary>
-    /// Initialise le composant en allant chercher les fichiers d'ecercice correspondants
-    /// </summary>
-    protected override async void OnInitialized()
-    {
-        //IdEtudiant = await sessionStorage.GetItemAsync<string>("idConnexion");
-
-        IdEtudiant = "etu";
-
-        //var Exercice = await ExerciceService.Get(Reference);
-        //exercice = Exercice.Data;
-
-        //await base.OnInitializedAsync();
-        //StateHasChanged();
-
-        var fichiersSauvegardesCall = await FichierSauvegardeService.GetAllExercice(ExerciceModel.ExerciceId, IdEtudiant);
-        var fichier = fichiersSauvegardesCall.Data;
-
-        FichierCode = new List<Fichier>();
-
-        foreach (var fichierListSauvegarde in fichier)
-        {
-            FichierCode.Add(new Fichier()
-                {
-                    Contenu = fichierListSauvegarde.Contenue,
-                    Nom = fichierListSauvegarde.Nom,
-                    Id = fichierListSauvegarde.FichierSauvegardeId,
-                    Css = HiddenTab
-                });
-        }
-
-        InitDone = true;
-        await InvokeAsync(StateHasChanged);
-    }
 
     /// <summary>
     /// Permet de DELETE un ficher_sauvegarde
@@ -309,17 +332,19 @@
         foreach (Fichier fichier in FichierCode)
         {
             if (fichier.Css != "hidden")
+            {
                 id = fichier.Id;
+            }
             await ChangeTab(fichier.Id);
             fichiersSauvegardes.Add(new FichierSauvegarde()
-                {
-                    FichierSauvegardeId = fichier.Id,
-                    ExerciceId = ExerciceModel.ExerciceId,
-                    CodeDA = IdEtudiant,
-                    Contenue = fichier.Contenu,
-                    Nom = fichier.Nom,
-                    Version = DateTime.Now
-                });
+            {
+                FichierSauvegardeId = fichier.Id,
+                ExerciceId = ExerciceModel.ExerciceId,
+                CodeDA = IdEtudiant,
+                Contenue = fichier.Contenu,
+                Nom = fichier.Nom,
+                Version = DateTime.Now
+            });
         }
         try
         {
@@ -406,22 +431,31 @@
         }
         else
         {
-            foreach (Fichier f in FichierCode)
+            try
             {
-                f.Css = HiddenTab;
-            }
+                foreach (Fichier f in FichierCode)
+                {
+                    f.Css = HiddenTab;
+                }
 
-            FichierCode.Add(new Fichier()
+                FichierCode.Add(new Fichier()
                 {
                     Contenu = "print('Hello World !')",
                     Nom = nomFichier,
                     Id = -(FichierCode.Count + 1),
                     Css = FocusedTab
                 });
+            }
+            catch (Exception e)
+            {
+                <p>@e</p>
+            }
+            
         }
 
         StateHasChanged();
     }
 
     public EventCallback<List<FichierSource>> FichierSourceChanged { get; set; }
+    }
 }

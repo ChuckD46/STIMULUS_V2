@@ -21,12 +21,13 @@
 @page "/ModifierPages"
 
 
-<RadzenLayout Style="grid-template-columns: 1fr auto; grid-template-areas: 'rz-header rz-header' 'rz-body rz-sidebar'; height: 3200px;">­
+<RadzenLayout Style="grid-template-columns: 1fr auto; grid-template-areas: 'rz-header rz-header' 'rz-body rz-sidebar'; height: 3200px;">
+    ­
     <RadzenSidebar>
         <RadzenPanelMenu>
             @foreach (var page in listePage.OrderBy(c => c.Ordre))
             {
-                <RadzenPanelMenuItem Text="@((page.Ordre != null) ? "Page #" + page.Ordre : "")" Click="@(args => ChangePageWithNavBar(page.PageId))" Icon="book"/>
+                <RadzenPanelMenuItem Text="@((page.Ordre != null) ? "Page #" + page.Ordre : "")" Click="@(args => ChangePageWithNavBar(page.PageId))" Icon="book" />
             }
             <RadzenPanelMenuItem Text="Ajouter une page" Click="@(args => AddPage())" Icon="note_add" />
         </RadzenPanelMenu>
@@ -66,7 +67,7 @@
                                                     <RadzenLabel Text="Type de composant" />
                                                 </RadzenColumn>
                                                 <RadzenColumn Size="12" SizeMD="8">
-                                                    <RadzenDropDown @bind-Value="typeComposant" Placeholder="Type" Data="types" Style="width: 200px;" Name="Type" />                                
+                                                    <RadzenDropDown @bind-Value="typeComposant" Placeholder="Type" Data="types" Style="width: 200px;" Name="Type" />
                                                 </RadzenColumn>
                                             </RadzenRow>
 
@@ -140,7 +141,7 @@
                                             }
                                             @if (typeComposant == "Exercice")
                                             {
-                                                <RadzenRow AlignItems="AlignItems.Center">
+                                                <RadzenRow>
                                                     <RadzenColumn Size="12" SizeMD="4">
                                                         <RadzenLabel Text="Solution" />
                                                     </RadzenColumn>
@@ -182,7 +183,7 @@
             <RadzenRow RowGap="2" Class="justify-content-center">
                 @foreach (var composant in listComposant.OrderBy(c => c.Ordre))
                 {
-                    <div style="margin: 0 auto; width: 100%;max-width: 1200px; padding: 10px; text-align: center; box-sizing: content-box;">
+                    <div style="margin: 0 auto; width: 100%;max-width: 1200px; padding: 10px; box-sizing: content-box;">
                         <!-- Conteneur du bouton -->
                         <div style="text-align: right; margin-bottom: 10px;">
                             <div style="text-align: center;">
@@ -195,15 +196,17 @@
                         </div>
 
                         <!-- Conteneur du composant spécifique -->
+                        @if (composant.Type == "Code")
+                        {
+                            <CodeComponent Reference="composant.Reference" />
+                        }
+                        @if (composant.Type == "Exercice")
+                        {
+                            <ExerciceComponent Reference="composant.Reference" />
+                        }
+
                         <div style="text-align: center;">
-                            @if (composant.Type == "Code")
-                            {
-                                <CodeComponent Reference="composant.Reference" />
-                            }
-                            @if (composant.Type == "Exercice")
-                            {
-                                <ExerciceComponent Reference="composant.Reference" />
-                            }
+
                             @if (composant.Type == "Image")
                             {
                                 <ImageComponent Reference="composant.Reference" />
@@ -227,7 +230,7 @@
         </RadzenCard>
     </RadzenBody>
 
-    </RadzenLayout>
+</RadzenLayout>
 
 
 @code {
@@ -289,7 +292,7 @@
     {
         try
         {
-           await sessionStorage.GetItemAsync<int>("idPage");
+            await sessionStorage.GetItemAsync<int>("idPage");
         }
         catch
         {
@@ -415,7 +418,8 @@
         {
             composant.Ordre = 1;
         }
-        else{
+        else
+        {
             composant.Ordre = composants.Count() + 1;
         }
 
@@ -507,7 +511,7 @@
                 var firstPage = listePage.FirstOrDefault();
                 await sessionStorage.SetItemAsync<int>("idPage", firstPage.PageId);
             }
-            
+
             var allPage2 = await PageService.GetAllFromNoeud(noeud.NoeudId);
             listePage = allPage2.Data.ToList();
             StateHasChanged();
