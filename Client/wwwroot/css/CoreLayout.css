@@ -3,6 +3,15 @@
     background-color: #394867;
 }
 
+#logo-container-header {
+    width: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    color: #394867;
+}
+
 .custom-header-radzen-breadcrumb {
     font-size: smaller;
     font-weight: bolder;
@@ -15,6 +24,12 @@
 
 .custom-header-title{
     font-family: Oswald;
+}
+
+.custom-header-cepi {
+    font-family: Oswald;
+    color: white;
+    font-size: x-large;
 }
 
 .custom-header-subtitle{
@@ -81,30 +96,33 @@
     font-size: 12px;
 }
 
+
+
 /*Cette section concerne l'ensemble du logo animé*/
-#logo-container {
+#logo-container-loading {
     width: 150px;
-    height: 50px;
     display: flex;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: center;
-    position: relative; /* Ajout d'une position relative pour positionner le texte animé */
+    position: relative;
+    color: #394867;
+    margin-left: 50%;
+    margin-top: 23%;
 }
 
 #animated-text {
-    /* Ajustez la durée de l'animation */
     font-family: Oswald;
     font-size: 20px;
-    fill: white;
+    fill: #394867;
     stroke: #394867;
     stroke-dashoffset: -25%;
     stroke-dasharray: 50% 0;
     stroke-width: 0;
-    font-weight: normal; /* Utiliser le même style que la fin de l'animation */
+    font-weight: normal;
 }
 
-#logo-container:hover #animated-text {
-    animation: stroke 5s infinite alternate;
+#logo-container-loading #animated-text {
+    animation: stroke 2s infinite alternate;
 }
 
 @keyframes stroke {
@@ -112,7 +130,7 @@
         stroke-dashoffset: 25%;
         stroke-dasharray: 0 50%;
         stroke-width: 2;
-        font-weight: bold; /* Rendre le texte en gras au début de l'animation */
+        font-weight: bold; 
     }
 
     70% {
@@ -140,4 +158,60 @@
 .custom-menusidebar-subtilte{
     font-family: Comfortaa;
     font-size: small;
+}
+
+/*Cette section concerne l'ensemble de Login*/
+.custom-login-background {
+    display: flex;
+    justify-content:center; 
+    padding-top:7%;
+    background: linear-gradient(360deg, hsla(215, 33%, 23%, 1) 5%, hsla(206, 31%, 90%, 1) 100%);
+}
+
+#logo-container-loadinginloading {
+    width: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    color: #394867;
+}
+
+#animated-text {
+    font-family: Oswald;
+    font-size: 20px;
+    fill: #394867;
+    stroke: #394867;
+    stroke-dashoffset: -25%;
+    stroke-dasharray: 50% 0;
+    stroke-width: 0;
+    font-weight: normal;
+}
+
+#logo-container-loadinginloading #animated-text {
+    animation: stroke 2s infinite alternate;
+}
+
+@keyframes stroke {
+    0% {
+        stroke-dashoffset: 25%;
+        stroke-dasharray: 0 50%;
+        stroke-width: 2;
+        font-weight: bold;
+    }
+
+    70% {
+        stroke: #394867;
+    }
+
+    80% {
+        stroke-width: 3;
+    }
+
+    100% {
+        stroke-dashoffset: -25%;
+        stroke-dasharray: 50% 0;
+        stroke-width: 0;
+        font-weight: normal; /* Revenir à la normale à la fin de l'animation */
+    }
 }

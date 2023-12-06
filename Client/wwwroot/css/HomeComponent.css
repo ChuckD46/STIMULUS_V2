@@ -27,6 +27,13 @@
     font-family: Comfortaa;
     color: #F1F6F9;
 }
+
+.custom-homestudent-background {
+    position: static;
+    background: linear-gradient(180deg, hsla(220, 29%, 31%, 1) 30%, hsla(218, 14%, 66%, 1) 66%);
+    height: 63%;
+}
+
 .custom-homestudent-searchbar {
     border-radius: 50px;
     border-color: #14274E;
@@ -34,6 +41,8 @@
     display: inline-block;
     width: 200%;
     height: 5%;
+    color: #9BA4B4;
+    font-family: Oswald;
 }
 
 .custom-homestudent-role-text{
@@ -57,6 +66,10 @@
     position: relative;
     display: inline-block;
 }
+.custom-homestudent-wave-effect-color {
+    height: 60%;
+    margin-bottom:10000px;
+}
 
 .custom-homestudent-wave-effect-color .shape-fill {
     fill: #F1F6F9;
@@ -65,9 +78,9 @@
 .custom-homestudent-search-icon {
     position: absolute;
     top: 50%;
-    left: 110%; /* Ajustez la position selon vos besoins */
+    left: 85%; /* Ajustez la position selon vos besoins */
     transform: translateY(-50%);
-    color: #555;
+    color: #9BA4B4;
     cursor: pointer;
 }
 

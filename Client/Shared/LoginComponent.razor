@@ -11,9 +11,16 @@
     @if (isLoading)
     {
         <div class="loading-overlay">
-            <RadzenStack AlignItems="Radzen.AlignItems.Center" Class="rz-m-12" Gap="2rem">
+          @*  <RadzenStack AlignItems="Radzen.AlignItems.Center" Class="rz-m-12" Gap="2rem">
                 <RadzenProgressBarCircular ProgressBarStyle="ProgressBarStyle.Danger" ShowValue="false" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.Medium" />
-            </RadzenStack>
+            </RadzenStack>*@
+            <div id="logo-container-loadinginloading">
+                <svg xmlns="http://www.w3.org/2000/svg" width="150" height="50">
+                    <text x="50%" y="50%" font-size="50" stroke-width="2" stroke="#365FA0" fill="lightyellow" id="animated-text" text-anchor="middle" dy="0.3em">
+                        C E P I
+                    </text>
+                </svg>
+            </div>
         </div>
     }
 
