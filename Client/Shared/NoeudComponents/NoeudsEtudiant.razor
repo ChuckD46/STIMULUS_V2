@@ -91,12 +91,7 @@
 
     private string TestParent() => (Node.NoeudParentId != null) ? Node.NoeudParentId.ToString() : "Aucun";
 
-    // private async Task <string> TestParent()
-    // {
-    //     var noeudParent = await NoeudService.Get((int)Node.NoeudParentId);
 
-    //     return noeudParent.Data.Nom;
-    // }
     private void OnMouseHover() => displayHover = "visible";
 
     private void OnMouseLeave()

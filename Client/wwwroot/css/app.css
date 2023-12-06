@@ -175,6 +175,14 @@ Connecteur:hover {
         color: royalblue;
         cursor: pointer;
     }
+#LockAndUnlockedGraphe {
+    color: black;
+}
+
+    #LockAndUnlockedGraphe:hover {
+        color: goldenrod;
+        cursor: pointer;
+    }
 
 a {
     text-decoration: none;

@@ -10,6 +10,7 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JsRunTime
 @inject IPageService PageService
+@inject IGrapheService GrapheService
 @inject IComposantService ComposantService
 @inject IEtudiantService EtudiantService
 @inject INoeudEtudiantService NoeudEtudiantService
@@ -44,6 +45,7 @@
     @if (GetModeDeVue() == 2)
     {
         Couleur = COULEUR_BLOQUER;
+
         @if(Nodes.Count > 1){
             @if (Nodes.Where(c => c.NoeudParentId == Node.NoeudId).ToList().Count == 0 || Node.NoeudId == Node.NoeudParentId)
             {
@@ -61,10 +63,14 @@
         else if (Node.Status == 2)
         {
                 <span title="Bloquer le noeud @Node.Nom" id="LockAndUnlocked" class="oi oi-lock-unlocked" aria-hidden="true" @onclick="(e => LockAndUnlocked(Node))"></span>
-        } 
-        else
+        }
+            else if ((graphe != null) && (graphe.Status != null) && (graphe.Status == GrapheStatus.ACTIVER) && Node.Status == 0)
         {
-                <span title="Le noeud @Node.Nom est le noeud de base" class="oi oi-shield" aria-hidden="true"></span>
+                <span title="Désactiver le graphe" id="LockAndUnlockedGraphe" class="oi oi-lock-unlocked" aria-hidden="true" @onclick="(e => LockAndUnlockedGraphe(Node))"></span>
+        }
+            else if ((graphe != null) && (graphe.Status != null) && (graphe.Status == GrapheStatus.DESACTIVER) && Node.Status == 0)
+        {
+                <span title="Activer le graphe" id="LockAndUnlockedGraphe" class="oi oi-lock-locked" aria-hidden="true" @onclick="(e => LockAndUnlockedGraphe(Node))"></span>
         }
         </foreignObject>
 
@@ -224,6 +230,7 @@
     private string modelNoeud = "CONTENU";
     private string statusNom = "";
     private Noeud nouveauNoeud = new();
+    private Graphe graphe { get; set; }
     private Noeud_Etudiant noeudEtudiant = new();
     private string displayNouveauNoeud = "hidden";
     private int formSizeH = 0;
@@ -239,6 +246,9 @@
     protected override async Task OnInitializedAsync()
     {
         Couleur = COULEUR_BLOQUER;
+
+        var grapheActuel = await GrapheService.Get(await sessionStorage.GetItemAsync<int>("idGraphe"));
+        graphe = grapheActuel.Data;
 
         var pageNoeud = await PageService.GetAllFromNoeud(Node.NoeudId);
         var affichPage = pageNoeud.Data;
@@ -321,12 +331,53 @@
         if(noeud.Status == 1)
         {
             Node.Status = 2;
-            await NoeudService.Update(Node.NoeudId, Node);   
+            await NoeudService.Update(Node.NoeudId, Node); 
         }
         else
         {
             Node.Status = 1;
             await NoeudService.Update(Node.NoeudId, Node);
+        }
+    }
+    private async Task LockAndUnlockedGraphe(Noeud noeud)
+    {
+        if (graphe.Status == GrapheStatus.ACTIVER)
+        {
+            graphe.Status = GrapheStatus.DESACTIVER;
+            await GrapheService.Update(graphe.GrapheId, graphe);        
+        }
+        else
+        {
+            graphe.Status = GrapheStatus.ACTIVER;
+            await GrapheService.Update(graphe.GrapheId, graphe);
+
+            var childrenNodesResponse = await NoeudService.GetAllById(noeud.NoeudId); // Contient tous les enfants dans la table noeuds
+
+            var childrenNodes = childrenNodesResponse.Data;
+
+            var parentNoeudEtudiant = await NoeudEtudiantService.GetByNoeudId(noeud.NoeudId); // Contient le neoud parent dans la table Noeud Etudiant
+
+            foreach (var childNode in childrenNodes)
+            {
+                var childNoeudEtudiant = await NoeudEtudiantService.GetByNoeudId(childNode.NoeudId);
+
+                if (childNoeudEtudiant.Data != null)
+                {
+                        // BARRURE DE NOEUD ENFANT
+                        if (parentNoeudEtudiant.Data.Status == 0) // Si l'enfant est bloqué par le prof
+                        {
+                            if (childNoeudEtudiant.Data.Status == 1) // et quer les enfants sont aussi bloqué par le prof
+                            {
+                                childNoeudEtudiant.Data.Status = 1; // Bloqué par le prof
+                            }
+                            else // sinon
+                                childNoeudEtudiant.Data.Status = 2; // bloqué par la progression
+
+                            await NoeudEtudiantService.Update(childNoeudEtudiant.Data.Noeud_EtudiantId, childNoeudEtudiant.Data); // Update chaque enfants du noeud parents
+                        }
+                }
+            }
+
         }
     }
 

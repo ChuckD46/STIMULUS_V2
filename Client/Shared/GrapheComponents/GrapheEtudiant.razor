@@ -14,6 +14,7 @@
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject IUpdateService updateService
 @inject INoeudService NoeudService;
+@inject IGrapheService GrapheService;
 @inject INoeudEtudiantService NoeudEtudiantService;
 @inject AppState State;
 @inject RerenderService Rerender
@@ -132,6 +133,8 @@
     /// </summary>
     private async Task CheckStatus(Noeud noeud)
     {
+        var graphe = await GrapheService.Get(await sessionStorage.GetItemAsync<int>("idGraphe"));
+
         try
         {
             // Récupérer tous les nœuds enfants du nœud parent
@@ -147,7 +150,15 @@
 
                 if (childNoeudEtudiant.Data != null)
                 {
-                    // BARRURE DE NOEUD ENFANT
+                    if (graphe.Data.Status == GrapheStatus.DESACTIVER)
+                    {
+                        if (parentNoeudEtudiant.Data.Status == 0) // Si l'enfant est bloqué par le prof
+                        {
+                            childNoeudEtudiant.Data.Status = 5; // reste bloqué
+                        }
+                    }
+              
+                    
                     if (parentNoeudEtudiant.Data.Status == 1) // si la parent est bloqué par le prof
                     {
                         if (childNoeudEtudiant.Data.Status == 1) // et quer les enfants sont aussi bloqué par le prof
@@ -155,8 +166,7 @@
                             childNoeudEtudiant.Data.Status = 1; // Bloqué par le prof
                         }
                         else // sinon
-                            childNoeudEtudiant.Data.Status = 2; // bloqué par la progression
-
+                            childNoeudEtudiant.Data.Status = 5; // bloqué par la progression
                     }
 
                     if (parentNoeudEtudiant.Data.Status == 5) // si le parent est bloqué par la progression
@@ -178,6 +188,7 @@
                         }
                     }
                     //OUVERTURE DE NOEUD ENFANT
+
                     else if (parentNoeudEtudiant.Data.Status == 4 && childNoeudEtudiant.Data.Status == 4) // si le parent et l'enfant son complétés
                     {
                         childNoeudEtudiant.Data.Status = 4; // l'enfant est complété
@@ -190,21 +201,24 @@
                             childNoeudEtudiant.Data.Status = 1; // reste bloqué
                         }
                         else
-                        {   
+                        {
                             childNoeudEtudiant.Data.Status = 2; // si non il est non complété
                         }
                     }
-                    // Update the status for each Noeud_Etudiant
-                   await NoeudEtudiantService.Update(childNoeudEtudiant.Data.Noeud_EtudiantId, childNoeudEtudiant.Data); // Update chaque enfants du noeud parents
-                }
+                        // Update the status for each Noeud_Etudiant
+                        await NoeudEtudiantService.Update(childNoeudEtudiant.Data.Noeud_EtudiantId, childNoeudEtudiant.Data); // Update chaque enfants du noeud parents
+                    }
+                    
+                }        
             }
-
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Erreur : {ex}");
-        }        
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erreur : {ex}");
+            }
     }
+            
+             
+
 
     /// <summary>
     /// Appeler un changement de status
