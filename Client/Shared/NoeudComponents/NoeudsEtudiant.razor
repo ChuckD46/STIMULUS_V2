@@ -84,7 +84,7 @@
         if (etudiantData != null)
         {
             noeudEtudiant = etudiantData.Data;
-            Rerender.OnNoeudStatus += UpdateChildrenColors;
+            UpdateChildrenColors();
         }
     }
 
@@ -111,12 +111,16 @@
 
             // Stocker l'ID de la première page dans la session
             noeudEtudiant.Status = 3;
+            await NoeudEtudiantService.Update(noeudEtudiant.Noeud_EtudiantId, noeudEtudiant);
+            await OnStatusUpdated.InvokeAsync();
+            Rerender.TriggerStatusNoeud();
             await sessionStorage.SetItemAsync<int>("idPage", firstPage.PageId);
         }
         else
         {
             await sessionStorage.RemoveItemAsync("idPage");
         }
+
         NavigationManager.NavigateTo("/Pages");
     }
 

@@ -76,8 +76,6 @@
 </div>
 
 @code {
-    [Parameter]
-    public EventCallback OnStatusChanged{ get; set; }
     private string displayHover;
     public List<Noeud> Nodes { get; set; } = new();
     private List<Noeud> NodesTemp { get; set; } = new();
@@ -94,6 +92,7 @@
     protected async override void OnInitialized()
     {
         await UpdateGraphe();
+        Rerender.OnNoeudStatus += HandleChangeNoeud;
     }
 
     /// <summary>
@@ -111,9 +110,15 @@
             await Task.Delay(100);
         }
         Nodes = ((APIResponse<IEnumerable<Noeud>>)await NoeudService.GetAllFromGraph(idGraphe)).Data.ToList();
-        await CheckStatus();
+        foreach (var noeud in Nodes)
+        {
+            await CheckStatus(noeud);
+        }
 
         // Consider navigating using a relative URL
+        Nodes.Clear();
+        StateHasChanged();
+        Nodes = ((APIResponse<IEnumerable<Noeud>>)await NoeudService.GetAllFromGraph(idGraphe)).Data.ToList();
         StateHasChanged();
         // NavigationManager.NavigateTo("/graphe");
     }
@@ -123,16 +128,16 @@
     private void OnMouseHover() => displayHover = "show";
     private void OnMouseLeave() => displayHover = "hidden";
 
-    private async Task CheckStatus()
+    private async Task CheckStatus(Noeud noeud)
     {
         try
         {
             // Récupérer tous les nœuds enfants du nœud parent
-            foreach(var noeudParent in Nodes)
-            {
-                var childrenNodesResponse = await NoeudService.GetAllById(noeudParent.NoeudId);
+                var childrenNodesResponse = await NoeudService.GetAllById(noeud.NoeudId);
 
                 var childrenNodes = childrenNodesResponse.Data;
+
+                var parentNoeudEtudiant = await NoeudEtudiantService.GetByNoeudId(noeud.NoeudId);
 
                 foreach (var childNode in childrenNodes)
                 {
@@ -141,17 +146,17 @@
                     if (childNoeudEtudiant.Data != null)
                     {
                         // Utilize the status of the parent to update the status of the children
-                        if (noeudEtudiant.Status == 1 || noeudEtudiant.Status == 5) // Bloqué
+                        if (parentNoeudEtudiant.Data.Status == 1 || parentNoeudEtudiant.Data.Status == 5) // Bloqué
                         {
                             childNoeudEtudiant.Data.Status = 5; // Bloqué
                         }
-                        else if (noeudEtudiant.Status == 2) // Non complété
+                        else if (parentNoeudEtudiant.Data.Status == 2) // Non complété
                         {
                             childNoeudEtudiant.Data.Status = 5; // Bloqué
                         }
-                        else if (noeudEtudiant.Status == 4) // Complété
+                        else if (parentNoeudEtudiant.Data.Status == 4) // Complété
                         {
-                            if (childNoeudEtudiant.Data.Status != 1) // If the child status is not Bloqué
+                            if (parentNoeudEtudiant.Data.Status != 1) // If the child status is not Bloqué
                             {
                                 childNoeudEtudiant.Data.Status = 2; // Non complété
                             }
@@ -161,17 +166,18 @@
                         await NoeudEtudiantService.Update(childNoeudEtudiant.Data.Noeud_EtudiantId, childNoeudEtudiant.Data);
                     }
                 }
-            }
-            
+
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Erreur : {ex}");
         }
 
-        await OnStatusChanged.InvokeAsync();
-        Rerender.TriggerStatusNoeud();
-        // Mettre à jour l'interface utilisateur
+    }
+
+    private async void HandleChangeNoeud()
+    {
+        await UpdateGraphe();
         StateHasChanged();
     }
 
