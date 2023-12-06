@@ -39,6 +39,12 @@ namespace STIMULUS_V2.Client.Services
             return result;
         }
 
+        public async Task<APIResponse<Noeud_Etudiant>> GetByNoeudAndDa(int id, string da)
+        {
+            var result = await _httpClient.GetFromJsonAsync<APIResponse<Noeud_Etudiant>>($"api/NoeudEtudiant/Fetch/NoeudAndDa/{id}/{da}");
+            return result;
+        }
+
         public async Task<APIResponse<IEnumerable<Noeud_Etudiant>>> GetAll()
         {
             var result = await _httpClient.GetFromJsonAsync<APIResponse<IEnumerable<Noeud_Etudiant>>>("api/NoeudEtudiant/Fetch/All");

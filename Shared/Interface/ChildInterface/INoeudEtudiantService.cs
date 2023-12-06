@@ -14,5 +14,6 @@ namespace STIMULUS_V2.Shared.Interface.ChildInterface
         Task<APIResponse<IEnumerable<Noeud_Etudiant>>> GetAllNoeudForStudent(string id);
 
         Task<APIResponse<Noeud_Etudiant>> GetByNoeudId(int id);
+        Task<APIResponse<Noeud_Etudiant>> GetByNoeudAndDa(int id, string da);
     }
 }

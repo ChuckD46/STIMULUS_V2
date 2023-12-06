@@ -30,7 +30,7 @@
             <foreignObject x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(-180 + Node.Rayon/2)" visibility="@displayHover" width="200" height="150" style="padding:5px">
                 <span> Nom :  @Node.Nom / ID : @Node.NoeudId</span><br />
                 <span> Parent : @TestParent()</span><br /> @*Pour ne pas avoir de champ vide*@
-                <span> Desc : @Node.Description</span>
+                <span> Desc : @Node.Description</span>              
             </foreignObject>
             <text @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) text-anchor="middle" alignment-baseline="central">@Node.Nom</text>
         </NavLink>
@@ -79,7 +79,8 @@
     protected override async Task OnInitializedAsync()
     {
 
-        var etudiantData = await NoeudEtudiantService.GetByNoeudId(Node.NoeudId);
+        var etudiantData = await NoeudEtudiantService.GetByNoeudAndDa(Node.NoeudId, await sessionStorage.GetItemAsync<string>("idConnexion"));
+
 
         if (etudiantData != null)
         {
@@ -89,6 +90,13 @@
     }
 
     private string TestParent() => (Node.NoeudParentId != null) ? Node.NoeudParentId.ToString() : "Aucun";
+
+    // private async Task <string> TestParent()
+    // {
+    //     var noeudParent = await NoeudService.Get((int)Node.NoeudParentId);
+
+    //     return noeudParent.Data.Nom;
+    // }
     private void OnMouseHover() => displayHover = "visible";
 
     private void OnMouseLeave()
@@ -110,17 +118,16 @@
             var firstPage = affichPage.OrderBy(p => p.Ordre).First();
 
             // Stocker l'ID de la première page dans la session
-            noeudEtudiant.Status = 3;
+            noeudEtudiant.Status = 4;
             await NoeudEtudiantService.Update(noeudEtudiant.Noeud_EtudiantId, noeudEtudiant);
-            await OnStatusUpdated.InvokeAsync();
-            Rerender.TriggerStatusNoeud();
             await sessionStorage.SetItemAsync<int>("idPage", firstPage.PageId);
         }
         else
         {
             await sessionStorage.RemoveItemAsync("idPage");
         }
-
+        await OnStatusUpdated.InvokeAsync();
+        Rerender.TriggerStatusNoeud();
         NavigationManager.NavigateTo("/Pages");
     }
 

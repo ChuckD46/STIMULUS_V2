@@ -112,6 +112,26 @@ namespace STIMULUS_V2.Server.Services
                 return new APIResponse<Noeud_Etudiant>(null, 500, $"Erreur lors de la récupération du modèle {typeof(Noeud_Etudiant).Name}. Message : {ex.Message}.");
             }
         }
+        public async Task<APIResponse<Noeud_Etudiant>> GetByNoeudAndDa(int id, string da)
+        {
+            try
+            {
+                var item = await sTIMULUSContext.Noeud_Etudiant.Where(e => e.NoeudId == id && e.CodeDA == da).FirstOrDefaultAsync();
+
+                if (item != null)
+                {
+                    return new APIResponse<Noeud_Etudiant>(item, 200, "Succès");
+                }
+                else
+                {
+                    return new APIResponse<Noeud_Etudiant>(null, 404, $"{typeof(Noeud_Etudiant).Name} non trouvé");
+                }
+            }
+            catch (Exception ex)
+            {
+                return new APIResponse<Noeud_Etudiant>(null, 500, $"Erreur lors de la récupération du modèle {typeof(Noeud_Etudiant).Name}. Message : {ex.Message}.");
+            }
+        }
 
         public async Task<APIResponse<IEnumerable<Noeud_Etudiant>>> GetAll()
         {
