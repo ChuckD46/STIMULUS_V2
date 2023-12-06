@@ -125,7 +125,7 @@ namespace STIMULUS_V2.Server.Services
             {
                 var itemList = await sTIMULUSContext.FichierSauvegarde.Where(item => item.CodeDA == da && item.ExerciceId == exerciceId ).ToListAsync();
 
-                if (itemList != null)
+                if (itemList != null && itemList.Any())
                 {
                     return new APIResponse<IEnumerable<FichierSauvegarde>>(itemList, 200, "Succès");
                 }

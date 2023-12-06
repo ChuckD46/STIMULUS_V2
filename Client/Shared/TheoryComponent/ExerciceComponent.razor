@@ -111,49 +111,39 @@
         var Exercice = await ExerciceService.Get(Reference);
         exercice = Exercice.Data;
 
-        await base.OnInitializedAsync();
-        StateHasChanged();
+        FichierCode = new List<Fichier>();
+
         try
         {
-            var fichiersSauvegardesCall = await FichierSauvegardeService.GetAllExercice(ExerciceModel.ExerciceId, "etu");
-            //var fichiersSauvegardesCall = await FichierSauvegardeService.GetAll();
+            var fichiersSauvegardesCall = await FichierSauvegardeService.GetAllExercice(exercice.ExerciceId, "etu");
 
             var fichier = fichiersSauvegardesCall.Data;
 
-            if (fichier != null)
-            {
-                FichierCode = new List<Fichier>();
-
-                foreach (var fichierListSauvegarde in fichier)
-                {
-                    FichierCode.Add(new Fichier()
-                        {
-                            Contenu = fichierListSauvegarde.Contenue,
-                            Nom = fichierListSauvegarde.Nom,
-                            Id = fichierListSauvegarde.FichierSauvegardeId,
-                            Css = HiddenTab
-                        });
-                }
-            }
-            else
+            foreach (var fichierListSauvegarde in fichier)
             {
                 FichierCode.Add(new Fichier()
                 {
-                    Contenu = "print('Hello World !')",
-                    Nom = "Main.py",
-                    Id = -(FichierCode.Count + 1),
-                    Css = FocusedTab            
+                    Contenu = fichierListSauvegarde.Contenue,
+                    Nom = fichierListSauvegarde.Nom,
+                    Id = fichierListSauvegarde.FichierSauvegardeId,
+                    Css = HiddenTab
                 });
             }
         }
         catch (Exception e)
         {
-            
+            FichierCode.Add(new Fichier()
+            {
+                Contenu = "print('Hello World !')",
+                Nom = "Main.py",
+                Id = -(FichierCode.Count + 1),
+                Css = HiddenTab
+            });
+            StateHasChanged();
         }
-
-
         InitDone = true;
-        await InvokeAsync(StateHasChanged);
+        await base.OnInitializedAsync();
+        StateHasChanged();
     }
 
     private async Task<string> GetCode()
@@ -337,14 +327,14 @@
             }
             await ChangeTab(fichier.Id);
             fichiersSauvegardes.Add(new FichierSauvegarde()
-            {
-                FichierSauvegardeId = fichier.Id,
-                ExerciceId = ExerciceModel.ExerciceId,
-                CodeDA = IdEtudiant,
-                Contenue = fichier.Contenu,
-                Nom = fichier.Nom,
-                Version = DateTime.Now
-            });
+                {
+                    FichierSauvegardeId = fichier.Id,
+                    ExerciceId = ExerciceModel.ExerciceId,
+                    CodeDA = IdEtudiant,
+                    Contenue = fichier.Contenu,
+                    Nom = fichier.Nom,
+                    Version = DateTime.Now
+                });
         }
         try
         {
@@ -439,18 +429,18 @@
                 }
 
                 FichierCode.Add(new Fichier()
-                {
-                    Contenu = "print('Hello World !')",
-                    Nom = nomFichier,
-                    Id = -(FichierCode.Count + 1),
-                    Css = FocusedTab
-                });
+                    {
+                        Contenu = "print('Hello World !')",
+                        Nom = nomFichier,
+                        Id = -(FichierCode.Count + 1),
+                        Css = FocusedTab
+                    });
             }
             catch (Exception e)
             {
-                <p>@e</p>
+                Console.WriteLine(e);
             }
-            
+
         }
 
         StateHasChanged();
