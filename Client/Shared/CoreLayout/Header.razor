@@ -28,7 +28,7 @@
                                 @{
                                     sessionStorage.SetItemAsync<string>("idConnexion", context.User.Identity!.Name);
                                  }
-                                <span>@context.User.Identity!.Name</span>
+                                <span class="custom-header-subtitle">@context.User.Identity!.Name</span>
                             </Authorized>
                             <NotAuthorized>
                                 <span>Guest</span>
@@ -42,10 +42,10 @@
                             <RadzenProfileMenuItem Text="Menu" Path="menu" Icon="list"></RadzenProfileMenuItem>
                         </Authorized>
                     </AuthorizeView>
-                    <RadzenProfileMenuItem Text="Réglages" Path="settings" Icon="build"></RadzenProfileMenuItem>
-                    <RadzenProfileMenuItem Text="Profile" Path="/dsadsa" Icon="account_circle"></RadzenProfileMenuItem>
+                    <RadzenProfileMenuItem class="custom-header-title" Text="Réglages" Path="settings" Icon="settings"></RadzenProfileMenuItem>
+                    <RadzenProfileMenuItem class="custom-header-title" Text="Profile" Path="/dsadsa" Icon="account_circle"></RadzenProfileMenuItem>
                     <Button style="border:none; background-color: #FFFFFF; padding: 0;" @onclick="Logout">
-                        <RadzenProfileMenuItem Text="Déconnexion" Icon="exit_to_app"></RadzenProfileMenuItem>
+                        <RadzenProfileMenuItem class="custom-header-title" Text="Déconnexion" Icon="logout"></RadzenProfileMenuItem>
                     </Button>
 
 

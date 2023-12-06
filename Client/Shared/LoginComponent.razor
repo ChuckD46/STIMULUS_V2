@@ -20,18 +20,18 @@
     <RadzenRow Gap="0" Class="rz-my-12 rz-mx-auto rz-border-radius-6 rz-shadow-10" Style="width: 100%; max-width: 800px; overflow: hidden;">
         <RadzenColumn Size="12" SizeMD="6">
             <RadzenCard Class="rz-shadow-0 rz-border-radius-0 rz-text-align-center rz-p-12" Style="height: 100%; background: linear-gradient(225deg, hsla(215, 33%, 23%, 1) 37%, hsla(206, 31%, 90%, 1) 100%);">
-                <RadzenText TextStyle="TextStyle.DisplayH3" TagName="TagName.H2" Class="rz-color-white rz-mb-6">STIMULUS</RadzenText>
-                <RadzenText TextStyle="TextStyle.H6" Class="rz-color-white">Votre plateforme d'apprentissage en ligne.</RadzenText>
+                <RadzenText TextStyle="TextStyle.DisplayH3" TagName="TagName.H2" Class="rz-color-white rz-mb-6 custom-connexion-title">STIMULUS</RadzenText>
+                <RadzenText TextStyle="TextStyle.H6" Class="rz-color-white custom-connexion-subtitle">Votre plateforme d'apprentissage en ligne.</RadzenText>
             </RadzenCard>
         </RadzenColumn>
         <RadzenColumn Size="12" SizeMD="6">
             <RadzenCard Class="rz-shadow-0 rz-border-radius-0 rz-p-12">
-                <RadzenText  TextStyle="TextStyle.H5" TagName="TagName.H2" Class="rz-mb-6">
+                <RadzenText  TextStyle="TextStyle.H5" TagName="TagName.H2" Class="rz-mb-6 custom-connexion-title">
                     Connexion
                 </RadzenText>
                 <RadzenLabel Style="color: red" Text="@errorMessage" />
                 <RadzenTemplateForm  Data=@("SimpleLogin")>
-                    <RadzenLogin Style="--rz-primary: #14274E;" AllowRegister="false" AllowResetPassword="false"
+                    <RadzenLogin Style="--rz-primary: #14274E;" class="custom-connexion-subtitle" AllowRegister="false" AllowResetPassword="false"
                                  LoginText="Se connecter" UserText="Identifiant" PasswordText="Mot de passe"                               
                                  UserRequired="Identifiant requis"
                                  PasswordRequired="Mot de passe requis"

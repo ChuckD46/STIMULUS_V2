@@ -1,15 +1,35 @@
-﻿/*Cette sectionm comporte l'ensemble des composants Home*/
+﻿/*Cette section comporte l'ensemble des composants Home*/
 .custom-home-spacing {
-    padding-top: 20%;
+    padding-top: 10%;
     padding-left: 0;
     padding-right: 0;
     margin-left: 0;
     margin-right: 0;
 }
 
+.custom-home-title {
+    font-family: Oswald;
+    color: #14274E;
+}
+
+.custom-home-subtitle {
+    font-family: Comfortaa;
+    color: #14274E;
+}
+
 /*Cette section comprend l''ensemble du composant HomeStudent*/
-.custom-homestudent-searchbar{
+.custom-homestudent-title {
+    font-family: Oswald;
+    color: #F1F6F9;
+}
+
+.custom-homestudent-subtitle {
+    font-family: Comfortaa;
+    color: #F1F6F9;
+}
+.custom-homestudent-searchbar {
     border-radius: 50px;
+    border-color: #14274E;
     overflow: hidden;
     display: inline-block;
     width: 200%;
@@ -21,7 +41,7 @@
 }
 
 .custom-homestudent-help-text a {
-    color: inherit;
+    color: #F1F6F9;
     text-decoration: underline;
     transition: color 0.3s ease;
     padding-top: 0%;
@@ -47,7 +67,7 @@
     top: 50%;
     left: 110%; /* Ajustez la position selon vos besoins */
     transform: translateY(-50%);
-    color: #555; /* Couleur de l'icône */
+    color: #555;
     cursor: pointer;
 }
 

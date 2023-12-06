@@ -30,7 +30,7 @@
     --rz-secondary: #14274E;
     --rz-success: #6966db;
     --rz-info: #DEDEE0;
-    --rz-warning: #FFB500;
+    --rz-warning: #394867;
     --rz-danger: #14274E;
     --rz-panel-menu-item-active-color: #14274E;
     --rz-panel-menu-item-2nd-level-active-color: #14274E;
@@ -81,6 +81,7 @@ a, .btn-link {
 }
 
 .validation-message {
+    font-family: Comfortaa;
     color: red;
 }
 
