@@ -158,14 +158,7 @@
 
                 if (childNoeudEtudiant.Data != null)
                 {
-                    if (graphe.Data.Status == GrapheStatus.DESACTIVER)
-                    {
-                        if (parentNoeudEtudiant.Data.Status == 0) // Si l'enfant est bloqué par le prof
-                        {
-                            childNoeudEtudiant.Data.Status = 5; // reste bloqué
-                        }
-                    }
-                    else if (parentNoeudEtudiant.Data.Status == 4 && childNode.Type == NoeudType.STRUCTURE && childNoeudEtudiant.Data.Status == 2)
+                    if (parentNoeudEtudiant.Data.Status == 4 && childNode.Type == NoeudType.STRUCTURE && childNoeudEtudiant.Data.Status == 2)
                     {
 
                             childNoeudEtudiant.Data.Status = 4; // Bloqué par le prof

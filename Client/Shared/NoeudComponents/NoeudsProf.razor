@@ -31,7 +31,7 @@
     <circle visibility="@displayHover" r="@(Node.Rayon + 3)" class="cercle" style="fill: rgba(255,255,255,5); opacity:0.5" />
     @if (GetModeDeVue() == 2)
     {
-        <circle @onmouseup=@(e => SaveChangeNoeud(Node)) @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) @onclick="(e => RelinkBindNode(Node))" r="@Node.Rayon" class="cercle" style="fill:@Couleur" />
+        <circle @onmouseup=@(e => SaveChangeNoeud(Node)) @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) @onclick="(e => RelinkBindNode(Node))" r="@Node.Rayon" class="cercle" style="fill:@COULEUR_BLOQUER" />
     }
     @if (GetModeDeVue() == 2)
     {
@@ -45,8 +45,6 @@
     }
     @if (GetModeDeVue() == 2)
     {
-        Couleur = COULEUR_BLOQUER;
-
         @if(Nodes.Count > 1){
             @if (Nodes.Where(c => c.NoeudParentId == Node.NoeudId).ToList().Count == 0 || Node.NoeudId == Node.NoeudParentId)
             {
@@ -129,9 +127,8 @@
     }
     @if (GetModeDeVue() == 1)
     {
-        Couleur = COULEUR_BLOQUER;
         <NavLink @onclick="ViewPageTemplate">
-            <circle r="@Node.Rayon" class="cercle" style="fill:@Couleur" />
+            <circle r="@Node.Rayon" class="cercle" style="fill:@COULEUR_BLOQUER" />
             @if (Node.Type == NoeudType.CONTENU)
             {
                 <foreignObject x="@((-Node.Rayon) )" y="@((Node.Rayon)/2 )" width="20" height="20">
@@ -168,7 +165,6 @@
     }
     else if (GetModeDeVue() == 2)
     {
-        Couleur = COULEUR_BLOQUER;
         <NavLink>
             <text @onclick=@(e => RelinkBindNode(Node)) @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) class="textLink" text-anchor="middle" alignment-baseline="central">@Node.Nom</text>
         </NavLink>
@@ -344,12 +340,13 @@
 
         var etudiantData = await NoeudEtudiantService.GetByNoeudAndDa(Node.NoeudId, await sessionStorage.GetItemAsync<string>("daEtudiant"));
 
-
         if (etudiantData != null)
         {
             noeudEtudiant = etudiantData.Data;
             UpdateChildrenColors();
         }
+        else
+            UpdateChildrenColors();
     }
 
     private async void ReRenderDataNoeudEtudiant()
@@ -488,6 +485,32 @@
             {
                 graphe.Status = GrapheStatus.DESACTIVER;
                 await GrapheService.Update(graphe.GrapheId, graphe);
+                var childrenNodesResponse = await NoeudService.GetAllById(noeud.NoeudId); // Contient tous les enfants dans la table noeuds
+
+                var childrenNodes = childrenNodesResponse.Data;
+
+                var parentNoeudEtudiant = await NoeudEtudiantService.GetByNoeudId(noeud.NoeudId); // Contient le neoud parent dans la table Noeud Etudiant
+
+                foreach (var childNode in childrenNodes)
+                {
+                    var childNoeudEtudiant = await NoeudEtudiantService.GetByNoeudId(childNode.NoeudId);
+
+                    if (childNoeudEtudiant.Data != null)
+                    {
+                        // BARRURE DE NOEUD ENFANT
+                        if (parentNoeudEtudiant.Data.Status == 0) // Si l'enfant est bloqué par le prof
+                        {
+                            if (childNoeudEtudiant.Data.Status == 1) // et quer les enfants sont aussi bloqué par le prof
+                            {
+                                childNoeudEtudiant.Data.Status = 1; // Bloqué par le prof
+                            }
+                            else // sinon
+                                childNoeudEtudiant.Data.Status = 5; // bloqué par la progression
+
+                            await NoeudEtudiantService.Update(childNoeudEtudiant.Data.Noeud_EtudiantId, childNoeudEtudiant.Data); // Update chaque enfants du noeud parents
+                        }
+                    }
+                }
             }    
         }
         else

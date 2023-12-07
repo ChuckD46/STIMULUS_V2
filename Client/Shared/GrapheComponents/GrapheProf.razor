@@ -39,10 +39,8 @@
             {
                 @if (listEtudiant.Any())
                 {
-                    <div class="rz-p-sm-12 rz-text-align-center">
-                        <RadzenLabel Text="Sélectionner un étudiant" Component="DropDownBindValue" Style="margin-right: 8px; vertical-align: middle;" />
-                        <RadzenDropDown @bind-Value="@etudiant" Data="@listEtudiant" Style="width: 100%; max-width: 400px;" Name="DropDownBindValue" Change="OnValueChanged" />
-                    </div>
+                        <RadzenText class="custom-graphe-zoom-text" TextStyle="TextStyle.DisplayH3">Sélectionner un étudiant :</RadzenText>
+                        <RadzenDropDown @bind-Value="@etudiant" AllowFiltering="true" Data="@listEtudiant" Style="width: 100%; max-width: 170px;" Name="DropDownBindValue" Change="OnValueChanged" />
                 }
             }
             <RadzenButton Click=SupprimerGraphe Text="Supprimer le graphe" ButtonStyle="ButtonStyle.Danger" style="background-color: darkblue; margin-left: auto;" />
