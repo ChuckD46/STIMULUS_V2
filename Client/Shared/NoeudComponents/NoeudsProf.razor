@@ -31,8 +31,8 @@
     }
     @if (GetModeDeVue() == 2 || GetModeDeVue() == 3)
     {
-        <rect x="@(sizeValue*2- sizeValue/2 -10)" y="@(-180 + sizeValue/2)" visibility="@displayHover" width="200" height="150" style="fill: rgba(255,255,255,255)" />
-        <foreignObject x="@(sizeValue*2- Node.Rayon/2 -10)" y="@(-180 + sizeValue/2)" visibility="@displayHover" width="200" height="150" style="padding:5px">
+        <rect x="@((int)Math.Ceiling((double)(sizeValue*2- sizeValue/2 -10)))" y="@((int)Math.Ceiling((double)(-180 + sizeValue/2)))" visibility="@displayHover" width="200" height="150" style="fill: rgba(255,255,255,255)" />
+        <foreignObject x="@((int)Math.Ceiling((double)sizeValue*2- Node.Rayon/2 -10))" y="@((int)Math.Ceiling((double)(-180 + sizeValue/2)))" visibility="@displayHover" width="200" height="150" style="padding:5px">
             <span> Nom :  @Node.Nom </span><br />
             <span>Parent : @TestParent()</span><br /> @*Pour ne pas avoir de champ vide*@
             <span> Desc : @Node.Description</span><br />
