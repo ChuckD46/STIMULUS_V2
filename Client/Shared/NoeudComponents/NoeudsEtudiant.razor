@@ -22,11 +22,12 @@
 }
 
 <NonDraggable @bind-X=Node.PosX @bind-Y=Node.PosY>
-    @if (noeudEtudiant != null &&
+
+
+    @if (noeudEtudiant != null && (
     ((noeudEtudiant.Status == 0) ||
     (noeudEtudiant.Status == 5) ||
-    (noeudEtudiant.Status == 1) ||
-    (Node.Type == NoeudType.STRUCTURE)))
+    (noeudEtudiant.Status == 1))))
     {
         <NavLink id="lien">
             <circle visibility="@displayHover" r="@(Node.Rayon + 3)" class="cercle" style="fill: rgba(255,255,255,5); opacity:0.5" />
@@ -37,29 +38,33 @@
                 <span> Desc : @Node.Description</span><br />
                 @if (noeudEtudiant.Status == 5)
                 {
+                    <foreignObject x="@(Node.Rayon)" y="@(-Node.Rayon )" width="20" height="20">
+                        <span title="Bloqué" class="oi oi-lock-locked" aria-hidden="true"></span>
+                    </foreignObject>
                     <strong>Vous devez compléter <h>"@TestParent()"</h> pour débloquer ce noeud.</strong>
                 }
                 else if (noeudEtudiant.Status == 1)
                 {
-                    <strong>Le professeur a bloqué cette théorie</strong>
+                    <foreignObject x="@(Node.Rayon)" y="@(-Node.Rayon )" width="20" height="20">
+                        <span title="Bloqué" class="oi oi-ban" aria-hidden="true"></span>
+                    </foreignObject>
+                    <strong>Le professeur a bloqué cette théorie.</strong>
                 }
                 else if (noeudEtudiant.Status == 0)
                 {
+                    <foreignObject x="@(Node.Rayon)" y="@(-Node.Rayon )" width="20" height="20">
+                        <span title="Bloqué" class="oi oi-book" aria-hidden="true"></span>
+                    </foreignObject>
                     <strong>Vous pouvez commencer votre apprentissage !</strong>
-                }
-                else if (Node.Type == NoeudType.STRUCTURE)
-                {
-                    <strong>Ce noeud ne contient aucun page</strong>
                 }
             </foreignObject>
             <text @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) text-anchor="middle" alignment-baseline="central">@Node.Nom</text>
         </NavLink>
     }
-    else if (noeudEtudiant != null &&
+    else if (noeudEtudiant != null && (
     ((noeudEtudiant.Status == 2) ||
     (noeudEtudiant.Status == 3) ||
-    (noeudEtudiant.Status == 4) ||
-    (Node.Type == NoeudType.CONTENU)))
+    (noeudEtudiant.Status == 4))))
     {
         <NavLink @onclick="DirectionPage" id="lien">
             <circle visibility="@displayHover" r="@(Node.Rayon + 3)" class="cercle" style="fill: rgba(255,255,255,5); opacity:0.5" />
@@ -70,15 +75,34 @@
                 <span> Desc : @Node.Description</span><br />
                 @if (noeudEtudiant.Status == 2)
                 {
+                    <foreignObject x="@(Node.Rayon)" y="@(-Node.Rayon )" width="20" height="20">
+                        <span title="Bloqué" class="oi oi-circle-x" aria-hidden="true"></span>
+                    </foreignObject>
                     <strong>Cette théorie n'est pas complété</strong>
                 }
                 else if (noeudEtudiant.Status == 3)
                 {
+                    <foreignObject x="@(Node.Rayon)" y="@(-Node.Rayon )" width="20" height="20">
+                        <span title="Bloqué" class="oi oi-magnifying-glass" aria-hidden="true"></span>
+                    </foreignObject>
                     <strong>Cette théorie est en cours de complétion</strong>
                 }
                 else if (noeudEtudiant.Status == 4)
                 {
-                    <strong>Cette théorie a été complété.</strong>
+                    if(Node.Type == NoeudType.STRUCTURE)
+                    {
+                        <foreignObject x="@(Node.Rayon)" y="@(-Node.Rayon )" width="20" height="20">
+                            <span title="Bloqué" class="oi oi-lock-unlocked" aria-hidden="true"></span>
+                        </foreignObject>
+                        <strong>Vous avez débloqué une nouvelle catégorie de noeuds</strong>
+                    }
+                    else
+                    {
+                        <foreignObject x="@(Node.Rayon)" y="@(-Node.Rayon )" width="20" height="20">
+                            <span title="Bloqué" class="oi oi-circle-check" aria-hidden="true"></span>
+                        </foreignObject>
+                        <strong>Cette théorie a été complété.</strong>
+                    }
                 }
             </foreignObject>
             <text @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) text-anchor="middle" alignment-baseline="central">@Node.Nom</text>
@@ -128,7 +152,7 @@
             noeudEtudiant = etudiantData.Data;
             UpdateChildrenColors();
         }
-        
+
     }
 
 
@@ -153,29 +177,32 @@
 
     private async void DirectionPage()
     {
-        await sessionStorage.SetItemAsync<int>("idNoeud", Node.NoeudId);
-
-        // Récupérer toutes les pages associées au nœud actuel
-        var pageNoeud = await PageService.GetAllFromNoeud(Node.NoeudId);
-        var affichPage = pageNoeud.Data;
-
-        if (affichPage != null && affichPage.Any())
+        if(Node.Type == NoeudType.CONTENU)
         {
-            // Trouver la page avec l'ordre minimum (la première page)
-            var firstPage = affichPage.OrderBy(p => p.Ordre).First();
+            await sessionStorage.SetItemAsync<int>("idNoeud", Node.NoeudId);
 
-            // Stocker l'ID de la première page dans la session
-            noeudEtudiant.Status = 4;
-            await NoeudEtudiantService.Update(noeudEtudiant.Noeud_EtudiantId, noeudEtudiant);
-            await sessionStorage.SetItemAsync<int>("idPage", firstPage.PageId);
+            // Récupérer toutes les pages associées au nœud actuel
+            var pageNoeud = await PageService.GetAllFromNoeud(Node.NoeudId);
+            var affichPage = pageNoeud.Data;
+
+            if (affichPage != null && affichPage.Any())
+            {
+                // Trouver la page avec l'ordre minimum (la première page)
+                var firstPage = affichPage.OrderBy(p => p.Ordre).First();
+
+                // Stocker l'ID de la première page dans la session
+                noeudEtudiant.Status = 4;
+                await NoeudEtudiantService.Update(noeudEtudiant.Noeud_EtudiantId, noeudEtudiant);
+                await sessionStorage.SetItemAsync<int>("idPage", firstPage.PageId);
+            }
+            else
+            {
+                await sessionStorage.RemoveItemAsync("idPage");
+            }
+            await OnStatusUpdated.InvokeAsync();
+            Rerender.TriggerStatusNoeud();
+            NavigationManager.NavigateTo("/Pages");
         }
-        else
-        {
-            await sessionStorage.RemoveItemAsync("idPage");
-        }
-        await OnStatusUpdated.InvokeAsync();
-        Rerender.TriggerStatusNoeud();
-        NavigationManager.NavigateTo("/Pages");
     }
 
     private void UpdateChildrenColors()
@@ -191,7 +218,7 @@
                 Couleur = "rgb(0,76,153)";
             }
             else
-            Couleur = COULEUR_BLOQUER;
+                Couleur = COULEUR_BLOQUER;
 
         }
         if (noeudEtudiant.Status == 1)
@@ -208,7 +235,12 @@
         }
         else if (noeudEtudiant.Status == 4)
         {
-            Couleur = COULEUR_COMPLETER;
+            if(Node.Type == NoeudType.CONTENU)
+            {
+                Couleur = COULEUR_COMPLETER;
+            }
+            else
+                Couleur = "rgb(0,76,153)";
         }
         else if (noeudEtudiant.Status == 5)
         {

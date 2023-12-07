@@ -62,7 +62,7 @@
                         </div>
                         <div class="custom-graphe-legend-color-position">
                             <div style="display: flex; align-items: center; justify-content: center;">
-                                <RadzenLabel>Structure de cours</RadzenLabel>
+                                <RadzenLabel>Catégorie de noeuds</RadzenLabel>
                                 <RadzenImage class="custom-graphe-legend-color-size" Path="/RessourceVisuel/Legende/structure.png"></RadzenImage>
                             </div>
                         </div>
@@ -154,6 +154,8 @@
             {
                 var childNoeudEtudiant = await NoeudEtudiantService.GetByNoeudAndDa(childNode.NoeudId, await sessionStorage.GetItemAsync<string>("idConnexion"));
 
+                
+
                 if (childNoeudEtudiant.Data != null)
                 {
                     if (graphe.Data.Status == GrapheStatus.DESACTIVER)
@@ -163,8 +165,14 @@
                             childNoeudEtudiant.Data.Status = 5; // reste bloqué
                         }
                     }
-              
-                    
+                    if (parentNoeudEtudiant.Data.Status == 4 && childNode.Type == NoeudType.STRUCTURE && childNoeudEtudiant.Data.Status == 2)
+                    {
+
+                            childNoeudEtudiant.Data.Status = 4; // Bloqué par le prof
+
+                        await NoeudEtudiantService.Update(childNoeudEtudiant.Data.Noeud_EtudiantId, childNoeudEtudiant.Data);
+                    }
+
                     if (parentNoeudEtudiant.Data.Status == 1) // si la parent est bloqué par le prof
                     {
                         if (childNoeudEtudiant.Data.Status == 1) // et quer les enfants sont aussi bloqué par le prof
