@@ -22,7 +22,7 @@ namespace STIMULUS_V2.Client.Services
 
         public async Task<APIResponse<string>> ExecuteCode(string da, string json)
         {
-            var result = await _httpClient.PostAsJsonAsync<string>($"api/Exercice/Execute/{da}", json);
+            var result = await _httpClient.PostAsJsonAsync<string>($"api/Exercice/Execute/{da}/{json}", json);
             return await result.Content.ReadFromJsonAsync<APIResponse<string>>();
         }
 

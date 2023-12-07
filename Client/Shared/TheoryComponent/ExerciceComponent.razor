@@ -1,4 +1,4 @@
-﻿@using Newtonsoft.Json;
+@using Newtonsoft.Json;
 @using STIMULUS_V2.Shared.Interface.ChildInterface;
 @using STIMULUS_V2.Shared.Models.Entities;
 @using BlazorMonaco
@@ -8,6 +8,7 @@
 @inject IFichierSauvegardeService FichierSauvegardeService
 @inject IExerciceService ExerciceService
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage;
+@inject IJSRuntime JsRunTime
 
 @if (InitDone)
 {
@@ -135,7 +136,7 @@
             FichierCode.Add(new Fichier()
             {
                 Contenu = "print('Hello World !')",
-                Nom = "Main.py",
+                Nom = "main.py",
                 Id = -(FichierCode.Count + 1),
                 Css = HiddenTab
             });
@@ -145,7 +146,7 @@
 
             var fichierSauv = new FichierSauvegarde()
             {
-                Nom = "Main.py",
+                Nom = "main.py",
                 Contenue = "print('Hello World !')",
                 Version = DateTime.Now,
                 CodeDA = "etu",
@@ -159,7 +160,7 @@
             {
                 Console.WriteLine(ea.Message);
             }
-            
+
             StateHasChanged();
         }
         InitDone = true;
@@ -315,6 +316,8 @@
         }
         foreach (var fichier in FichierCode)
         {
+            if (fichier.Nom == "Main.py")
+                fichier.Nom = "main.py";
             await ChangeTab(fichier.Id);
             string texte = await GetCode();
             fichiers.Add(new
@@ -459,7 +462,7 @@
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                
             }
 
         }

@@ -22,7 +22,7 @@ namespace STIMULUS_V2.Server.Controllers
             return StatusCode(response.StatusCode, response);
         }
 
-        [HttpPost("Execute/{da}")]
+        [HttpPost("Execute/{da}/{json}")]
         public async Task<IActionResult> ExecuteCode(string da, string json)
         {
             var response = await exerciceService.ExecuteCode(da, json);
