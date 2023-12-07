@@ -52,10 +52,20 @@
                 }
                 else if (noeudEtudiant.Status == 0)
                 {
-                    <foreignObject x="@(Node.Rayon)" y="@(-Node.Rayon )" width="20" height="20">
-                        <span title="Bloqué" class="oi oi-book" aria-hidden="true"></span>
-                    </foreignObject>
-                    <strong>Vous pouvez commencer votre apprentissage !</strong>
+                    if(graphe.Status == GrapheStatus.ACTIVER)
+                    {
+                        <foreignObject x="@(Node.Rayon)" y="@(-Node.Rayon )" width="20" height="20">
+                            <span title="Bloqué" class="oi oi-book" aria-hidden="true"></span>
+                        </foreignObject>
+                        <strong>Vous pouvez commencer votre apprentissage !</strong>
+                    }
+                    else
+                    {
+                        <foreignObject x="@(Node.Rayon)" y="@(-Node.Rayon )" width="20" height="20">
+                            <span title="Bloqué" class="oi oi-ban" aria-hidden="true"></span>
+                        </foreignObject>
+                        <strong>Ce graph à été bloqué par votre professeur</strong>
+                    }
                 }
             </foreignObject>
             <text @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) text-anchor="middle" alignment-baseline="central">@Node.Nom</text>
