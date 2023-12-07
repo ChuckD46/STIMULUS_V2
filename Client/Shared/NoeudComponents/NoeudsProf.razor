@@ -188,14 +188,14 @@
                             <foreignObject x="@(Node.Rayon)" y="@(-Node.Rayon )" width="20" height="20">
                                 <span title="Bloqué" class="oi oi-lock-locked" aria-hidden="true"></span>
                             </foreignObject>
-                            <strong>Vous devez compléter <h>"@TestParent()"</h> pour débloquer ce noeud.</strong>
+                            <strong>@noeudEtudiant.CodeDA doit compléter <h>"@TestParent()"</h> pour débloquer ce noeud.</strong>
                         }
                         else if (noeudEtudiant.Status == 1)
                         {
                             <foreignObject x="@(Node.Rayon)" y="@(-Node.Rayon )" width="20" height="20">
                                 <span title="Bloqué" class="oi oi-ban" aria-hidden="true"></span>
                             </foreignObject>
-                            <strong>Le professeur a bloqué cette théorie.</strong>
+                            <strong>Vous avez bloqué cette théorie.</strong>
                         }
                         else if (noeudEtudiant.Status == 0)
                         {
@@ -204,14 +204,14 @@
                                 <foreignObject x="@(Node.Rayon)" y="@(-Node.Rayon )" width="20" height="20">
                                     <span title="Bloqué" class="oi oi-book" aria-hidden="true"></span>
                                 </foreignObject>
-                                <strong>Vous pouvez commencer votre apprentissage !</strong>
+                                <strong>Ce graphe peut être complété !</strong>
                             }
                             else
                             {
                                 <foreignObject x="@(Node.Rayon)" y="@(-Node.Rayon )" width="20" height="20">
                                     <span title="Bloqué" class="oi oi-ban" aria-hidden="true"></span>
                                 </foreignObject>
-                                <strong>Ce graph à été bloqué par votre professeur</strong>
+                                <strong>Ce graph a été bloqué par votre professeur</strong>
                             }
                         }
                     </foreignObject>
@@ -234,7 +234,7 @@
                             <foreignObject x="@(Node.Rayon)" y="@(-Node.Rayon )" width="20" height="20">
                                 <span title="Bloqué" class="oi oi-circle-x" aria-hidden="true"></span>
                             </foreignObject>
-                            <strong>Cette théorie n'est pas complété</strong>
+                            <strong>Cette théorie n'a pas été complété.</strong>
                         }
                         else if (noeudEtudiant.Status == 3)
                         {
@@ -250,7 +250,7 @@
                                 <foreignObject x="@(Node.Rayon)" y="@(-Node.Rayon )" width="20" height="20">
                                     <span title="Bloqué" class="oi oi-lock-unlocked" aria-hidden="true"></span>
                                 </foreignObject>
-                                <strong>Vous avez débloqué une nouvelle catégorie de noeuds</strong>
+                                <strong>@noeudEtudiant.CodeDA a débloquer cette catégorie</strong>
                             }
                             else
                             {
