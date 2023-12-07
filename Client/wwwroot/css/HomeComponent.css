@@ -29,9 +29,7 @@
 }
 
 .custom-homestudent-background {
-    position: static;
-    background: linear-gradient(180deg, hsla(220, 29%, 31%, 1) 30%, hsla(218, 14%, 66%, 1) 66%);
-    height: 63%;
+    background-image: url('/RessourceVisuel/gradiant.png');
 }
 
 .custom-homestudent-searchbar {
@@ -67,12 +65,14 @@
     display: inline-block;
 }
 .custom-homestudent-wave-effect-color {
-    height: 60%;
-    margin-bottom:10000px;
+    padding: 0;
+    margin: 0;
+    height: 20%
 }
 
 .custom-homestudent-wave-effect-color .shape-fill {
     fill: #F1F6F9;
+    height: 30%;
 }
 
 .custom-homestudent-search-icon {

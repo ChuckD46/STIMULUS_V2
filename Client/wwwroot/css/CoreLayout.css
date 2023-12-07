@@ -30,6 +30,8 @@
     font-family: Oswald;
     color: white;
     font-size: x-large;
+    margin-right: 90%;
+    margin-top: 2%
 }
 
 .custom-header-subtitle{
@@ -95,8 +97,6 @@
 .custom-footer-icon {
     font-size: 12px;
 }
-
-
 
 /*Cette section concerne l'ensemble du logo animé*/
 #logo-container-loading {
@@ -212,6 +212,6 @@
         stroke-dashoffset: -25%;
         stroke-dasharray: 50% 0;
         stroke-width: 0;
-        font-weight: normal; /* Revenir à la normale à la fin de l'animation */
+        font-weight: normal; 
     }
 }
