@@ -139,6 +139,27 @@
                 Id = -(FichierCode.Count + 1),
                 Css = HiddenTab
             });
+
+            int id = -1;
+            List<FichierSauvegarde> fichiersSauvegardes = new List<FichierSauvegarde>();
+
+            var fichierSauv = new FichierSauvegarde()
+            {
+                Nom = "Main.py",
+                Contenue = "print('Hello World !')",
+                Version = DateTime.Now,
+                CodeDA = "etu",
+                ExerciceId = exercice.ExerciceId
+            };
+            try
+            {
+                await FichierSauvegardeService.Create(fichierSauv);   
+            }
+            catch (Exception ea)
+            {
+                Console.WriteLine(ea.Message);
+            }
+            
             StateHasChanged();
         }
         InitDone = true;
@@ -175,12 +196,12 @@
     private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
     {
         return new StandaloneEditorConstructionOptions
-            {
-                AutomaticLayout = true,
-                Language = "python",
-                Theme = "vs-dark",
-                Value = texteDefaut
-            };
+        {
+            AutomaticLayout = true,
+            Language = "python",
+            Theme = "vs-dark",
+            Value = texteDefaut
+        };
     }
 
 #warning Check
@@ -327,14 +348,14 @@
             }
             await ChangeTab(fichier.Id);
             fichiersSauvegardes.Add(new FichierSauvegarde()
-                {
-                    FichierSauvegardeId = fichier.Id,
-                    ExerciceId = ExerciceModel.ExerciceId,
-                    CodeDA = IdEtudiant,
-                    Contenue = fichier.Contenu,
-                    Nom = fichier.Nom,
-                    Version = DateTime.Now
-                });
+            {
+                FichierSauvegardeId = fichier.Id,
+                ExerciceId = 1,
+                CodeDA = "etu",
+                Contenue = fichier.Contenu,
+                Nom = fichier.Nom,
+                Version = DateTime.Now
+            });
         }
         try
         {
@@ -343,18 +364,18 @@
                 await FichierSauvegardeService.Create(PostFichier);
             }
 
-            var fichiersSauvegardesCall = await FichierSauvegardeService.GetAllExercice(ExerciceModel.ExerciceId, IdEtudiant);
+            var fichiersSauvegardesCall = await FichierSauvegardeService.GetAllExercice(exercice.ExerciceId, IdEtudiant);
             var fichier = fichiersSauvegardesCall.Data;
 
             foreach (var fichierListSauvegarde in fichier)
             {
                 FichierCode.Add(new Fichier()
-                    {
-                        Contenu = fichierListSauvegarde.Contenue,
-                        Nom = fichierListSauvegarde.Nom,
-                        Id = fichierListSauvegarde.FichierSauvegardeId,
-                        Css = HiddenTab
-                    });
+                {
+                    Contenu = fichierListSauvegarde.Contenue,
+                    Nom = fichierListSauvegarde.Nom,
+                    Id = fichierListSauvegarde.FichierSauvegardeId,
+                    Css = HiddenTab
+                });
             }
             //FichierCode[0].Css = FocusedTab;
         }
@@ -429,12 +450,12 @@
                 }
 
                 FichierCode.Add(new Fichier()
-                    {
-                        Contenu = "print('Hello World !')",
-                        Nom = nomFichier,
-                        Id = -(FichierCode.Count + 1),
-                        Css = FocusedTab
-                    });
+                {
+                    Contenu = "print('Hello World !')",
+                    Nom = nomFichier,
+                    Id = -(FichierCode.Count + 1),
+                    Css = FocusedTab
+                });
             }
             catch (Exception e)
             {
