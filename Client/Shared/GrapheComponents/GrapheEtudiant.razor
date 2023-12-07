@@ -165,7 +165,7 @@
                             childNoeudEtudiant.Data.Status = 5; // reste bloqué
                         }
                     }
-                    if (parentNoeudEtudiant.Data.Status == 4 && childNode.Type == NoeudType.STRUCTURE && childNoeudEtudiant.Data.Status == 2)
+                    else if (parentNoeudEtudiant.Data.Status == 4 && childNode.Type == NoeudType.STRUCTURE && childNoeudEtudiant.Data.Status == 2)
                     {
 
                             childNoeudEtudiant.Data.Status = 4; // Bloqué par le prof
@@ -173,7 +173,7 @@
                         await NoeudEtudiantService.Update(childNoeudEtudiant.Data.Noeud_EtudiantId, childNoeudEtudiant.Data);
                     }
 
-                    if (parentNoeudEtudiant.Data.Status == 1) // si la parent est bloqué par le prof
+                    else if (parentNoeudEtudiant.Data.Status == 1) // si la parent est bloqué par le prof
                     {
                         if (childNoeudEtudiant.Data.Status == 1) // et quer les enfants sont aussi bloqué par le prof
                         {
@@ -183,7 +183,7 @@
                             childNoeudEtudiant.Data.Status = 5; // bloqué par la progression
                     }
 
-                    if (parentNoeudEtudiant.Data.Status == 5) // si le parent est bloqué par la progression
+                    else if (parentNoeudEtudiant.Data.Status == 5) // si le parent est bloqué par la progression
                     {
                         if (childNoeudEtudiant.Data.Status != 1) // Et que le prof n'a pas bloqué le noeud
                         {
@@ -219,7 +219,7 @@
                             childNoeudEtudiant.Data.Status = 2; // si non il est non complété
                         }
                     }
-                        // Update the status for each Noeud_Etudiant
+
                         await NoeudEtudiantService.Update(childNoeudEtudiant.Data.Noeud_EtudiantId, childNoeudEtudiant.Data); // Update chaque enfants du noeud parents
                     }
                     

@@ -41,7 +41,7 @@
                 {
                     <div class="rz-p-sm-12 rz-text-align-center">
                         <RadzenLabel Text="Sélectionner un étudiant" Component="DropDownBindValue" Style="margin-right: 8px; vertical-align: middle;" />
-                        <RadzenDropDown @bind-Value="@etudiant" Data="@listEtudiant" Style="width: 100%; max-width: 400px;" Name="DropDownBindValue" />
+                        <RadzenDropDown @bind-Value="@etudiant" Data="@listEtudiant" Style="width: 100%; max-width: 400px;" Name="DropDownBindValue" Change="OnValueChanged" />
                     </div>
                 }
             }
@@ -108,8 +108,7 @@
                         AjoutNouveauNoeud="AjoutNouveauNoeud" 
                         SupprNoeud="SupprimerNoeud"
                         ReLinkBindPage="ReLinkBindPage"
-                        ReLinkPage="ReLinkPage"
-                        Etudiant = "@etudiant"/>
+                        ReLinkPage="ReLinkPage"/>
                 }
             </Draggable>
         </svg>
@@ -119,6 +118,8 @@
 @code {
     [Parameter]
     public EventCallback OnGrapheDelete { get; set; }
+    [Parameter]
+    public EventCallback OnEtudiantChanged { get; set; }
     private string displayHover = "hidden";
     private double viewBoxX = 0;
     private double viewBoxY = 0;
@@ -143,10 +144,9 @@
 
     protected async override void OnInitialized()
     {
-        StateHasChanged();       
+        StateHasChanged();   
         await UpdateGraphe();
         await GetDataGroupe();
-        await sessionStorage.SetItemAsync<string>("daEtudiant", etudiant);
     }
 
     private async Task GetDataGroupe()
@@ -166,6 +166,18 @@
             }
         }
         etudiant = listEtudiant.FirstOrDefault();
+        await sessionStorage.SetItemAsync<string>("daEtudiant", etudiant);
+        await OnEtudiantChanged.InvokeAsync();
+        Rerender.TriggerEtudiantChanged();
+    }
+
+    private async Task OnValueChanged(object value)
+    {
+        // Mettre à jour la valeur de l'étudiant dans le stockage de session
+        await sessionStorage.SetItemAsync<string>("daEtudiant", etudiant);
+
+        await OnEtudiantChanged.InvokeAsync();
+        Rerender.TriggerEtudiantChanged();
     }
     /// <summary>
     /// Permet de set le mode de vu. 1 => Page, 2 => Edit, 3 => Etudiant
