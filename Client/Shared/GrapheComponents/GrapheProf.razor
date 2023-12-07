@@ -106,7 +106,8 @@
                         AjoutNouveauNoeud="AjoutNouveauNoeud" 
                         SupprNoeud="SupprimerNoeud"
                         ReLinkBindPage="ReLinkBindPage"
-                        ReLinkPage="ReLinkPage"/>
+                        ReLinkPage="ReLinkPage"
+                        NoeudValueFormOpen="NoeudValueFormOpen" />
                 }
             </Draggable>
         </svg>
@@ -124,7 +125,10 @@
     private double viewBoxWidth = 2000;
     private double viewBoxHeight = 2000;
     private double zoomIncrement = 100;
+    private int oneFormNodeAddOpen = -1; 
     private Noeud enfantRechercheParent = new();
+    private Noeud clickedNode = new();
+    private string modelNoeud = "CONTENU";
     private bool enRecherche = false;
     private Page pageRechercheNoeud = new();
     private bool enRecherchePage = new();
@@ -145,6 +149,10 @@
         StateHasChanged();   
         await UpdateGraphe();
         await GetDataGroupe();
+    }
+    private void NoeudValueFormOpen(int v)
+    {
+        oneFormNodeAddOpen = v;
     }
 
     private async Task GetDataGroupe()
