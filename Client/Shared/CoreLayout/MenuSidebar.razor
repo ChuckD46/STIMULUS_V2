@@ -14,6 +14,7 @@
 @inject ICoursService CoursService
 @inject IGroupeEtudiantService GroupeEtudiantService
 @inject AppState State;
+@inject Radzen.DialogService DialogService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject RerenderService Rerender
 
@@ -30,26 +31,26 @@
             }
         </AuthorizeView>
         <AuthorizeView Roles="PROFESSEUR">
-            <RadzenPanelMenuItem class="custom-menusidebar-title" Text="Gestion de Graphe" Icon="workspaces">
+            <RadzenPanelMenuItem class="custom-menusidebar-title" Text="Gestion de graphe" Icon="workspaces">
                 @foreach (var graphe in ListeGraphesProf)
                 {
                     <RadzenPanelMenuItem Icon="workspaces_outline" class="custom-menusidebar-subtilte" Text="@graphe.Nom" Click="(() => ChargerGraphe(graphe.GrapheId))"></RadzenPanelMenuItem>
                 }
-                <RadzenPanelMenuItem class="custom-menusidebar-subtilte" Text="Créer un nouveau Graphe" Icon="add" Path="/CreerGraphe" />
+                <RadzenPanelMenuItem class="custom-menusidebar-subtilte" Text="Créer un nouveau graphe" Icon="add" Path="/CreerGraphe" />
             </RadzenPanelMenuItem>
-            <RadzenPanelMenuItem class="custom-menusidebar-title" Text="Gestion de Groupe" Icon="groups">
+            <RadzenPanelMenuItem class="custom-menusidebar-title" Text="Gestion de groupe" Icon="groups">
                 @foreach (var groupe in groupesProf)
                 {
                     <RadzenPanelMenuItem Icon="group" class="custom-menusidebar-subtilte" Text="@groupe.Nom" Click="(() => ChargerGroupe(groupe.GroupeId))"></RadzenPanelMenuItem>
                 }
-                <RadzenPanelMenuItem class="custom-menusidebar-subtilte" Text="Créer un nouveau Groupe" Icon="group_add" Path="/CreerGroupe" />
+                <RadzenPanelMenuItem class="custom-menusidebar-subtilte" Text="Créer un nouveau groupe" Icon="group_add" Path="/CreerGroupe" />
             </RadzenPanelMenuItem>
-            <RadzenPanelMenuItem class="custom-menusidebar-title" Text="Gestion de Cours" Icon="school">
+            <RadzenPanelMenuItem class="custom-menusidebar-title" Text="Gestion de cours" Icon="school">
                 @foreach (var cours in ListeCoursProf)
                 {
-                    <RadzenPanelMenuItem Icon="event" class="custom-menusidebar-subtilte" Text="@cours.Code"></RadzenPanelMenuItem>
+                    <RadzenPanelMenuItem Icon="event" class="custom-menusidebar-subtilte" Text="@cours.Code" Click=@(args => DialogService.Alert("Description du cours : "+ cours.Description, @cours.Code, new AlertOptions() { OkButtonText = "Ok" }))></RadzenPanelMenuItem>
                 }
-                <RadzenPanelMenuItem class="custom-menusidebar-subtilte" Text="Créer un nouveau Cours" Icon="add" Path="/CreerCours" />
+                <RadzenPanelMenuItem class="custom-menusidebar-subtilte" Text="Créer un nouveau cours" Icon="add" Path="/CreerCours" />
             </RadzenPanelMenuItem>
         </AuthorizeView>
         <AuthorizeView Roles="ADMIN">
@@ -84,6 +85,8 @@
         var isEtudiant = user.IsInRole("ETUDIANT");
         groupesProf.Clear();
         ListeGraphesProf.Clear();
+        ListeCoursProf.Clear();
+        ListeCoursEtudiant.Clear();
 
         if (isProfesseur)
         {
@@ -101,12 +104,17 @@
 
                     ListeGraphesProf.AddRange(graphesDuGroupe);
                 }
+                HashSet<int> uniqueCoursIds = new HashSet<int>(); //Permet d'afficher un cours une seul fois même si il est lié à plusieurs groupes
                 foreach (var cours in groupes)
                 {
-                    var responseCours = await CoursService.GetAllById((int)cours.GroupeId);
-                    var nomDesCours = responseCours.Data;
+                    var responseCours = await CoursService.Get((int)cours.CoursId);
 
-                    ListeCoursProf.AddRange(nomDesCours);
+                    // Check if the course ID is not already in the HashSet
+                    if (uniqueCoursIds.Add(responseCours.Data.CoursId))
+                    {
+                        // If not present, add the course to the list
+                        ListeCoursProf.Add(responseCours.Data);
+                    }
                 }
             }
             else
