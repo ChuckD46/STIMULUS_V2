@@ -45,42 +45,45 @@ else
                 <RadzenRow RowGap="2" Class="justify-content-center">
                     @foreach (var composant in listComposant.OrderBy(c => c.Ordre))
                     {
+                        <div style ="margin: 0 auto; width: 100%;max-width: 1200px; padding: 10px;box-sizing: content-box;">
+                            <div>
+                                @if (composant.Type == "Code")
+                                {
+                                    <CodeComponent Reference="composant.Reference" />
+                                }
+                                @if (composant.Type == "Exercice")
+                                {
+                                    <ExerciceComponent Reference="composant.Reference" />
+                                }
+                            </div>
+                        </div>                
                         <div style="margin: 0 auto; width: 100%;max-width: 1200px; padding: 10px; text-align: center; box-sizing: content-box;">
-
-                        @if (composant.Type == "Code")
-                        {
-                            <CodeComponent Reference="composant.Reference" />
-                        }
-                        @if (composant.Type == "Exercice")
-                        {
-                            <ExerciceComponent Reference="composant.Reference" />
-                        }
-                        <!-- Conteneur du composant spécifique -->
-                        <div style="text-align: center;">
-                            @if (composant.Type == "Image")
-                            {
-                                <ImageComponent Reference="composant.Reference" />
-                            }
-                            @if (composant.Type == "Reference")
-                            {
-                                <ReferenceComponent Reference="composant.Reference" />
-                            }
-                            @if (composant.Type == "Texte")
-                            {
-                                <TextComponent Reference="composant.Reference" />
-                            }
-                            @if (composant.Type == "Video")
-                            {
-                                <VideoComponent Reference="composant.Reference" />
-                            }
+                            <!-- Conteneur du composant spécifique -->
+                            <div style="text-align: center;">
+                                @if (composant.Type == "Image")
+                                {
+                                    <ImageComponent Reference="composant.Reference" />
+                                }
+                                @if (composant.Type == "Reference")
+                                {
+                                    <ReferenceComponent Reference="composant.Reference" />
+                                }
+                                @if (composant.Type == "Texte")
+                                {
+                                    <TextComponent Reference="composant.Reference" />
+                                }
+                                @if (composant.Type == "Video")
+                                {
+                                    <VideoComponent Reference="composant.Reference" />
+                                }
+                            </div>
                         </div>
-                    </div>
-                }
-            </RadzenRow>
-        </RadzenCard>
-    </RadzenBody>
-</RadzenLayout>
-
+                    }
+                </RadzenRow>
+            </RadzenCard>
+        </RadzenBody>
+    </RadzenLayout>
+}
 @code {
     [Parameter]
     public EventCallback OnStatusUpdated { get; set; }

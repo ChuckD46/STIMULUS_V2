@@ -12,62 +12,63 @@
 
 @if (InitDone)
 {
-    <div class="fileSelector">
-        @if (FichierCode != null)
-        {
-            @foreach (Fichier fichier in FichierCode)
-            {
-
-                @if (fichier.Nom == "Main.py" || fichier.Nom == "main.py")
-                {
-                    <div class="file-tab">
-                        <button @onclick="() => ChangeTab(fichier.Id)" style="color: @(fichier.Css == "focused" ? "white" : "grey")">@((fichier.Nom != null) ? fichier.Nom : "")</button>
-                    </div>
-                }
-                else
-                {
-                    <div class="file-tab">
-                        <button @onclick="() => ChangeTab(fichier.Id)" style="color: @(fichier.Css == "focused" ? "white" : "grey")">@((fichier.Nom != null) ? fichier.Nom : "")</button>
-                        <button class="close-button" @onclick="() => Delete(fichier.Id)">X</button>
-                    </div>
-                }
-
-            }
-        }
-        else
-        {
-            <p>Chargement...</p>
-        }
-        <button @onclick="AddPage">+</button>
-    </div>
-
-    <div class="d-flex justify-content-around">
-        <div class="d-flex justify-content-between">
-            <div>
-                <StandaloneCodeEditor Id="monaco" ConstructionOptions="EditorConstructionOptions" @ref="_editor" />
-            </div>
+    <div>
+        <div class="fileSelector">
             @if (FichierCode != null)
             {
                 @foreach (Fichier fichier in FichierCode)
                 {
 
-                    if (fichier.Css != "hidden")
+                    @if (fichier.Nom == "Main.py" || fichier.Nom == "main.py")
                     {
-                        SetCode(@fichier.Contenu);
+                        <div class="file-tab">
+                            <button @onclick="() => ChangeTab(fichier.Id)" style="color: @(fichier.Css == "focused" ? "white" : "grey")">@((fichier.Nom != null) ? fichier.Nom : "")</button>
+                        </div>
                     }
-                    <textarea class="textareaCode hidden" id="@fichier.Id" cols="50" rows="25" name="@((fichier.Nom != null) ? fichier.Nom : "")" @bind=@fichier.Contenu @bind:event="oninput" @onfocus="() => Tab(fichier.Id)"></textarea>
+                    else
+                    {
+                        <div class="file-tab">
+                            <button @onclick="() => ChangeTab(fichier.Id)" style="color: @(fichier.Css == "focused" ? "white" : "grey")">@((fichier.Nom != null) ? fichier.Nom : "")</button>
+                            <button class="close-button" @onclick="() => Delete(fichier.Id)">X</button>
+                        </div>
+                    }
+
                 }
             }
             else
             {
                 <p>Chargement...</p>
             }
+            <button @onclick="AddPage">+</button>
         </div>
-        <div id="background-result">
-            <p style="white-space:pre-wrap">@Result</p>
+
+        <div class="d-flex justify-content-around">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <StandaloneCodeEditor Id="monaco" ConstructionOptions="EditorConstructionOptions" @ref="_editor" />
+                </div>
+                @if (FichierCode != null)
+                {
+                    @foreach (Fichier fichier in FichierCode)
+                    {
+
+                        if (fichier.Css != "hidden")
+                        {
+                            SetCode(@fichier.Contenu);
+                        }
+                        <textarea class="textareaCode hidden" id="@fichier.Id" cols="50" rows="25" name="@((fichier.Nom != null) ? fichier.Nom : "")" @bind=@fichier.Contenu @bind:event="oninput" @onfocus="() => Tab(fichier.Id)"></textarea>
+                    }
+                }
+                else
+                {
+                    <p>Chargement...</p>
+                }
+            </div>
+            <div id="background-result">
+                <p style="white-space:pre-wrap; color: white;">@Result</p>
+            </div>
         </div>
     </div>
-
     <!-- Section bouton -->
     <div class="row">
         <div class="d-flex flex-row-reverse" style="width: 800px">
