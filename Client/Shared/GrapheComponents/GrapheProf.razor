@@ -453,7 +453,6 @@
                         }
                         await PageService.Delete(pageDelete.PageId);
                     }
-                    await NoeudService.Delete(noeudDelete.NoeudId);
                 }
                 foreach (var noeudDeleteParent in noeuds)
                 {
@@ -465,7 +464,12 @@
                         await NoeudEtudiantService.Delete(etudiantNoeud.Noeud_EtudiantId);
                     }
 
-                    await NoeudService.Delete(noeudDeleteParent.NoeudId);
+                }
+
+                foreach (var nodeDelete in noeuds)
+                {
+                    await NoeudService.Delete(nodeDelete.NoeudId);
+
                 }
             }
             // Supprimer le graphe

@@ -21,7 +21,7 @@
     <RadzenPanelMenu DisplayStyle="@(sidebarExpanded ? MenuItemDisplayStyle.IconAndText : MenuItemDisplayStyle.Icon)" ShowArrow="@sidebarExpanded">
         <RadzenPanelMenuItem class="custom-menusidebar-title" Text="Accueil" Icon="home" Path="/" />
         <AuthorizeView Roles="ETUDIANT">
-            @foreach (var cours in ListeCours)
+            @foreach (var cours in ListeCoursEtudiant)
             {
                 @foreach (var graphe in ListeGraphesEtudiant)
                 {
@@ -45,6 +45,10 @@
                 <RadzenPanelMenuItem class="custom-menusidebar-subtilte" Text="Créer un nouveau Groupe" Icon="group_add" Path="/CreerGroupe" />
             </RadzenPanelMenuItem>
             <RadzenPanelMenuItem class="custom-menusidebar-title" Text="Gestion de Cours" Icon="school">
+                @foreach (var cours in ListeCoursProf)
+                {
+                    <RadzenPanelMenuItem Icon="event" class="custom-menusidebar-subtilte" Text="@cours.Code"></RadzenPanelMenuItem>
+                }
                 <RadzenPanelMenuItem class="custom-menusidebar-subtilte" Text="Créer un nouveau Cours" Icon="add" Path="/CreerCours" />
             </RadzenPanelMenuItem>
         </AuthorizeView>
@@ -60,7 +64,8 @@
     public bool sidebarExpanded { get; set; } = false;
     public List<STIMULUS_V2.Shared.Models.Entities.Graphe> ListeGraphesProf { get; set; } = new List<STIMULUS_V2.Shared.Models.Entities.Graphe>();
     public List<STIMULUS_V2.Shared.Models.Entities.Graphe> ListeGraphesEtudiant { get; set; } = new List<STIMULUS_V2.Shared.Models.Entities.Graphe>();
-    public List<STIMULUS_V2.Shared.Models.Entities.Cours> ListeCours { get; set; } = new List<Cours>();
+    public List<STIMULUS_V2.Shared.Models.Entities.Cours> ListeCoursEtudiant { get; set; } = new List<Cours>();
+    public List<STIMULUS_V2.Shared.Models.Entities.Cours> ListeCoursProf { get; set; } = new List<Cours>();
     public List<STIMULUS_V2.Shared.Models.Entities.Groupe> groupesProf { get; set; } = new List<STIMULUS_V2.Shared.Models.Entities.Groupe>();
 
     protected async override void OnInitialized()
@@ -84,20 +89,28 @@
         {
             if (await sessionStorage.GetItemAsync<string>("idConnexion") != null)
             {
-                var responseGroupeActif = await GroupeService.GetAllGroupActif(await sessionStorage.GetItemAsync<string>("idConnexion"));
-                var groupesActif = responseGroupeActif.Data;
+                var responseGroupe = await GroupeService.GetAllForTeacher(await sessionStorage.GetItemAsync<string>("idConnexion"));
+                var groupes = responseGroupe.Data;
 
-                groupesProf.AddRange(groupesActif);
+                groupesProf.AddRange(groupes);
 
-                foreach (var graphe in groupesActif)
+                foreach (var graphe in groupes)
                 {
                     var responseGraphe = await GrapheService.GetAllFromGroup(graphe.GroupeId);
                     var graphesDuGroupe = responseGraphe.Data;
 
                     ListeGraphesProf.AddRange(graphesDuGroupe);
                 }
-                StateHasChanged();
+                foreach (var cours in groupes)
+                {
+                    var responseCours = await CoursService.GetAllById((int)cours.GroupeId);
+                    var nomDesCours = responseCours.Data;
+
+                    ListeCoursProf.AddRange(nomDesCours);
+                }
             }
+            else
+                await SideBarData();
         }
 
         if (isEtudiant)
@@ -120,10 +133,12 @@
                     var responseCours = await CoursService.GetAllById((int)cours.GroupeId);
                     var nomDesCours = responseCours.Data;
 
-                    ListeCours.AddRange(nomDesCours);
+                    ListeCoursEtudiant.AddRange(nomDesCours);
                 }
                 StateHasChanged();
             }
+            else
+                await SideBarData();
         }
     }
     private async void HandleUpdateSideBar()
