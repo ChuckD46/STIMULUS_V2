@@ -372,7 +372,14 @@
         {
             foreach (var PostFichier in fichiersSauvegardes)
             {
-                await FichierSauvegardeService.Create(PostFichier);
+                if(await FichierSauvegardeService.Get(PostFichier.FichierSauvegardeId) != null)
+                {
+                    await FichierSauvegardeService.Update(PostFichier.FichierSauvegardeId, PostFichier);
+                }
+                else
+                {
+                    await FichierSauvegardeService.Create(PostFichier);
+                }               
             }
 
             var fichiersSauvegardesCall = await FichierSauvegardeService.GetAllExercice(exercice.ExerciceId, IdEtudiant);
