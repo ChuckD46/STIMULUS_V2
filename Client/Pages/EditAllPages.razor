@@ -395,7 +395,8 @@
         }
         if (typeComposant == "Texte")
         {
-            texte.Contenu = contenuTexte;
+            texte.Contenue = contenuTexte;
+
             var texteNew = await TexteService.Create(texte);
             var newTexte = texteNew.Data;
             composant.Reference = newTexte.TexteFormaterId;

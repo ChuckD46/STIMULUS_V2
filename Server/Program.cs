@@ -71,7 +71,7 @@ using (var scope = app.Services.CreateScope())
     context.EnsureEtuUserCreated();
     context.EnsureProfUserCreated();
 
-    //Création du trigger pour changer le status
+    ////Création du trigger pour changer le status
     //context.Database.ExecuteSqlRaw(@"
     //    CREATE TRIGGER TRG_UpdateStatus
     //    ON Noeud

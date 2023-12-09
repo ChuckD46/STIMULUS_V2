@@ -12,6 +12,13 @@
 
 @if (InitDone)
 {
+    @*<AuthorizeView Roles="PROFESSEUR">
+        <GrapheProf />
+    </AuthorizeView>
+
+    <AuthorizeView Roles="ETUDIANT">
+        <GrapheEtudiant />
+    </AuthorizeView>*@
     <div>
         <div class="fileSelector">
             @if (FichierCode != null)
@@ -106,9 +113,7 @@
     /// </summary>
     protected override async void OnInitialized()
     {
-        //IdEtudiant = await sessionStorage.GetItemAsync<string>("idConnexion");
-
-        IdEtudiant = "etu";
+        IdEtudiant = await sessionStorage.GetItemAsync<string>("idConnexion");
 
         var Exercice = await ExerciceService.Get(Reference);
         exercice = Exercice.Data;
@@ -117,7 +122,7 @@
 
         try
         {
-            var fichiersSauvegardesCall = await FichierSauvegardeService.GetAllExercice(exercice.ExerciceId, "etu");
+            var fichiersSauvegardesCall = await FichierSauvegardeService.GetAllExercice(exercice.ExerciceId, IdEtudiant);
 
             var fichier = fichiersSauvegardesCall.Data;
 
@@ -134,35 +139,38 @@
         }
         catch (Exception e)
         {
-            FichierCode.Add(new Fichier()
+            if (FichierCode == null || FichierCode.Count == 0)
             {
-                Contenu = "print('Hello World !')",
-                Nom = "main.py",
-                Id = -(FichierCode.Count + 1),
-                Css = HiddenTab
-            });
+                FichierCode.Add(new Fichier()
+                {
+                    Contenu = "print('Hello World !')",
+                    Nom = "main.py",
+                    Id = -(FichierCode.Count + 1),
+                    Css = HiddenTab
+                });
 
-            int id = -1;
-            List<FichierSauvegarde> fichiersSauvegardes = new List<FichierSauvegarde>();
+                int id = -1;
+                List<FichierSauvegarde> fichiersSauvegardes = new List<FichierSauvegarde>();
 
-            var fichierSauv = new FichierSauvegarde()
-            {
-                Nom = "main.py",
-                Contenue = "print('Hello World !')",
-                Version = DateTime.Now,
-                CodeDA = "etu",
-                ExerciceId = exercice.ExerciceId
-            };
-            try
-            {
-                await FichierSauvegardeService.Create(fichierSauv);   
-            }
-            catch (Exception ea)
-            {
-                Console.WriteLine(ea.Message);
-            }
+                var fichierSauv = new FichierSauvegarde()
+                {
+                    Nom = "main.py",
+                    Contenue = "print('Hello World !')",
+                    Version = DateTime.Now,
+                    CodeDA = IdEtudiant,
+                    ExerciceId = exercice.ExerciceId
+                };
+                try
+                {
+                    await FichierSauvegardeService.Create(fichierSauv);
+                }
+                catch (Exception ea)
+                {
+                    Console.WriteLine(ea.Message);
+                }
 
-            StateHasChanged();
+                StateHasChanged();
+            }   
         }
         InitDone = true;
         await base.OnInitializedAsync();
@@ -198,12 +206,12 @@
     private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
     {
         return new StandaloneEditorConstructionOptions
-        {
-            AutomaticLayout = true,
-            Language = "python",
-            Theme = "vs-dark",
-            Value = texteDefaut
-        };
+            {
+                AutomaticLayout = true,
+                Language = "python",
+                Theme = "vs-dark",
+                Value = texteDefaut
+            };
     }
 
 #warning Check
@@ -353,12 +361,11 @@
             await ChangeTab(fichier.Id);
             fichiersSauvegardes.Add(new FichierSauvegarde()
             {
-                FichierSauvegardeId = fichier.Id,
-                ExerciceId = 1,
-                CodeDA = "etu",
-                Contenue = fichier.Contenu,
                 Nom = fichier.Nom,
-                Version = DateTime.Now
+                Contenue = fichier.Contenu,
+                Version = DateTime.Now,
+                CodeDA = IdEtudiant,
+                ExerciceId = exercice.ExerciceId
             });
         }
         try
@@ -374,12 +381,12 @@
             foreach (var fichierListSauvegarde in fichier)
             {
                 FichierCode.Add(new Fichier()
-                {
-                    Contenu = fichierListSauvegarde.Contenue,
-                    Nom = fichierListSauvegarde.Nom,
-                    Id = fichierListSauvegarde.FichierSauvegardeId,
-                    Css = HiddenTab
-                });
+                    {
+                        Contenu = fichierListSauvegarde.Contenue,
+                        Nom = fichierListSauvegarde.Nom,
+                        Id = fichierListSauvegarde.FichierSauvegardeId,
+                        Css = HiddenTab
+                    });
             }
             //FichierCode[0].Css = FocusedTab;
         }
@@ -454,16 +461,16 @@
                 }
 
                 FichierCode.Add(new Fichier()
-                {
-                    Contenu = "print('Hello World !')",
-                    Nom = nomFichier,
-                    Id = -(FichierCode.Count + 1),
-                    Css = FocusedTab
-                });
+                    {
+                        Contenu = "print('Hello World !')",
+                        Nom = nomFichier,
+                        Id = -(FichierCode.Count + 1),
+                        Css = FocusedTab
+                    });
             }
             catch (Exception e)
             {
-                
+
             }
 
         }
