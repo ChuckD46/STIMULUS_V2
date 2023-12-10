@@ -113,7 +113,8 @@
                         AjoutNouveauNoeud="AjoutNouveauNoeud" 
                         SupprNoeud="SupprimerNoeud"
                         ReLinkBindPage="ReLinkBindPage"
-                        ReLinkPage="ReLinkPage" />
+                        ReLinkPage="ReLinkPage" 
+                        Etudiant ="@listEtudiant"/>
                 }
             </Draggable>
         </svg>
@@ -152,12 +153,48 @@
     public List<Noeud> Nodes { get; set; } = new();
 
     protected async override void OnInitialized()
-    {
-        StateHasChanged();   
-        await UpdateGraphe();
-        await GetDataGroupe();
+    {  
         Rerender.OnGroupeDelete += SupprimerGraphe;
+        Rerender.OnNoeudProf += OnStatusChanged;
+        await GetDataGroupe();
+        await UpdateGraphe();
+        StateHasChanged();
     }
+
+    /// <summary>
+    /// Recupere les noeuds du graph Numero X et permet la MAJ du graph
+    /// </summary>
+    private async Task UpdateGraphe()
+    {
+        Nodes = new();
+        if (sessionStorage != null)
+        {
+            int idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");
+
+            var groupeGraphe = await GrapheService.Get(idGraphe);
+            var groupe = groupeGraphe.Data;
+            await sessionStorage.SetItemAsync<int>("idGroupe", (int)groupe.GroupeId);
+
+            // Attendre 'idGraphe' pour ne pas etre 0 (utilise un timeout ou cancellation token = plus safe).
+            while (idGraphe == 0)
+            {
+                //Plus chill qu'une boucle industrielle
+                await Task.Delay(100);
+            }
+            Nodes = ((APIResponse<IEnumerable<Noeud>>)await NoeudService.GetAllFromGraph(idGraphe)).Data.ToList();
+            foreach (var noeud in Nodes)
+            {
+                await CheckStatus(noeud);
+            }
+            // Nodes.Clear();
+            // StateHasChanged();
+            // Nodes = ((APIResponse<IEnumerable<Noeud>>)await NoeudService.GetAllFromGraph(idGraphe)).Data.ToList();
+            await OnEtudiantChanged.InvokeAsync();
+            Rerender.TriggerEtudiantChanged();
+        }
+        StateHasChanged();
+    }
+
     private async Task GetDataGroupe()
     {
         var eleve = await GroupeEtudiantService.GetAllStudentForGroup(await sessionStorage.GetItemAsync<int>("idGroupe"));
@@ -182,9 +219,13 @@
     {
         // Mettre à jour la valeur de l'étudiant dans le stockage de session
         await sessionStorage.SetItemAsync<string>("daEtudiant", etudiant);
-
         await OnEtudiantChanged.InvokeAsync();
         Rerender.TriggerEtudiantChanged();
+    }
+    private async void OnStatusChanged()
+    {
+        await UpdateGraphe();
+        StateHasChanged();
     }
     /// <summary>
     /// Permet de set le mode de vu. 1 => Page, 2 => Edit, 3 => Etudiant
@@ -309,35 +350,6 @@
         Console.WriteLine($"Noeud {noeud.Nom} a besoin d'un parent");
         enfantRechercheParent = noeud;
         enRecherche = true;
-    }
-
-    /// <summary>
-    /// Recupere les noeuds du graph Numero X et permet la MAJ du graph
-    /// </summary>
-    private async Task UpdateGraphe()
-    {
-        Nodes = new();
-        if (sessionStorage != null)
-        {
-            int idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");
-
-            var groupeGraphe = await GrapheService.Get(idGraphe);
-            var groupe = groupeGraphe.Data;
-            await sessionStorage.SetItemAsync<int>("idGroupe", (int)groupe.GroupeId);
-
-            // Attendre 'idGraphe' pour ne pas etre 0 (utilise un timeout ou cancellation token = plus safe).
-            while (idGraphe == 0)
-            {
-                //Plus chill qu'une boucle industrielle
-                await Task.Delay(100);
-            }
-            Nodes = ((APIResponse<IEnumerable<Noeud>>)await NoeudService.GetAllFromGraph(idGraphe)).Data.ToList();
-
-            var response = await NoeudService.GetAllFromGraph(idGraphe);
-            Nodes = response.Data.ToList();
-            Console.WriteLine("Mise a jour des noeuds du graph");
-        }
-        StateHasChanged();
     }
 
     /// <summary>
@@ -627,6 +639,128 @@
         else
         {
             return (zoomIncrement + "%");
+        }
+    }
+    private async Task CheckStatus(Noeud noeud)
+    {
+        var graphe = await GrapheService.Get(await sessionStorage.GetItemAsync<int>("idGraphe"));
+
+        List<string> EtudiantProgression = new List<string>();
+
+        try
+        {
+            if(listEtudiant.Any())
+            {
+
+                foreach (var etudiant in listEtudiant)
+                {
+                    // Récupérer tous les nœuds enfants du nœud parent
+                    var childrenNodesResponse = await NoeudService.GetAllById(noeud.NoeudId);
+
+                    var childrenNodes = childrenNodesResponse.Data;
+
+                    var parentNoeudEtudiant = await NoeudEtudiantService.GetByNoeudAndDa(noeud.NoeudId, etudiant);
+
+                    foreach (var childNode in childrenNodes)
+                    {
+                        var childNoeudEtudiant = await NoeudEtudiantService.GetByNoeudAndDa(childNode.NoeudId, etudiant);
+
+                        if (parentNoeudEtudiant.Data.Status == 0)
+                        {
+                            if (childNoeudEtudiant.Data.Status == 1)
+                            {
+                                childNoeudEtudiant.Data.Status = 1;
+                            }
+                            else
+                                childNoeudEtudiant.Data.Status = 5; // Bloqué par le prof
+                        }
+                        else if (parentNoeudEtudiant.Data.Status == 5)
+                        {
+                            if (childNoeudEtudiant.Data.Status == 1)
+                            {
+                                childNoeudEtudiant.Data.Status = 1;
+                            }
+                            else
+                                childNoeudEtudiant.Data.Status = 5;
+                        }
+                        else
+                        {
+                            if (childNoeudEtudiant.Data != null)
+                            {
+                                if (parentNoeudEtudiant.Data.Status == 4 && childNode.Type == NoeudType.STRUCTURE && childNoeudEtudiant.Data.Status == 2)
+                                {
+
+                                    childNoeudEtudiant.Data.Status = 4; // Bloqué par le prof
+
+                                    await NoeudEtudiantService.Update(childNoeudEtudiant.Data.Noeud_EtudiantId, childNoeudEtudiant.Data);
+                                    StateHasChanged();
+                                }
+
+                                else if (parentNoeudEtudiant.Data.Status == 1) // si la parent est bloqué par le prof
+                                {
+                                    if (childNoeudEtudiant.Data.Status == 1) // et quer les enfants sont aussi bloqué par le prof
+                                    {
+                                        childNoeudEtudiant.Data.Status = 1; // Bloqué par le prof
+                                    }
+                                    else // sinon
+                                        childNoeudEtudiant.Data.Status = 5; // bloqué par la progression
+                                }
+
+                                else if (parentNoeudEtudiant.Data.Status == 5) // si le parent est bloqué par la progression
+                                {
+                                    if (childNoeudEtudiant.Data.Status != 1) // Et que le prof n'a pas bloqué le noeud
+                                    {
+                                        childNoeudEtudiant.Data.Status = 5; // les enfants sont bloqué par la progression
+                                    }
+                                }
+                                else if (parentNoeudEtudiant.Data.Status == 2) // Si le parent est non  complété
+                                {
+                                    if (childNoeudEtudiant.Data.Status == 1) // Si l'enfant est bloqué par le prof
+                                    {
+                                        childNoeudEtudiant.Data.Status = 1; // Bloqué par le prof
+                                    }
+                                    else
+                                    {
+                                        childNoeudEtudiant.Data.Status = 5; // Bloqué par la progression
+                                    }
+                                }
+                                //OUVERTURE DE NOEUD ENFANT
+                                else if (parentNoeudEtudiant.Data.Status == 0) // si le parent et l'enfant son complétés
+                                {
+                                    if (childNoeudEtudiant.Data.Status != 1) // Et que le prof n'a pas bloqué le noeud
+                                    {
+                                        childNoeudEtudiant.Data.Status = 2; // les enfants sont bloqué par la progression
+                                    }
+                                    else
+                                        childNoeudEtudiant.Data.Status = 1;
+                                }
+
+                                else if (parentNoeudEtudiant.Data.Status == 4 && childNoeudEtudiant.Data.Status == 4) // si le parent et l'enfant son complétés
+                                {
+                                    childNoeudEtudiant.Data.Status = 4; // l'enfant est complété
+                                }
+
+                                else if (parentNoeudEtudiant.Data.Status == 4) // Si le parent est Complété
+                                {
+                                    if (childNoeudEtudiant.Data.Status == 1) // Si l'enfant est bloqué par le prof
+                                    {
+                                        childNoeudEtudiant.Data.Status = 1; // reste bloqué
+                                    }
+                                    else
+                                    {
+                                        childNoeudEtudiant.Data.Status = 2; // si non il est non complété
+                                    }
+                                }                                
+                            }
+                            await NoeudEtudiantService.Update(childNoeudEtudiant.Data.Noeud_EtudiantId, childNoeudEtudiant.Data); // Update chaque enfants du noeud parents
+                        }
+                    }
+                }
+            }                      
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur : {ex}");
         }
     }
 }

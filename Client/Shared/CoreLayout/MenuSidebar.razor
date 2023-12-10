@@ -139,13 +139,11 @@
 
                     ListeGraphesEtudiant.AddRange(graphesDuGroupe);
                 }
-
                 foreach (var cours in groupes)
                 {
-                    var responseCours = await CoursService.GetAllById((int)cours.GroupeId);
-                    var nomDesCours = responseCours.Data;
-
-                    ListeCoursEtudiant.AddRange(nomDesCours);
+                    var groupeCours = await GroupeService.Get((int)cours.GroupeId);
+                    var responseCours = await CoursService.Get((int)groupeCours.Data.CoursId);
+                    ListeCoursEtudiant.Add(responseCours.Data);
                 }
                 StateHasChanged();
             }
