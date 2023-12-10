@@ -156,6 +156,7 @@
         StateHasChanged();   
         await UpdateGraphe();
         await GetDataGroupe();
+        Rerender.OnGroupeDelete += SupprimerGraphe;
     }
     private async Task GetDataGroupe()
     {
