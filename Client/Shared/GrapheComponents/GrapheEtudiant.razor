@@ -144,6 +144,10 @@
     {
         var graphe = await GrapheService.Get(await sessionStorage.GetItemAsync<int>("idGraphe"));
 
+
+        // await NoeudEtudiantService.GetProgression(await sessionStorage.GetItemAsync<string>("idConnexion"), graphe.Data.GrapheId, noeud);
+
+
         try
         {
             // Récupérer tous les nœuds enfants du nœud parent
