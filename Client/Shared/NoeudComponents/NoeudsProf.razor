@@ -507,7 +507,6 @@
         await OnStatusUpdated.InvokeAsync();
         Rerender.TriggerNoeudProf();
         StateHasChanged();
-        UpdateChildrenColors();
     }
     private async Task LockAndUnlockedGraphe(Noeud noeud)
     {
@@ -528,7 +527,6 @@
         await OnStatusUpdated.InvokeAsync();
         Rerender.TriggerNoeudProf();
         StateHasChanged();
-        UpdateChildrenColors();
     }
 
     private async Task AjoutPage(int id)
