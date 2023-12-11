@@ -33,7 +33,7 @@
             <RadzenButton Style="background-color: #14274E;" class="custom-graphe-reset-button" Icon="refresh" ButtonStyle="ButtonStyle.Primary" Click=ResetViewbox />
             <RadzenButton Style="@modeDeVuButtonEdition" class="custom-graphe-viewmodebutton-title" Click=@(args => ModeDeVue(2)) Text="Édition" ButtonStyle="ButtonStyle.Warning" />
             <RadzenButton Style="@modeDeVuButtonPage" class="custom-graphe-viewmodebutton-title" Click=@(args => ModeDeVue(1)) Text="Gestion de pages" ButtonStyle="ButtonStyle.Warning" />
-            @if(listEtudiant.Any())
+            @if(listEtudiant.Any() || listEtudiant != null)
             {
                 <RadzenButton Style="@modeDeVuButtonEtudiant" class="custom-graphe-viewmodebutton-title" Click=@(args => ModeDeVue(3)) Text="Vue étudiante" ButtonStyle="ButtonStyle.Warning" />
                 @if (modeDeVue == 3)
@@ -51,8 +51,7 @@
             <RadzenButton Click=SupprimerGraphe Text="Supprimer le graphe" class="custom-graphe-viewmodebutton-title" ButtonStyle="ButtonStyle.Danger" style="background-color: darkblue; margin-left: auto; background-color: #14274E;" />
             @if (loading == true)
             {
-                <RadzenProgressBarCircular ProgressBarStyle="ProgressBarStyle.Dark" Value="100" Sho
-                wValue="false" Mode="ProgressBarMode.Indeterminate" />
+                <RadzenProgressBarCircular ProgressBarStyle="ProgressBarStyle.Dark" Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
             }
         </RadzenStack>
     </foreignObject>
