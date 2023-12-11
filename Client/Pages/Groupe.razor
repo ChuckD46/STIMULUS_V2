@@ -217,6 +217,8 @@
         var Newcours = await CoursService.Get(coursId);
         StateHasChanged();
         groupeCours = Newcours.Data;
+        await OnGroupeDelete.InvokeAsync();
+        Rerender.TriggerGroupeDelete();
         StateHasChanged();
     }
 
