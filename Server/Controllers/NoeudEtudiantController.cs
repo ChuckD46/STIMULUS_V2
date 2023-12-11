@@ -48,7 +48,7 @@ namespace STIMULUS_V2.Server.Controllers
             return StatusCode(response.StatusCode, response);
         }
         [HttpGet("Fetch/Progression/{da}/{graphe}/{noeud}")]
-        public async Task<IActionResult> GetProgression(string da, int graphe, Noeud noeud)
+        public async Task<IActionResult> GetProgression(string da, int graphe, int noeud)
         {
             var response = await noeudEtudiantService.GetProgression(da, graphe, noeud);
             return StatusCode(response.StatusCode, response);
