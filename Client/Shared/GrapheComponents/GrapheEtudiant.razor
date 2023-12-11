@@ -31,6 +31,12 @@
                 <RadzenText class="custom-grapheprof-selectuser-title">+</RadzenText>
                 <RadzenImage class="custom-grapheprof-selectuser-title" Style="height: 30px; width: 30px; align-content:center; margin-left: 1%;margin-right: 1%;" Path="/RessourceVisuel/scroll.png"></RadzenImage>
                 <RadzenText class="custom-grapheprof-selectuser-title">pour zoomer !</RadzenText>
+                @if (loading == true)
+                {
+                    <RadzenProgressBarCircular ProgressBarStyle="ProgressBarStyle.Dark" Value="100" ShowValue="false" Size="ProgressBarCircularSize.Medium" Mode="ProgressBarMode.Indeterminate">
+                    </RadzenProgressBarCircular>
+                    <RadzenText class="custom-grapheprof-selectuser-title">Chargement de votre progression ...</RadzenText>
+                }
 
             </RadzenStack>
         </foreignObject>
@@ -99,6 +105,7 @@
     private double viewBoxWidth = 2000;
     private double viewBoxHeight = 2000;
     private double zoomIncrement = 100;
+    private bool loading;
     private string viewForm = "hidden";
     private string displayNouveauNoeud = "hidden";
     private Noeud nouveauNoeud;
@@ -144,6 +151,7 @@
     {
         var graphe = await GrapheService.Get(await sessionStorage.GetItemAsync<int>("idGraphe"));
 
+        loading = true;
         try
         {
             // Récupérer tous les nœuds enfants du nœud parent
@@ -157,7 +165,7 @@
             {
                 var childNoeudEtudiant = await NoeudEtudiantService.GetByNoeudAndDa(childNode.NoeudId, await sessionStorage.GetItemAsync<string>("idConnexion"));
 
-                if(graphe.Data.Status == GrapheStatus.DESACTIVER)
+                if (graphe.Data.Status == GrapheStatus.DESACTIVER)
                 {
                     if (parentNoeudEtudiant.Data.Status == 0)
                     {
@@ -190,8 +198,8 @@
                             childNoeudEtudiant.Data.Status = 4; // Bloqué par le prof
 
                             await NoeudEtudiantService.Update(childNoeudEtudiant.Data.Noeud_EtudiantId, childNoeudEtudiant.Data);
-                            StateHasChanged();
                         }
+
 
                         else if (parentNoeudEtudiant.Data.Status == 1) // si la parent est bloqué par le prof
                         {
@@ -238,10 +246,30 @@
                                 childNoeudEtudiant.Data.Status = 2; // si non il est non complété
                             }
                         }
+                        else if (parentNoeudEtudiant.Data.Status == 0 && childNoeudEtudiant.Data.Status == 4) // si la parent est bloqué par le prof
+                        {
+                            if (childNoeudEtudiant.Data.Status == 1) // et quer les enfants sont aussi bloqué par le prof
+                            {
+                                childNoeudEtudiant.Data.Status = 1; // Bloqué par le prof
+                            }
+                            else // sinon
+                                childNoeudEtudiant.Data.Status = 4; // bloqué par la progression
+                        }
+                        else if (parentNoeudEtudiant.Data.Status == 0) // si la parent est bloqué par le prof
+                        {
+                            if (childNoeudEtudiant.Data.Status == 1) // et quer les enfants sont aussi bloqué par le prof
+                            {
+                                childNoeudEtudiant.Data.Status = 1; // Bloqué par le prof
+                            }
+                            else // sinon
+                                childNoeudEtudiant.Data.Status = 2; // bloqué par la progression
+                        }
                     }
                     await NoeudEtudiantService.Update(childNoeudEtudiant.Data.Noeud_EtudiantId, childNoeudEtudiant.Data); // Update chaque enfants du noeud parents
+                    StateHasChanged();
                 }
             }
+            loading = false;
             }
             catch (Exception ex)
             {
