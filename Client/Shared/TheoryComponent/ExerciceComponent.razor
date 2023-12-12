@@ -83,7 +83,6 @@
             <button @onclick=@Save class="boutonExerciceDroite">Sauvegarder</button>
         </div>
     </div>
-
     <style>
         .focused {
             display: block;
@@ -98,7 +97,6 @@
             width: 800px;
         }
     </style>
-
     @code {
     [Parameter]
     public int Reference { get; set; }
@@ -492,3 +490,4 @@
     public EventCallback<List<FichierSource>> FichierSourceChanged { get; set; }
     }
 }
+
