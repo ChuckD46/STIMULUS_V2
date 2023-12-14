@@ -1,9 +1,37 @@
-﻿
+﻿@using STIMULUS_V2.Client.Services;
+@using STIMULUS_V2.Shared.Interface.ChildInterface;
+@using STIMULUS_V2.Shared.Models.Entities;
+
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@inject IEtudiantService EtudiantService
+@inject NavigationManager NavigationManager
+@inject RerenderService Rerender
+@inject IGroupeEtudiantService GroupeEtudiantService
+@inject Radzen.DialogService DialogService
+@inject AppState State;
 
 @page "/Profile"
 
 
-<h3>En construction ...</h3>
+<RadzenText class="custom-profile-title custom-profile-titleposition">Profile</RadzenText>
+
+<RadzenCard class="rz-mx-auto" Style="max-width: 50%;">
+    <RadzenStack Orientation="Orientation.Vertical">
+        <RadzenStack Orientation="Orientation.Horizontal">
+            <RadzenText class="custom-profile-subtitle">Prénom: </RadzenText>
+            <RadzenText> </RadzenText>
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal">
+            <RadzenText class="custom-profile-subtitle">Nom: </RadzenText>
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal">
+            <RadzenText class="custom-profile-subtitle">Adresse courriel: </RadzenText>
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal">
+            <RadzenText class="custom-profile-subtitle">Statut: </RadzenText>
+        </RadzenStack>
+    </RadzenStack>
+</RadzenCard>
 
 @code {
 
