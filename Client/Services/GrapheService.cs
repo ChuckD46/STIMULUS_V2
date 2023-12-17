@@ -43,6 +43,8 @@ namespace STIMULUS_V2.Client.Services
         public async Task<APIResponse<Graphe>> GetGroupe(int id)
         {
             var result = await _httpClient.GetFromJsonAsync<APIResponse<Graphe>>($"api/Graphe/Fetch/Groupe/{id}");
+            var log = Log.ForContext<GrapheService>();
+            log.Information($"GetGroupe(int id = {id}) ApiResponse: {result}");
             return result;
         }
 
