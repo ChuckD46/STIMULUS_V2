@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using STIMULUS_V2.Shared.Interface.ChildInterface;
+using STIMULUS_V2.Shared.Models.Authentication;
 using STIMULUS_V2.Shared.Models.Entities;
 
 namespace STIMULUS_V2.Server.Controllers

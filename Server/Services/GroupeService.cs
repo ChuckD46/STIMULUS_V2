@@ -155,12 +155,12 @@ namespace STIMULUS_V2.Server.Services
                 return new APIResponse<IEnumerable<Groupe>>(null, 500, $"Erreur lors de la récupération de la liste du model {typeof(Groupe).Name}. Message : {ex.Message}.");
             }
         }
-
+       
         public async Task<APIResponse<IEnumerable<Groupe>>> GetAllById(int id)
         {
             try
             {
-                var itemList = await sTIMULUSContext.Groupe.Where(item => item.GroupeId == id).ToListAsync();
+                var itemList = await sTIMULUSContext.Groupe.Where(item => item.CoursId == id).ToListAsync();
 
                 if (itemList != null)
                 {

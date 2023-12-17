@@ -24,6 +24,12 @@ namespace STIMULUS_V2.Client.Services
             return apiResponse;
         }
 
+        public async Task<APIResponse<string>> ExecuteCode(string da, string json)
+        {
+            var result = await _httpClient.PostAsJsonAsync<string>($"api/Exercice/Execute/{da}/{json}", json);
+            return await result.Content.ReadFromJsonAsync<APIResponse<string>>();
+        }
+
         public async Task<APIResponse<bool>> Delete(int id)
         {
             var result = await _httpClient.DeleteAsync($"api/Exercice/Delete/{id}");

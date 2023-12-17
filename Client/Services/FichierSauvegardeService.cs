@@ -48,7 +48,11 @@ namespace STIMULUS_V2.Client.Services
             log.Information($"GetAll() ApiResponse: {result}");
             return result;
         }
-
+        public async Task<APIResponse<IEnumerable<FichierSauvegarde>>> GetAllExercice(int exerciceId, string da)
+        {
+            var result = await _httpClient.GetFromJsonAsync<APIResponse<IEnumerable<FichierSauvegarde>>>($"api/FichierSauvegarde/Fetch/All/Exercice/{da}/{exerciceId}");
+            return result;
+        }
         public Task<APIResponse<IEnumerable<FichierSauvegarde>>> GetAllById(int id)
         {
             var log = Log.ForContext<EtudiantService>();

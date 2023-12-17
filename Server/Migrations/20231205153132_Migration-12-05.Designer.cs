@@ -12,8 +12,8 @@ using STIMULUS_V2.Server.Data;
 namespace STIMULUS_V2.Server.Migrations
 {
     [DbContext(typeof(STIMULUSContext))]
-    [Migration("20231116000745_page nom")]
-    partial class pagenom
+    [Migration("20231205153132_Migration-12-05")]
+    partial class Migration1205
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -107,6 +107,9 @@ namespace STIMULUS_V2.Server.Migrations
                         .HasColumnType("int");
 
                     b.Property<int?>("PageId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Reference")
                         .HasColumnType("int");
 
                     b.Property<string>("Type")
@@ -405,10 +408,6 @@ namespace STIMULUS_V2.Server.Migrations
 
                     b.Property<int?>("NoeudId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Nom")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Ordre")
                         .HasColumnType("int");

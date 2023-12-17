@@ -65,6 +65,11 @@ namespace STIMULUS_V2.Client.Services
             log.Information($"GetAllFromGraph(int id = {id}) ApiResponse: {result}");
             return result;
         }
+        public async Task<APIResponse<bool>> ReOrderNoeuds(int id)
+        {
+            var result = await _httpClient.GetFromJsonAsync<APIResponse<bool>>($"api/Noeud/Fetch/ReOrder/{id}");
+            return result;
+        }
 
         public async Task<APIResponse<Noeud>> Update(int id, Noeud item)
         {
